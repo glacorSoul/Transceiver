@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Transciever.ServiceDiscoverer": {
+      "commandName": "Project",
+      "commandLineArgs": "tcp://127.0.0.1:11111"
+    }
+  }
+}

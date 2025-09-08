@@ -1,0 +1,57 @@
+{
+  "Services": [
+    {
+      "RequestName": "ServiceDiscoveryRequest",
+      "RequestProperties": {},
+      "ResponseName": "ServiceDiscoveryResponse",
+      "ResponseProperties": {
+        "Services": [
+          {
+            "RequestName": "",
+            "%RequestProperties": {},
+            "ResponseName": "",
+            "%ResponseProperties": {}
+          }
+        ],
+        "TypeIdAssigner": {
+          "%TypeToIdMap": {
+            "ClientRequest\u003CServiceDiscoveryRequest,ServiceDiscoveryResponse\u003E": 0,
+            "ServerResponse\u003CServiceDiscoveryRequest,ServiceDiscoveryResponse\u003E": 1
+          }
+        }
+      }
+    },
+    {
+      "RequestName": "MultiplyRequest",
+      "RequestProperties": {
+        "A": 0,
+        "B": 0
+      },
+      "ResponseName": "MultiplyResponse",
+      "ResponseProperties": {
+        "Result": 0
+      }
+    },
+    {
+      "RequestName": "SumRequest",
+      "RequestProperties": {
+        "A": 0,
+        "B": 0
+      },
+      "ResponseName": "SumResponse",
+      "ResponseProperties": {
+        "Result": 0
+      }
+    }
+  ],
+  "TypeIdAssigner": {
+    "%TypeToIdMap": {
+      "ClientRequest\u003CServiceDiscoveryRequest,ServiceDiscoveryResponse\u003E": 0,
+      "ServerResponse\u003CServiceDiscoveryRequest,ServiceDiscoveryResponse\u003E": 1,
+      "ClientRequest\u003CMultiplyRequest,MultiplyResponse\u003E": 2,
+      "ServerResponse\u003CMultiplyRequest,MultiplyResponse\u003E": 3,
+      "ClientRequest\u003CSumRequest,SumResponse\u003E": 4,
+      "ServerResponse\u003CSumRequest,SumResponse\u003E": 5
+    }
+  }
+}

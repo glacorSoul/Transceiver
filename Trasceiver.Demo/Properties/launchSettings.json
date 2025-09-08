@@ -1,0 +1,60 @@
+{
+  "profiles": {
+    "Transciever.Direct": {
+      "commandName": "Project",
+      "commandLineArgs": "direct"
+    },
+    "Transciever.DomainSocket": {
+      "commandName": "Project",
+      "commandLineArgs": "domainSockets"
+    },
+    "Transciever.UDP": {
+      "commandName": "Project",
+      "commandLineArgs": "udp"
+    },
+    "Transciever.TCP": {
+      "commandName": "Project",
+      "commandLineArgs": "tcp"
+    },
+    "Transciever.TCPServer": {
+      "commandName": "Project",
+      "commandLineArgs": "tcpServer"
+    },
+    "Transciever.TCPClient": {
+      "commandName": "Project",
+      "commandLineArgs": "tcpClient"
+    },
+    "Transciever.SSL": {
+      "commandName": "Project",
+      "commandLineArgs": "ssl -c 78c24d8cfe9fae3fba6cf84b30bfc8a17908efbf"
+    },
+    "Transciever.Benchmark": {
+      "commandName": "Project",
+      "commandLineArgs": "bench"
+    },
+    "Transciever.ZeroMQ": {
+      "commandName": "Project",
+      "commandLineArgs": "zeroMq"
+    },
+    "Transciever.AmazonSQS": {
+      "commandName": "Project",
+      "commandLineArgs": "amazonSqs"
+    },
+    "Transciever.AzureQueue": {
+      "commandName": "Project",
+      "commandLineArgs": "azureQueue"
+    },
+    "Transciever.RabbitMq": {
+      "commandName": "Project",
+      "commandLineArgs": "rabbitMq"
+    },
+    "Transciever.Kafka": {
+      "commandName": "Project",
+      "commandLineArgs": "kafka"
+    },
+    "Transciever.GooglePubSub": {
+      "commandName": "Project",
+      "commandLineArgs": "googlePubSub -p transceiver-470011"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net7.0;net8.0;net9.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latestMajor</LangVersion>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>COPYING</PackageLicenseFile>
+		<Version>1.0.1</Version>
+		<AssemblyVersion>1.0.1</AssemblyVersion>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='net9.0' Or '$(TargetFramework)'=='net8.0'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" VersionOverride="[9.0.0,]" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" VersionOverride="[9.0.0,]" />
+		<PackageReference Include="Microsoft.Extensions.Options" VersionOverride="[9.0.0,]" />
+		<PackageReference Include="System.Text.Json" VersionOverride="[8.0.5,]" />
+		<PackageReference Include="System.Threading.Channels" VersionOverride="[9.0.0,]" />
+		<PackageReference Include="System.Threading.RateLimiting" VersionOverride="[9.0.0,]" />
+	</ItemGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" VersionOverride="[7.0.0,]" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" VersionOverride="[7.0.0,]" />
+		<PackageReference Include="Microsoft.Extensions.Options" VersionOverride="[7.0.0,]" />
+		<PackageReference Include="System.Text.Json" VersionOverride="[8.0.5,]" />
+		<PackageReference Include="System.Threading.Channels" VersionOverride="[6.0.0,]" />
+		<PackageReference Include="System.Threading.RateLimiting" VersionOverride="[7.0.0,]" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" VersionOverride="[7.0.0,]" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" VersionOverride="[7.0.0,]" />
+		<PackageReference Include="Microsoft.Extensions.Options" VersionOverride="[7.0.0,]" />
+		<PackageReference Include="System.Text.Json" VersionOverride="[8.0.5,]" />
+		<PackageReference Include="System.Threading.Channels" VersionOverride="[6.0.0,]" />
+		<PackageReference Include="System.Threading.RateLimiting" VersionOverride="[7.0.0,]" />
+		<PackageReference Include="System.Diagnostics.DiagnosticSource" VersionOverride="[6.0.0,]" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Roslynator.Analyzers">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="SonarAnalyzer.CSharp">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+		<None Include="..\COPYING" Pack="true" PackagePath="\" />
+	</ItemGroup>
+</Project>

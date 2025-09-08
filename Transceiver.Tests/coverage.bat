@@ -1,0 +1,1 @@
+dotnet test --no-build --configuration Release --test-adapter-path:. --collect:"Code Coverage" --settings .\Transceiver.Tests\collector.runsettings

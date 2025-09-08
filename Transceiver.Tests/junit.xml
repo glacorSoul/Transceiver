@@ -1,0 +1,179 @@
+<testsuites>
+  <testsuite name="Transceiver.Tests.dll" tests="33" skipped="0" failures="0" errors="0" time="2.0221000999999994" timestamp="2025-08-17T09:28:29" hostname="DESKTOP-T18RUM3" id="0" package="Transceiver.Tests.dll">
+    <properties />
+    <testcase classname="Transceiver.Tests.Sockets.Factories.UdpSocketFactoryTests" name="Constructor_WithStrings_ShouldInitializeFactoryIdentifier" time="0.2731301">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.DomainSocketFactoryTests" name="Constructor_WithPath_ShouldSetPath" time="0.2733685">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.TcpSocketFactoryTests" name="Constructor_WithStrings_ShouldInitializeFactoryIdentifier" time="0.2731382">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.DomainSocketFactoryTests" name="GenerateRandomPath_CustomSize_ShouldReturnPathOfCorrectLength" time="0.0028457">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.DomainSocketFactoryTests" name="GenerateRandomPath_DefaultSize_ShouldReturnPathOfCorrectLength" time="0.0001568">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.UdpSocketFactoryTests" name="Connect_ShouldReturnConnectedSocket" time="0.0063284">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.TcpSocketFactoryTests" name="Connect_ShouldReturnConnectedSocket" time="0.0064570">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.UdpSocketFactoryTests" name="Constructor_WithIPEndPoints_ShouldInitializeFactoryIdentifier" time="0.0004621">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.TcpSocketFactoryTests" name="Constructor_WithIPEndPoints_ShouldInitializeFactoryIdentifier" time="0.0003465">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.DomainSocketFactoryTests" name="Listen_ShouldReturnListeningSocket" time="0.0042573">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.TcpSocketFactoryTests" name="Listen_ShouldReturnListeningSocket" time="0.0002297">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.UdpSocketFactoryTests" name="Listen_ShouldReturnListeningSocket" time="0.0003716">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.DomainSocketFactoryTests" name="Connect_ShouldReturnConnectedSocket" time="0.0012401">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.Factories.DomainSocketFactoryTests" name="Constructor_Default_ShouldInitializePath" time="0.0001031">
+      <properties>
+        <property name="Category" value="SocketFactories" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Serializer.TransceiverHelloJsonConverterTest" name="SerializeClientInfo_SingleSerialize_ShouldSerializeAllData" time="0.2995040">
+      <properties>
+        <property name="Category" value="Serializer" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Serializer.TransceiverHelloJsonConverterTest" name="DeserializeClientInfo_SingleDeserialize_ShouldDeserializeAllData" time="0.0127549">
+      <properties>
+        <property name="Category" value="Serializer" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Serializer.TransceiverHelloJsonConverterAsyncTest" name="DeserializeClientInfo_SingleDeserialize_ShouldDeserializeAllData" time="0.3128102">
+      <properties>
+        <property name="Category" value="Serializer" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Serializer.TransceiverHelloJsonConverterAsyncTest" name="SerializeClientInfo_SingleSerialize_ShouldSerializeAllData" time="0.0009023">
+      <properties>
+        <property name="Category" value="Serializer" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Serializer.TransceiverHelloJsonConverterTest" name="SerializeClientInfo_MultipleSerialize_ShouldSerializeOnlyId" time="0.0011396">
+      <properties>
+        <property name="Category" value="Serializer" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Serializer.TransceiverHelloJsonConverterTest" name="DeserializeClientInfo_MultipleDeserialize_ShouldDeserializeAllData" time="0.0005347">
+      <properties>
+        <property name="Category" value="Serializer" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Serializer.TransceiverHelloJsonConverterAsyncTest" name="DeserializeClientInfo_MultipleDeserialize_ShouldDeserializeAllData" time="0.0010912">
+      <properties>
+        <property name="Category" value="Serializer" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Serializer.TransceiverHelloJsonConverterAsyncTest" name="SerializeClientInfo_MultipleSerialize_ShouldSerializeOnlyId" time="0.0010265">
+      <properties>
+        <property name="Category" value="Serializer" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.TcpTransceiverTests" name="Transceive_ShouldSendAndReceive" time="0.5252316">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.TcpTransceiverTests" name="Send_ShouldNotError" time="0.0008408">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.TcpTransceiverTests" name="SendAsync_ShouldNotError" time="0.0007073">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.DomainSocketsTransceiverTests" name="Transceive_ShouldSendAndReceive" time="0.0116464">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.DomainSocketsTransceiverTests" name="SendAsync_ShouldNotError" time="0.0006095">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.DomainSocketsTransceiverTests" name="Send_ShouldNotError" time="0.0003170">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.UdpTransceiverTests" name="Transceive_ShouldSendAndReceive" time="0.0058377">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.UdpTransceiverTests" name="Send_ShouldNotError" time="0.0003237">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.UdpTransceiverTests" name="SendAsync_ShouldNotError" time="0.0004043">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.ChannelTransceiverTests" name="SendAsync_ShouldNotError" time="0.0031540">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <testcase classname="Transceiver.Tests.Sockets.ChannelTransceiverTests" name="Send_ShouldNotError" time="0.0008293">
+      <properties>
+        <property name="Category" value="Transceiver" />
+      </properties>
+    </testcase>
+    <system-out>
+Test Framework Informational Messages:
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 9.0.8)
+[xUnit.net 00:00:00.15]   Discovering: Transceiver.Tests
+[xUnit.net 00:00:00.34]   Discovered:  Transceiver.Tests
+[xUnit.net 00:00:00.68]   Starting:    Transceiver.Tests
+[xUnit.net 00:00:01.46]   Finished:    Transceiver.Tests
+</system-out>
+    <system-err></system-err>
+  </testsuite>
+</testsuites>

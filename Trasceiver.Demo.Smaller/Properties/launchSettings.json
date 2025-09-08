@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Transciever.TCPServer": {
+      "commandName": "Project",
+      "commandLineArgs": "tcpServer"
+    },
+    "Transciever.TCPClient": {
+      "commandName": "Project",
+      "commandLineArgs": "tcpClient -p 2244"
+    }
+  }
+}
