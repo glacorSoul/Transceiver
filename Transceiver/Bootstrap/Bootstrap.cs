@@ -32,6 +32,7 @@ public static class BootStrap
             .Concat(typeof(BootStrap).Assembly.DiscoverType(typeof(ITransceiver<,>)));
         foreach (Type transceiverType in discoverableTransceivers)
         {
+            _ = services.AddTransient(typeof(MetricsPipelineProcessor<,>).MakeGenericType(transceiverType.GenericTypeArguments));
             config(new(services, transceiverType));
         }
         return services;

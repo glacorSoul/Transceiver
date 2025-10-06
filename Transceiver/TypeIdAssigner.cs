@@ -12,8 +12,8 @@ namespace Transceiver;
 public sealed class TypeIdAssigner
 {
     private static readonly Type[] SystemTypes = [
-        typeof(ClientRequest<ServiceDiscoveryRequest, ServiceDiscoveryResponse>),
-        typeof(ServerResponse<ServiceDiscoveryRequest, ServiceDiscoveryResponse>)
+        typeof(ClientRequest<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel>),
+        typeof(ServerResponse<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel>)
     ];
 
     private readonly ManualResetEventSlim _hasBeenInitialized = new(false);

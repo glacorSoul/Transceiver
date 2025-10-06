@@ -5,5 +5,5 @@
 namespace Transceiver.Requests;
 
 #pragma warning disable S2094 // Classes should not be empty
-public class ServiceDiscoveryRequest;
+public class ServiceDiscoveryRequestModel;
 #pragma warning restore S2094 // Classes should not be empty

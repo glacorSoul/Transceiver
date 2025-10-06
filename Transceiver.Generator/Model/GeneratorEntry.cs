@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Transceiver.Generator;
 
-public class GeneratorEntry : IComparable<GeneratorEntry>
+public class GeneratorEntry : IComparable<GeneratorEntry>, IComparable
 {
     public GeneratorEntry(string url, ClassDeclarationSyntax classSyntax)
     {
@@ -17,9 +17,58 @@ public class GeneratorEntry : IComparable<GeneratorEntry>
     public ClassDeclarationSyntax ClassSyntax { get; set; }
     public string Url { get; set; }
 
+    public static bool operator !=(GeneratorEntry left, GeneratorEntry right)
+    {
+        return !(left == right);
+    }
+
+    public static bool operator <(GeneratorEntry left, GeneratorEntry right)
+    {
+        return left.CompareTo(right) < 0;
+    }
+
+    public static bool operator <=(GeneratorEntry left, GeneratorEntry right)
+    {
+        return left.CompareTo(right) <= 0;
+    }
+
+    public static bool operator ==(GeneratorEntry left, GeneratorEntry right)
+    {
+        if (left is null)
+        {
+            return right is null;
+        }
+        return left.Equals(right);
+    }
+
+    public static bool operator >(GeneratorEntry left, GeneratorEntry right)
+    {
+        return left.CompareTo(right) > 0;
+    }
+
+    public static bool operator >=(GeneratorEntry left, GeneratorEntry right)
+    {
+        return left.CompareTo(right) >= 0;
+    }
+
     public int CompareTo(GeneratorEntry other)
     {
         return other.Url.CompareTo(Url);
+    }
+
+    public int CompareTo(object obj)
+    {
+        if (obj == null)
+        {
+            return 1;
+        }
+
+        if (obj is GeneratorEntry x)
+        {
+            return CompareTo(x);
+        }
+
+        throw new ArgumentException("", nameof(obj));
     }
 
     public override bool Equals(object obj)

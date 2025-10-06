@@ -4,7 +4,7 @@
 
 namespace Transceiver.Generator;
 
-public struct ClientRequest<TRequest, TResponse>
+public struct ClientRequest<TRequest>
 {
     public TRequest Data { get; set; }
     public Guid Id { get; set; }

@@ -4,7 +4,7 @@
 
 namespace Transceiver.Requests;
 
-public class ServiceDiscoveryResponse
+public class ServiceDiscoveryResponseModel
 {
     public IEnumerable<ServiceDiscoveryModel> Services { get; set; } = [];
     public TypeIdAssigner TypeIdAssigner { get; set; } = new();

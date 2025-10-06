@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Text.Json;
 
 namespace Transceiver.Generator;
@@ -229,13 +228,13 @@ public class TransceiverGenerator : IIncrementalGenerator
             }
             current = current.Parent;
         }
-        throw new Exception("Node not found");
+        throw new InvalidOperationException("Node not found");
     }
 
-    public void Initialize(IncrementalGeneratorInitializationContext incrementalContext)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValueProvider<ImmutableArray<GeneratorEntry>> serviceDiscoveryProvider
-            = incrementalContext.SyntaxProvider.ForAttributeWithMetadataName(
+            = context.SyntaxProvider.ForAttributeWithMetadataName(
             fullyQualifiedMetadataName: "Transceiver.ServiceDiscoveryAttribute",
             predicate: (node, cancelationToken) =>
             {
@@ -259,7 +258,7 @@ public class TransceiverGenerator : IIncrementalGenerator
         }).WithComparer(EqualityComparer<GeneratorEntry>.Default)
         .Collect();
 
-        IncrementalValueProvider<ImmutableArray<AdditionalText>> jsonFiles = incrementalContext.AdditionalTextsProvider
+        IncrementalValueProvider<ImmutableArray<AdditionalText>> jsonFiles = context.AdditionalTextsProvider
             .Where(text => text.Path.EndsWith(".json"))
             .Collect();
 
@@ -267,11 +266,11 @@ public class TransceiverGenerator : IIncrementalGenerator
             = serviceDiscoveryProvider.Combine(jsonFiles).Select((providers, cancelationToken) =>
             {
                 return providers.Left
-                .Where(generatorEntry => providers.Right.Any(f => f.Path.ToLowerInvariant().Contains(generatorEntry.Url.ToLowerInvariant())))
+                .Where(generatorEntry => providers.Right.Any(f => f.Path.IndexOf(generatorEntry.Url, StringComparison.InvariantCultureIgnoreCase) >= 0))
                 .Select(generatorEntry =>
                 {
                     SourceText text = providers.Right
-                        .First(f => f.Path.ToLowerInvariant().Contains(generatorEntry.Url.ToLowerInvariant()))
+                        .First(f => f.Path.IndexOf(generatorEntry.Url, StringComparison.InvariantCultureIgnoreCase) >= 0)
                         .GetText(cancelationToken)!;
                     string json = text.ToString();
                     JsonSerializerOptions options = new(JsonSerializerOptions.Default);
@@ -281,7 +280,7 @@ public class TransceiverGenerator : IIncrementalGenerator
                 }).ToImmutableArray();
             });
 
-        incrementalContext.RegisterSourceOutput(incrementalValueProvider, (sourceProductionContext, source) =>
+        context.RegisterSourceOutput(incrementalValueProvider, (sourceProductionContext, source) =>
         {
             foreach ((GeneratorEntry generatorEntry, ServiceDiscoveryResponse response) in source)
             {

@@ -10,7 +10,7 @@ public class ServerResponse<TRequest, TResponse>
     {
     }
 
-    public ServerResponse(TResponse data, ClientRequest<TRequest, TResponse> request)
+    public ServerResponse(TResponse data, ClientRequest<TRequest> request)
     {
         RequestId = request.Id;
         TimeStamp = DateTimeOffset.UtcNow;

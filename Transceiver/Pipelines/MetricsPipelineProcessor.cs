@@ -8,7 +8,7 @@ using System.Threading.RateLimiting;
 
 namespace Transceiver;
 
-internal class MetricsProcessor<TRequest, TResponse> : IPipelineProcessor<TRequest, TResponse>
+internal class MetricsPipelineProcessor<TRequest, TResponse> : IPipelineProcessor<TRequest, TResponse>
 {
     private static readonly RateLimiter _logLimiter = new FixedWindowRateLimiter(
         new FixedWindowRateLimiterOptions
@@ -20,9 +20,9 @@ internal class MetricsProcessor<TRequest, TResponse> : IPipelineProcessor<TReque
         });
 
     private static readonly CountersModel<TRequest, TResponse> Counters = new();
-    private readonly ILogger _logger;
+    private readonly ILogger<MetricsPipelineProcessor<TRequest, TResponse>> _logger;
 
-    public MetricsProcessor(ILogger logger)
+    public MetricsPipelineProcessor(ILogger<MetricsPipelineProcessor<TRequest, TResponse>> logger)
     {
         _logger = logger;
     }
@@ -37,7 +37,7 @@ internal class MetricsProcessor<TRequest, TResponse> : IPipelineProcessor<TReque
         }
         catch (Exception ex)
         {
-            Counters.NErrorCounter.Add(1, new("request", request), new("error", ex));
+            Counters.NErrorsCounter.Add(1, new("request", request), new("error", ex));
             throw;
         }
         finally

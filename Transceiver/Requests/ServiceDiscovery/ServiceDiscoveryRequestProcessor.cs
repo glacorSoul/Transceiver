@@ -6,16 +6,16 @@ using System.Reflection;
 
 namespace Transceiver.Requests;
 
-public class ServiceDiscoveryProcessor : IProcessor<ServiceDiscoveryRequest, ServiceDiscoveryResponse>
+public class ServiceDiscoveryRequestProcessor : IProcessor<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel>
 {
-    internal ITransceiver<ServiceDiscoveryRequest, ServiceDiscoveryResponse> Transceiver { get; set; } = default!;
+    internal ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel> Transceiver { get; set; } = default!;
 
-    public Task<ServiceDiscoveryResponse> ProcessRequest(ServiceDiscoveryRequest request, CancellationToken cancellationToken)
+    public Task<ServiceDiscoveryResponseModel> ProcessRequest(ServiceDiscoveryRequestModel request, CancellationToken cancellationToken)
     {
         IEnumerable<Type> transceiverTypes = [..Assembly.GetExecutingAssembly().DiscoverType(typeof(ITransceiver<,>))
             .Concat(Assembly.GetEntryAssembly()!.DiscoverType(typeof(ITransceiver<,>)))];
 
-        ServiceDiscoveryResponse result = new()
+        ServiceDiscoveryResponseModel result = new()
         {
             Services = transceiverTypes
             .Select(t => new ServiceDiscoveryModel

@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		Directory.Build.Props = Directory.Build.Props
 		Directory.Packages.props = Directory.Packages.props
 		pack.bat = pack.bat
 	EndProjectSection
@@ -35,6 +36,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.ServiceDiscoverer", "Transceiver.ServiceDiscoverer\Transceiver.ServiceDiscoverer.csproj", "{73EF48CF-C16E-4CE4-91F8-1D9F241F8BA6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.DomainSockets", "Transceiver.DomainSockets\Transceiver.DomainSockets.csproj", "{FB1971AA-1067-48EB-B3C1-779359FEBAB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Dashboard.Web", "Transceiver.Dashboard.Web\Transceiver.Dashboard.Web.csproj", "{4C4FD4A1-88CC-48F0-AABB-4438F2CA8082}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,6 +97,10 @@ Global
 		{FB1971AA-1067-48EB-B3C1-779359FEBAB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB1971AA-1067-48EB-B3C1-779359FEBAB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB1971AA-1067-48EB-B3C1-779359FEBAB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C4FD4A1-88CC-48F0-AABB-4438F2CA8082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C4FD4A1-88CC-48F0-AABB-4438F2CA8082}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C4FD4A1-88CC-48F0-AABB-4438F2CA8082}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C4FD4A1-88CC-48F0-AABB-4438F2CA8082}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

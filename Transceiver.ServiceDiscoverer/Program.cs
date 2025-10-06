@@ -12,7 +12,7 @@ namespace Transceiver.ServiceDiscoverer;
 
 internal static class Program
 {
-    public static async Task<ServiceDiscoveryResponse> GetService(string url)
+    public static async Task<ServiceDiscoveryResponseModel> GetService(string url)
     {
         using CancellationTokenSource cts = new();
         cts.CancelAfter(TimeSpan.FromSeconds(20));
@@ -35,9 +35,9 @@ internal static class Program
         ServiceProvider provider = services.BuildServiceProvider();
         provider.ConfigureTransceiverProvider(Assembly.GetExecutingAssembly());
 
-        ITransceiver<ServiceDiscoveryRequest, ServiceDiscoveryResponse> transceiver
-            = provider.GetRequiredService<ITransceiver<ServiceDiscoveryRequest, ServiceDiscoveryResponse>>();
-        ServiceDiscoveryResponse serviceDiscovery = await transceiver.TransceiveOnceAsync(new(), cts.Token);
+        ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel> transceiver
+            = provider.GetRequiredService<ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel>>();
+        ServiceDiscoveryResponseModel serviceDiscovery = await transceiver.TransceiveOnceAsync(new(), cts.Token);
         return serviceDiscovery;
     }
 
@@ -48,7 +48,7 @@ internal static class Program
             Console.WriteLine("Usage: ServiceDiscoverer <url>");
             return;
         }
-        ServiceDiscoveryResponse serviceDiscovery = await GetService(args[0]);
+        ServiceDiscoveryResponseModel serviceDiscovery = await GetService(args[0]);
 
         JsonSerializerOptions options = new(JsonSerializerDefaults.Web)
         {

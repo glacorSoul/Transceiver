@@ -4,7 +4,7 @@
 
 namespace Transceiver;
 
-internal class CompositePipelineProcessor<TRequest, TResponse> : IPipelineProcessor<TRequest, TResponse>
+public class CompositePipelineProcessor<TRequest, TResponse> : IPipelineProcessor<TRequest, TResponse>
 {
     private readonly IEnumerable<IPipelineProcessor<TRequest, TResponse>> _processors;
 

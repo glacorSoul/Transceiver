@@ -25,8 +25,10 @@ public class AsyncSource<T>
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            T value = await _channel.Reader.ReadAsync(cancellationToken);
-            yield return value;
+            if (await _channel.Reader.WaitToReadAsync(cancellationToken))
+            {
+                yield return await _channel.Reader.ReadAsync(cancellationToken);
+            }
         }
     }
 

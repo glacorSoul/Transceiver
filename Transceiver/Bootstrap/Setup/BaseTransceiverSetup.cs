@@ -18,18 +18,17 @@ public class BaseTransceiverSetup : ITransceiverSetup
         PipelineType = typeof(IPipelineProcessor<,>).MakeGenericType(genericArguments);
         ProcessorType = typeof(IProcessor<,>).MakeGenericType(genericArguments);
         CompositePipelineType = typeof(CompositePipelineProcessor<,>).MakeGenericType(genericArguments);
+        MetricsPipelineType = typeof(MetricsPipelineProcessor<,>).MakeGenericType(genericArguments);
         Type = transceiverType;
         Services = services;
         _ = services.AddSingleton<CorrelatedMessageProcessor>()
             .AddSingleton<IMessageProcessor, CorrelatedMessageProcessor>(provider => provider.GetRequiredService<CorrelatedMessageProcessor>())
-            .AddTransient(CompositePipelineType, provider =>
-            {
-                IEnumerable<object?> processors = provider.GetServices(PipelineType);
-                return Activator.CreateInstance(CompositePipelineType, processors)!;
-            });
+            .AddTransient(PipelineType, MetricsPipelineType)
+            .AddTransient(CompositePipelineType);
     }
 
     protected Type CompositePipelineType { get; }
+    protected Type MetricsPipelineType { get; }
     protected Type PipelineType { get; }
     protected Type ProcessorType { get; }
     protected IServiceCollection Services { get; }
@@ -44,7 +43,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
             object pipeline = provider.GetRequiredService(CompositePipelineType);
             object protocol = provider.GetRequiredService<ITransceiverProtocol>();
             object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline)!;
-            if (transceiver is ITransceiver<ServiceDiscoveryRequest, ServiceDiscoveryResponse> serviceDiscoveryTransceiver)
+            if (transceiver is ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel> serviceDiscoveryTransceiver)
             {
                 _ = serviceDiscoveryTransceiver.TransceiveOnceAsync(new(), CancellationToken.None)
                     .ContinueWith(response =>
@@ -61,7 +60,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
     {
         _ = Services.AddSingleton(Type, provider =>
         {
-            object pipeline = provider.GetRequiredService(CompositePipelineType);
+            object pipeline = provider.GetRequiredService(PipelineType);
             object protocol = provider.GetRequiredService<ITransceiverProtocol>();
             object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline)!;
             object processor = transceiver;

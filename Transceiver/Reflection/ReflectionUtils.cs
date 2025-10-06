@@ -53,6 +53,13 @@ public static class ReflectionUtils
             .OrderBy(t => t.Name)
             .Distinct()];
 
+        types = [.. types.Concat(currentAssembly
+            .DefinedTypes
+            .SelectMany(type => type.DeclaredFields)
+            .Select(field => field.FieldType))
+            .OrderBy(t => t.Name)
+            .Distinct()];
+
         return types;
     }
 
