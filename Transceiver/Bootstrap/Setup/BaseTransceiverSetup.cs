@@ -18,27 +18,24 @@ public class BaseTransceiverSetup : ITransceiverSetup
         PipelineType = typeof(IPipelineProcessor<,>).MakeGenericType(genericArguments);
         ProcessorType = typeof(IProcessor<,>).MakeGenericType(genericArguments);
         CompositePipelineType = typeof(CompositePipelineProcessor<,>).MakeGenericType(genericArguments);
-        MetricsPipelineType = typeof(MetricsPipelineProcessor<,>).MakeGenericType(genericArguments);
-        Type = transceiverType;
+        Type metricsPipelineType = typeof(MetricsPipelineProcessor<,>).MakeGenericType(genericArguments);
         Services = services;
         _ = services.AddSingleton<CorrelatedMessageProcessor>()
             .AddSingleton<IMessageProcessor, CorrelatedMessageProcessor>(provider => provider.GetRequiredService<CorrelatedMessageProcessor>())
-            .AddTransient(PipelineType, MetricsPipelineType)
+            .AddTransient(PipelineType, metricsPipelineType)
             .AddTransient(CompositePipelineType);
     }
 
     protected Type CompositePipelineType { get; }
-    protected Type MetricsPipelineType { get; }
     protected Type PipelineType { get; }
     protected Type ProcessorType { get; }
     protected IServiceCollection Services { get; }
     protected Type TransceiverType { get; }
-    protected Type Type { get; }
 
     public virtual void SetupClient()
     {
         Services.TryAddSingleton<TypeIdAssigner>();
-        Services.TryAddSingleton(Type, provider =>
+        Services.TryAddSingleton(TransceiverType, provider =>
         {
             object pipeline = provider.GetRequiredService(CompositePipelineType);
             object protocol = provider.GetRequiredService<ITransceiverProtocol>();
@@ -58,7 +55,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
 
     public virtual void SetupServer(bool serverOnly)
     {
-        _ = Services.AddSingleton(Type, provider =>
+        _ = Services.AddSingleton(TransceiverType, provider =>
         {
             object pipeline = provider.GetRequiredService(PipelineType);
             object protocol = provider.GetRequiredService<ITransceiverProtocol>();

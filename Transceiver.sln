@@ -37,8 +37,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.ServiceDiscover
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.DomainSockets", "Transceiver.DomainSockets\Transceiver.DomainSockets.csproj", "{FB1971AA-1067-48EB-B3C1-779359FEBAB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Dashboard.Web", "Transceiver.Dashboard.Web\Transceiver.Dashboard.Web.csproj", "{4C4FD4A1-88CC-48F0-AABB-4438F2CA8082}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,10 +95,6 @@ Global
 		{FB1971AA-1067-48EB-B3C1-779359FEBAB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB1971AA-1067-48EB-B3C1-779359FEBAB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB1971AA-1067-48EB-B3C1-779359FEBAB2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4C4FD4A1-88CC-48F0-AABB-4438F2CA8082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4C4FD4A1-88CC-48F0-AABB-4438F2CA8082}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4C4FD4A1-88CC-48F0-AABB-4438F2CA8082}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4C4FD4A1-88CC-48F0-AABB-4438F2CA8082}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
