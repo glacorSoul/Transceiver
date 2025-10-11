@@ -71,21 +71,21 @@ public sealed class ConcurrentDictionaryList<Tkey, TValue>
         {
             List<TValue> list;
             bool hasValue = _dictionary.TryGetValue(key, out list!);
-            if (hasValue)
+            if (!hasValue)
             {
-                IEnumerable<TValue> matching = list.Where(e => condition(e));
-                IEnumerable<TValue> nonMatching = list.Where(e => !condition(e));
-                if (nonMatching.Any())
-                {
-                    _dictionary[key] = [.. nonMatching];
-                }
-                else
-                {
-                    _ = _dictionary.Remove(key);
-                }
-                return [.. matching];
+                return [];
             }
-            return [];
+            List<TValue> matching = [.. list.Where(e => condition(e))];
+            List<TValue> nonMatching = [.. list.Where(e => !condition(e))];
+            if (nonMatching.Count == 0)
+            {
+                _ = _dictionary.Remove(key);
+            }
+            else
+            {
+                _dictionary[key] = nonMatching;
+            }
+            return matching;
         }
     }
 

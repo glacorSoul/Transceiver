@@ -1,0 +1,17 @@
+{
+   "name": "transceiver",
+   "version": "1.0.0",
+   "description": "Transceiver documentation",
+   "author": "Glacor",
+   "repository": "https://github.com/glacorSoul/Transceiver.git",
+   "license": "GPL-3.0-only",
+   "devDependencies": {
+      "vitepress": "^1.2.3",
+      "vue": "^3.4.29"
+   },
+   "scripts": {
+      "dev": "vitepress dev",
+      "build": "vitepress build",
+      "preview": "vitepress preview"
+   }
+}

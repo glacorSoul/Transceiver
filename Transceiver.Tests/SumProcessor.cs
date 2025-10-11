@@ -5,10 +5,10 @@
 namespace Transceiver.Tests;
 
 public class SumProcessor :
-    IProcessor<UdpSumRequest, UdpSumResponse>,
     IProcessor<TcpSumRequest, TcpSumResponse>,
     IProcessor<DomainSocketsSumRequest, DomainSocketsSumResponse>,
-    IProcessor<ChannelsSumRequest, ChannelsSumResponse>
+    IProcessor<ChannelsSumRequest, ChannelsSumResponse>,
+    IProcessor<UdpSumRequest, UdpSumResponse>
 {
     public Task<TcpSumResponse> ProcessRequest(TcpSumRequest request, CancellationToken cancellationToken)
     {

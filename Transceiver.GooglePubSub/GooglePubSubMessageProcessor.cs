@@ -31,7 +31,7 @@ public sealed class GooglePubSubMessageProcessor : IMessageProcessor, IDisposabl
         _topicsSource = new();
         _config = config;
         _messageProcessor = messageProcessor;
-        _receiveMessages = new(async () => await ReceiveMessagesAsync(_cts.Token));
+        _receiveMessages = new(() => ReceiveMessagesAsync(_cts.Token).GetAwaiter().GetResult());
         _receiveMessages.Start();
         _serializer = serializer;
     }
@@ -82,7 +82,7 @@ public sealed class GooglePubSubMessageProcessor : IMessageProcessor, IDisposabl
             {
                 _logger.LogWarning(ex, "Failed to create topic {TopicId}. It probably already existed.", topicId);
             }
-            await _topicsSource.WriteAsync(topicId);
+            await _topicsSource.WriteAsync(topicId, _cts.Token);
         }
         if (message is null)
         {
@@ -133,9 +133,9 @@ public sealed class GooglePubSubMessageProcessor : IMessageProcessor, IDisposabl
                 {
                     _logger.LogWarning(ex, "Failed to create subscription {Subscription}. It probably already existed.", subscriptionName);
                 }
-                _ = cancellationToken.Register(async () =>
+                _ = cancellationToken.Register(() =>
                 {
-                    await subscriberClient.StopAsync(CancellationToken.None);
+                    subscriberClient.StopAsync(CancellationToken.None).GetAwaiter().GetResult();
                 });
                 await subscriberClient.StartAsync(async (msg, ct) =>
                 {

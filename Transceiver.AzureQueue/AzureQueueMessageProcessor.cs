@@ -23,7 +23,7 @@ public sealed class AzureQueueMessageProcessor : IMessageProcessor, IDisposable
         _cts = new();
         _queueFactory = queueFactory;
         _messageProcessor = processor;
-        _receiveMessages = new(async () => await StartReceivingMessagesAsync(_cts.Token));
+        _receiveMessages = new(() => StartReceivingMessagesAsync(_cts.Token).GetAwaiter().GetResult());
         _receiveMessages.Start();
         _serializer = serializer;
     }

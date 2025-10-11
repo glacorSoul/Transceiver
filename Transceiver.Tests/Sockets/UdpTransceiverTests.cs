@@ -11,21 +11,19 @@ namespace Transceiver.Tests.Sockets;
 public class UdpTransceiverTests : IClassFixture<TestFixture>
 {
     private readonly TestFixture _fixture;
+    private readonly ITransceiver<UdpSumRequest, UdpSumResponse> _transceiver;
 
     public UdpTransceiverTests(TestFixture fixture)
     {
         _fixture = fixture;
-        Transceiver = _fixture.Provider.GetService<ITransceiver<UdpSumRequest, UdpSumResponse>>()!;
-        _ = Transceiver.StartProcessingRequestsAsync(new SumProcessor(), TestContext.Current.CancellationToken).ConfigureAwait(false);
+        _transceiver = _fixture.Provider.GetService<ITransceiver<UdpSumRequest, UdpSumResponse>>()!;
     }
-
-    public ITransceiver<UdpSumRequest, UdpSumResponse> Transceiver { get; }
 
     [Fact]
     public async Task SendAsync_ShouldNotError()
     {
         UdpSumRequest request = new(1, 2);
-        ClientRequest<UdpSumRequest, UdpSumResponse> clientRequest = await Transceiver.SendToServerAsync(request, TestContext.Current.CancellationToken);
+        ClientRequest<UdpSumRequest, UdpSumResponse> clientRequest = await _transceiver.SendToServerAsync(request, TestContext.Current.CancellationToken);
         Assert.Equivalent(clientRequest.Data, request);
     }
 
@@ -33,7 +31,7 @@ public class UdpTransceiverTests : IClassFixture<TestFixture>
     public async Task Transceive_ShouldSendAndReceive()
     {
         UdpSumRequest request = new(1, 2);
-        UdpSumResponse sumResponse = await Transceiver.TransceiveOnceAsync(request, TestContext.Current.CancellationToken);
+        UdpSumResponse sumResponse = await _transceiver.TransceiveOnceAsync(request, TestContext.Current.CancellationToken);
         Assert.Equivalent(request.A + request.B, sumResponse.Result);
     }
 }

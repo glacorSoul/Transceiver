@@ -37,7 +37,7 @@ public sealed class KafkaMessageProcessor : IMessageProcessor, IDisposable
         _producerConfig = producerConfig;
         _consumerConfig = consumerConfig;
         _processor = processor;
-        _receiveMessages = new(async () => await ReceiveMessages(_cts.Token));
+        _receiveMessages = new(() => ReceiveMessages(_cts.Token).GetAwaiter().GetResult());
         _receiveMessages.Start();
         _serializer = serializer;
     }
@@ -98,7 +98,7 @@ public sealed class KafkaMessageProcessor : IMessageProcessor, IDisposable
         {
             _logger.LogError(e, "Error creating topic {Topic}", topic);
         }
-        await _topicsSource.WriteAsync(topic);
+        await _topicsSource.WriteAsync(topic, _cts.Token);
         return topic;
     }
 

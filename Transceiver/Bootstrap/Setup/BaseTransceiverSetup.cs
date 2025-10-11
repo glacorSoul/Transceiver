@@ -14,6 +14,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
     public BaseTransceiverSetup(Type transceiverType, IServiceCollection services)
     {
         Type[] genericArguments = transceiverType.GetGenericArguments();
+        ITransceiverType = typeof(ITransceiver<,>).MakeGenericType(genericArguments);
         TransceiverType = typeof(Transceiver<,>).MakeGenericType(genericArguments);
         PipelineType = typeof(IPipelineProcessor<,>).MakeGenericType(genericArguments);
         ProcessorType = typeof(IProcessor<,>).MakeGenericType(genericArguments);
@@ -27,6 +28,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
     }
 
     protected Type CompositePipelineType { get; }
+    protected Type ITransceiverType { get; }
     protected Type PipelineType { get; }
     protected Type ProcessorType { get; }
     protected IServiceCollection Services { get; }
@@ -35,7 +37,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
     public virtual void SetupClient()
     {
         Services.TryAddSingleton<TypeIdAssigner>();
-        Services.TryAddSingleton(TransceiverType, provider =>
+        Services.TryAddSingleton(ITransceiverType, provider =>
         {
             object pipeline = provider.GetRequiredService(CompositePipelineType);
             object protocol = provider.GetRequiredService<ITransceiverProtocol>();
@@ -55,7 +57,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
 
     public virtual void SetupServer(bool serverOnly)
     {
-        _ = Services.AddSingleton(TransceiverType, provider =>
+        _ = Services.AddSingleton(ITransceiverType, provider =>
         {
             object pipeline = provider.GetRequiredService(PipelineType);
             object protocol = provider.GetRequiredService<ITransceiverProtocol>();

@@ -11,21 +11,19 @@ namespace Transceiver.Tests.Sockets;
 public class TcpTransceiverTests : IClassFixture<TestFixture>
 {
     private readonly TestFixture _fixture;
+    private readonly ITransceiver<TcpSumRequest, TcpSumResponse> _transceiver;
 
     public TcpTransceiverTests(TestFixture fixture)
     {
         _fixture = fixture;
-        Transceiver = _fixture.Provider.GetService<ITransceiver<TcpSumRequest, TcpSumResponse>>()!;
-        _ = Transceiver.StartProcessingRequestsAsync(new SumProcessor(), TestContext.Current.CancellationToken).ConfigureAwait(false);
+        _transceiver = _fixture.Provider.GetService<ITransceiver<TcpSumRequest, TcpSumResponse>>()!;
     }
-
-    public ITransceiver<TcpSumRequest, TcpSumResponse> Transceiver { get; }
 
     [Fact]
     public async Task SendAsync_ShouldNotError()
     {
         TcpSumRequest request = new(1, 2);
-        ClientRequest<TcpSumRequest, TcpSumResponse> clientRequest = await Transceiver.SendToServerAsync(request, TestContext.Current.CancellationToken);
+        ClientRequest<TcpSumRequest, TcpSumResponse> clientRequest = await _transceiver.SendToServerAsync(request, TestContext.Current.CancellationToken);
         Assert.Equivalent(clientRequest.Data, request);
     }
 
@@ -33,7 +31,7 @@ public class TcpTransceiverTests : IClassFixture<TestFixture>
     public async Task Transceive_ShouldSendAndReceive()
     {
         TcpSumRequest request = new(1, 2);
-        TcpSumResponse sumResponse = await Transceiver.TransceiveOnceAsync(request, TestContext.Current.CancellationToken);
+        TcpSumResponse sumResponse = await _transceiver.TransceiveOnceAsync(request, TestContext.Current.CancellationToken);
         Assert.Equivalent(request.A + request.B, sumResponse.Result);
     }
 }

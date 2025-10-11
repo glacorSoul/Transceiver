@@ -28,7 +28,7 @@ public sealed class AmazonSqsMessageProcessor : IMessageProcessor, IDisposable
         _sqsFactory = sqs;
         _processor = processor;
         _logger = logger;
-        _receiveMessages = new(async () => await ProcessMessagesAsync(_cts.Token));
+        _receiveMessages = new(() => ProcessMessagesAsync(_cts.Token).GetAwaiter().GetResult());
         _receiveMessages.Start();
         _serializer = serializer;
     }
