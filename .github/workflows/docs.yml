@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pages: write
+      contents: read
     defaults:
       run:
         working-directory: docs
