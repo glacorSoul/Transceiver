@@ -13,7 +13,7 @@ public class AsyncSource<T>
     {
         SingleReader = false,
         SingleWriter = false,
-        AllowSynchronousContinuations = true,
+        AllowSynchronousContinuations = false,
     });
 
     public void Complete()
@@ -25,15 +25,12 @@ public class AsyncSource<T>
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            if (await _channel.Reader.WaitToReadAsync(cancellationToken))
-            {
-                yield return await _channel.Reader.ReadAsync(cancellationToken);
-            }
+            yield return await _channel.Reader.ReadAsync(cancellationToken);
         }
     }
 
-    public async Task WriteAsync(T item)
+    public ValueTask WriteAsync(T item, CancellationToken cancellationToken)
     {
-        await _channel.Writer.WriteAsync(item);
+        return _channel.Writer.WriteAsync(item, cancellationToken);
     }
 }

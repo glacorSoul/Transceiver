@@ -56,10 +56,10 @@ public sealed class TransceiverSocketProtocol : ReceiveMessagesProtocol<Socket>
         return tcs.Task;
     }
 
-    protected sealed override async Task<Socket> SetupReadAsync(CancellationToken cancellationToken)
+    protected sealed override Task<Socket> SetupReadAsync(CancellationToken cancellationToken)
     {
         Socket listenSocket = _socketFactory.Listen();
-        return await listenSocket.TryAcceptAsync();
+        return listenSocket.TryAcceptAsync();
     }
 
     protected sealed override Task WriteAsync(Socket transceiver, object client, byte[] data, CancellationToken cancellationToken)

@@ -17,7 +17,7 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
     public CorrelatedMessageProcessor(ISerializer serializer)
     {
         _serializer = serializer;
-        _retainedMessagesProcessor = new(async () => await ProcessMessages());
+        _retainedMessagesProcessor = new(() => ProcessMessages().GetAwaiter().GetResult());
         _retainedMessagesProcessor.Start();
     }
 
@@ -36,13 +36,13 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
 
     public async Task ProcessGenericMessageAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
     {
-        await _messages.WriteAsync(data);
+        await _messages.WriteAsync(data, cancellationToken);
     }
 
     public async Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken)
     {
         IIdentifiable data = (IIdentifiable)_serializer.Deserialize(message.Header.Type, message.Data);
-        await _messages.WriteAsync(data);
+        await _messages.WriteAsync(data, cancellationToken);
     }
 
     private async Task ProcessMessages()
@@ -59,12 +59,14 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
             }
             if (streams.Count == 0)
             {
-                _ = Task.Delay(TimeSpan.FromMilliseconds(0))
-                    .ContinueWith((ctx) => _messages.WriteAsync(message));
+                await _messages.WriteAsync(message, _cts.Token);
             }
-            foreach (object stream in streams)
+            else
             {
-                _ = sendDataMethod.Invoke(stream, [message]);
+                foreach (object stream in streams)
+                {
+                    _ = sendDataMethod.Invoke(stream, [message, _cts.Token]);
+                }
             }
         }
     }

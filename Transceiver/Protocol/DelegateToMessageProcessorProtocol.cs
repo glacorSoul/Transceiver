@@ -25,8 +25,8 @@ public class DelegateToMessageProcessorProtocol : ITransceiverProtocol
         return SendObjectToServerAsync(data, cancellationToken);
     }
 
-    public async Task SendObjectToServerAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
+    public Task SendObjectToServerAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
     {
-        await _messageProcessor.ProcessMessageAsync(new TransceiverMessage(data, _serializer), cancellationToken);
+        return _messageProcessor.ProcessMessageAsync(new TransceiverMessage(data, _serializer), cancellationToken);
     }
 }

@@ -20,7 +20,7 @@ public class DirectProtocol : ITransceiverProtocol
 
     public Task SendObjectToClientAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
     {
-        return SendObjectToServerAsync(data, cancellationToken);
+        return _messageProcessor.ProcessGenericMessageAsync(data, cancellationToken);
     }
 
     public Task SendObjectToServerAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
