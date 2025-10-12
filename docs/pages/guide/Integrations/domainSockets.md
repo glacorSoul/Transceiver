@@ -1,4 +1,4 @@
-# Amazon SQS
+# Domain Sockets
 
 `Transceiver` integrates with `DomainSockets`. You need to install the [Transceiver.DomainSockets](https://www.nuget.org/packages/Transceiver.DomainSockets) plugin.
 Domain Sockets is a protocol that allows you to exchange messages between two processes running on the same machine.
