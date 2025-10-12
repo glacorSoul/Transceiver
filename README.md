@@ -1,3 +1,5 @@
+<img src="transceiver.png" alt="Transceiver logo" width="80"/>
+
 # Transceiver
 `Transceiver` allows you to send messages In-process, between processes and between machines. 
 Implementing, Request/Response and Publish/Subscribe patterns.
