@@ -22,6 +22,12 @@ export const sidebar: DefaultTheme.Sidebar = {
          ]
       },
       {
+         text: 'Configuration',
+         items: [
+            { text: 'Configuration', link: '/guide/configuration' },
+         ]
+      },
+      {
          text: 'Integrations',
          items: [
             { text: 'Domain Sockets', link: '/guide/Integrations/domainSockets' },

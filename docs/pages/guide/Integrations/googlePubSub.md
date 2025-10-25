@@ -6,7 +6,7 @@
 dotnet add package Transceiver.GooglePubSub
 ```
 
-This is an example on how you can set up Google pub/sub. This example can be viewed on [git](https://github.com/glacorSoul/Transceiver/blob/main/Trasceiver.Demo/Options/GooglePubSubOptions.cs)
+This is an example on how you can set up `Transceiver` with Google pub/sub. This example can be viewed on [git](https://github.com/glacorSoul/Transceiver/blob/main/Trasceiver.Demo/Options/GooglePubSubOptions.cs)
 
 ```csharp
 public void Run(IServiceCollection services, CancellationToken cancellationToken)
