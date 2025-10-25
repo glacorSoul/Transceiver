@@ -26,3 +26,5 @@ The description of the configuration properties are as follows:
 | CertificateThumbprint      | Allows to configure a certificate from the certification store Machine/Personal with the specified thumbprint.                                   |
 | OptimizeHelloSerialization | Allows to configure messages with smaller traffic. This configuration is experimental.                                                           |
 | RequestTimeout             | Configures request timeout.                                                                                                                      |
+| NRetries                   | Number of attempts transceiver will make when sending request/response to server and client.                                                     |
+| DelayBetweenRetriesMs      | Delay between attemps.                                                                                                                           |
