@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.4](https://github.com/glacorSoul/Transceiver/compare/V1.0.3...1.0.4)  (2025-10-12)
+
+### Features
+
+* Add resilient protocol that will do retries when services throw exceptions
+
 ## [1.0.3](https://github.com/glacorSoul/Transceiver/compare/V1.0.1...1.0.3)  (2025-10-12)
 
 ### Features
