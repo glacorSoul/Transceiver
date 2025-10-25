@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.4](https://github.com/glacorSoul/Transceiver/compare/V1.0.3...1.0.4)  (2025-10-12)
+## [1.0.4](https://github.com/glacorSoul/Transceiver/compare/1.0.3...1.0.4)  (2025-10-25)
 
 ### Features
 
