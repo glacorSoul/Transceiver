@@ -4,6 +4,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 using Transceiver.Requests;
 
@@ -40,7 +42,8 @@ public class BaseTransceiverSetup : ITransceiverSetup
         Services.TryAddSingleton(ITransceiverType, provider =>
         {
             object pipeline = provider.GetRequiredService(CompositePipelineType);
-            object protocol = provider.GetRequiredService<ITransceiverProtocol>();
+            ITransceiverProtocol protocol = CreateResilientProtocol(provider);
+
             object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline)!;
             if (transceiver is ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel> serviceDiscoveryTransceiver)
             {
@@ -60,7 +63,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
         _ = Services.AddSingleton(ITransceiverType, provider =>
         {
             object pipeline = provider.GetRequiredService(PipelineType);
-            object protocol = provider.GetRequiredService<ITransceiverProtocol>();
+            ITransceiverProtocol protocol = CreateResilientProtocol(provider);
             object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline)!;
             object processor = transceiver;
             if (!ProcessorType.IsInstanceOfType(transceiver))
@@ -78,5 +81,13 @@ public class BaseTransceiverSetup : ITransceiverSetup
         {
             return TypeIdAssigner.CreateServerAssigner();
         });
+    }
+
+    private static ResilientProtocol CreateResilientProtocol(IServiceProvider provider)
+    {
+        ITransceiverProtocol protocol = provider.GetRequiredService<ITransceiverProtocol>();
+        ILogger<ResilientProtocol> resilientProtocol = provider.GetRequiredService<ILogger<ResilientProtocol>>();
+        IOptions<TransceiverConfiguration> config = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
+        return new ResilientProtocol(protocol, resilientProtocol, config);
     }
 }

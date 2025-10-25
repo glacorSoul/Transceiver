@@ -12,7 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		Directory.Build.Props = Directory.Build.Props
 		Directory.Packages.props = Directory.Packages.props
-		pack.bat = pack.bat
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Tests", "Transceiver.Tests\Transceiver.Tests.csproj", "{8347F2F0-96E1-41F8-B26E-CEF77C821571}"

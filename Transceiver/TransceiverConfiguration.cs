@@ -8,6 +8,9 @@ public class TransceiverConfiguration
 {
     public string CertificateThumbprint { get; set; } = default!;
 
+    public int DelayBetweenRetriesMs { get; set; } = 5000;
+    public int NRetries { get; set; } = 5;
+
     /// <summary>
     /// This value needs to be false for scenarios where the messages can remain persisted in disk and services are restarted.
     /// Can be set to false when application is not expected to be restarted.
