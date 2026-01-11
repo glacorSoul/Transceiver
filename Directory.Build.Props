@@ -8,6 +8,9 @@
 		<PackageLicenseFile>COPYING</PackageLicenseFile>
 		<Version>1.0.4</Version>
 		<AssemblyVersion>1.0.4</AssemblyVersion>
+		<RepositoryUrl>https://github.com/glacorSoul/Transceiver.git</RepositoryUrl>
+		<PackageProjectUrl>https://glacorsoul.github.io/Transceiver/</PackageProjectUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 
 	<ItemGroup>

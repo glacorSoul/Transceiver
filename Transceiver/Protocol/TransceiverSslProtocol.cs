@@ -50,6 +50,7 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>
         await sslStream.AuthenticateAsServerAsync(LoadCertificate());
         return sslStream;
     }
+
     protected override async Task WriteAsync(Stream transceiver, object client, byte[] data, CancellationToken cancellationToken)
     {
         await _writeLock.WaitAsync(cancellationToken);
@@ -82,7 +83,7 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>
     private async Task<Stream> SetupWriter()
     {
         SslStream writeStream = new(new NetworkStream(_connectSocket, true), false, ValidateServerCertificate, null);
-        await writeStream.AuthenticateAsClientAsync("localhost");
+        await writeStream.AuthenticateAsClientAsync(Configuration.Value.Server.Name);
         return writeStream;
     }
 

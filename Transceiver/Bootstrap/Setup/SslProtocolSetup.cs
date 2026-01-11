@@ -10,10 +10,10 @@ using System.Net;
 
 namespace Transceiver;
 
-internal sealed class SslProtocolSetup : ProtocolSpecificTransceiverSetup
+internal sealed class SslProtocolSetup : ProtocolSpecificSetup
 {
-    public SslProtocolSetup(Type transceiverType, IServiceCollection services, IPEndPoint serverEndpoint)
-        : base(transceiverType, services, serverEndpoint, ProtocolTypeEnum.Ssl)
+    public SslProtocolSetup(Type transceiverType, IServiceCollection services, IPEndPoint serverEndpoint, string name)
+        : base(transceiverType, services, serverEndpoint, name, ProtocolTypeEnum.Ssl)
     {
     }
 

@@ -50,7 +50,7 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         await foreach (IIdentifiable message in _messages.ReadAllAsync(_cts.Token))
         {
             Type asyncType = typeof(AsyncSource<>).MakeGenericType(message.GetType());
-            MethodInfo sendDataMethod = asyncType.GetMethod(nameof(AsyncSource<string>.WriteAsync))!;
+            MethodInfo sendDataMethod = asyncType.GetMethod(nameof(AsyncSource<>.WriteAsync))!;
 
             List<object> streams = _streams.RemoveAll(message.Id, m => m.GetType().GetGenericArguments()[0] == message.GetType());
             if (streams.Count == 0)

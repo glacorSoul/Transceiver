@@ -71,7 +71,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
                 processor = provider.GetRequiredService(ProcessorType);
             }
 
-            const string startAsyncMethod = nameof(ITransceiver<string, string>.StartProcessingRequestsAsync);
+            const string startAsyncMethod = nameof(ITransceiver<,>.StartProcessingRequestsAsync);
             Type[] startAsyncArguments = [ProcessorType, typeof(CancellationToken)];
             MethodInfo start = transceiver.GetType().GetMethod(startAsyncMethod, startAsyncArguments)!;
             _ = (Task)start.Invoke(transceiver, [processor, CancellationToken.None])!;

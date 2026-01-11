@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Transceiver;
 
-public struct ClientRequest<TRequest, TResponse> : IIdentifiable
+public class ClientRequest<TRequest, TResponse> : IIdentifiable
 {
     [JsonConstructor]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -27,7 +27,7 @@ public struct ClientRequest<TRequest, TResponse> : IIdentifiable
     public Guid Id { get; set; }
     public DateTimeOffset TimeStamp { get; set; }
 
-    public readonly Task SendResponseAsync(TResponse response, CancellationToken cancellationToken)
+    public Task SendResponseAsync(TResponse response, CancellationToken cancellationToken)
     {
         ServerResponse<TRequest, TResponse> serverResponse = new(response, this);
         ITransceiverProtocol protocol = BootStrap.ServiceProvider.GetRequiredService<ITransceiverProtocol>();

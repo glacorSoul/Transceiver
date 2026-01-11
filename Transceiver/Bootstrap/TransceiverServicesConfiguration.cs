@@ -40,19 +40,34 @@ public class TransceiverServicesConfiguration
 
     public ITransceiverSetup ConfigureSsl(IPEndPoint serverEndPoint)
     {
-        SslProtocolSetup setup = new(Type, _services, serverEndPoint);
+        return ConfigureSsl(serverEndPoint, "localhost");
+    }
+
+    public ITransceiverSetup ConfigureSsl(IPEndPoint serverEndPoint, string name)
+    {
+        SslProtocolSetup setup = new(Type, _services, serverEndPoint, name);
         return setup;
     }
 
     public ITransceiverSetup ConfigureTcp(IPEndPoint serverEndPoint)
     {
-        ProtocolSpecificTransceiverSetup setup = new(Type, _services, serverEndPoint, ProtocolTypeEnum.Tcp);
+        return ConfigureTcp(serverEndPoint, "localhost");
+    }
+
+    public ITransceiverSetup ConfigureTcp(IPEndPoint serverEndPoint, string name)
+    {
+        ProtocolSpecificSetup setup = new(Type, _services, serverEndPoint, name, ProtocolTypeEnum.Tcp);
         return setup;
     }
 
     public ITransceiverSetup ConfigureUdp(IPEndPoint serverEndPoint)
     {
-        ProtocolSpecificTransceiverSetup setup = new(Type, _services, serverEndPoint, ProtocolTypeEnum.Udp);
+        return ConfigureUdp(serverEndPoint, "localhost");
+    }
+
+    public ITransceiverSetup ConfigureUdp(IPEndPoint serverEndPoint, string name)
+    {
+        ProtocolSpecificSetup setup = new(Type, _services, serverEndPoint, name, ProtocolTypeEnum.Udp);
         return setup;
     }
 

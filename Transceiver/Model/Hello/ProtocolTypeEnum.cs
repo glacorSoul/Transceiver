@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Transceiver;
 
-public class ProtocolTypeEnum : BetterEnum
+public class ProtocolTypeEnum : NamedEnum
 {
     public static readonly ProtocolTypeEnum Channels = new(4, nameof(Channels));
     public static readonly ProtocolTypeEnum Ssl = new(5, nameof(Ssl));
@@ -16,5 +16,17 @@ public class ProtocolTypeEnum : BetterEnum
     [JsonConstructor]
     public ProtocolTypeEnum(int value, string name) : base(value, name)
     {
+    }
+
+    public static ProtocolTypeEnum FromScheme(string scheme)
+    {
+        return scheme.ToLowerInvariant() switch
+        {
+            "tcp" => Tcp,
+            "udp" => Udp,
+            "ssl" => Ssl,
+            "channels" => Channels,
+            _ => throw new ArgumentOutOfRangeException(nameof(scheme), $"Unsupported protocol scheme: {scheme}"),
+        };
     }
 }

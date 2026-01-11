@@ -8,16 +8,16 @@ using System.Text.Json.Serialization;
 namespace Transceiver;
 
 [DebuggerDisplay("({Value}): {Name}")]
-public abstract class BetterEnum
+public abstract class NamedEnum
 {
-    protected BetterEnum()
+    protected NamedEnum()
     {
         Value = int.MinValue;
         Name = string.Empty;
     }
 
     [JsonConstructor]
-    protected BetterEnum(int value, string name)
+    protected NamedEnum(int value, string name)
     {
         Value = value;
         Name = name;
@@ -28,7 +28,7 @@ public abstract class BetterEnum
 
     public override bool Equals(object? obj)
     {
-        if (obj is not BetterEnum other)
+        if (obj is not NamedEnum other)
         {
             return false;
         }

@@ -9,6 +9,7 @@ namespace Transceiver;
 public class TransceiverHeader
 {
     public const int Size = sizeof(int) + sizeof(ushort) + SizeOfGuid;
+    public static readonly int MinHeaderSizeString = 2 + Guid.Empty.ToString().Length;
     private const int SizeOfGuid = 16;
     private static readonly TypeIdAssigner _typeIdMap = BootStrap.ServiceProvider.GetRequiredService<TypeIdAssigner>();
 

@@ -7,16 +7,21 @@ using System.Net;
 
 namespace Transceiver;
 
-internal class ProtocolSpecificTransceiverSetup : SocketsSetup
+internal class ProtocolSpecificSetup : SocketsSetup
 {
     private readonly ProtocolTypeEnum _protocolType;
     private readonly IPEndPoint _serverEndPoint;
 
-    public ProtocolSpecificTransceiverSetup(Type transceiverType,
+    public ProtocolSpecificSetup(Type transceiverType,
         IServiceCollection services,
         IPEndPoint serverEndPoint,
+        string name,
         ProtocolTypeEnum protocolType) : base(transceiverType, services)
     {
+        _ = services.PostConfigure<TransceiverConfiguration>(opt =>
+        {
+            opt.Server = new HostIdentifier(serverEndPoint, name, protocolType);
+        });
         _serverEndPoint = serverEndPoint;
         _protocolType = protocolType;
     }

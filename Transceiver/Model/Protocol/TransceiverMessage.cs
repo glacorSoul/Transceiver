@@ -40,7 +40,7 @@ public sealed class TransceiverMessage : IIdentifiable
     public TransceiverMessage(string csv)
     {
         Header = new(csv);
-        string text = csv.Substring(csv.IndexOf(',', 32 + 4) + 1);
+        string text = csv.Substring(csv.IndexOf(',', TransceiverHeader.MinHeaderSizeString) + 1);
         Data = Encoding.UTF8.GetBytes(text);
     }
 

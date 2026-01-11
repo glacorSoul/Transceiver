@@ -3,7 +3,6 @@
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Reflection;
 
 namespace Transceiver.DomainSockets;
