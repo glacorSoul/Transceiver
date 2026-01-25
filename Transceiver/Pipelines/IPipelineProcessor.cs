@@ -6,5 +6,5 @@ namespace Transceiver;
 
 public interface IPipelineProcessor<TRequest, TResponse>
 {
-    Task<TResponse> Process(TRequest request, Func<CancellationToken, Task<TResponse>> nextStep, CancellationToken cancellationToken);
+    Task<TResponse> ProcessAsync(TRequest request, Func<CancellationToken, Task<TResponse>> nextStep, CancellationToken cancellationToken);
 }

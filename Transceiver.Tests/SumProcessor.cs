@@ -10,22 +10,22 @@ public class SumProcessor :
     IProcessor<ChannelsSumRequest, ChannelsSumResponse>,
     IProcessor<UdpSumRequest, UdpSumResponse>
 {
-    public Task<TcpSumResponse> ProcessRequest(TcpSumRequest request, CancellationToken cancellationToken)
+    public Task<TcpSumResponse> ProcessRequestAsync(TcpSumRequest request, CancellationToken cancellationToken)
     {
         return Task.FromResult(new TcpSumResponse(request.A + request.B));
     }
 
-    public Task<ChannelsSumResponse> ProcessRequest(ChannelsSumRequest request, CancellationToken cancellationToken)
+    public Task<ChannelsSumResponse> ProcessRequestAsync(ChannelsSumRequest request, CancellationToken cancellationToken)
     {
         return Task.FromResult(new ChannelsSumResponse(request.A + request.B));
     }
 
-    public Task<DomainSocketsSumResponse> ProcessRequest(DomainSocketsSumRequest request, CancellationToken cancellationToken)
+    public Task<DomainSocketsSumResponse> ProcessRequestAsync(DomainSocketsSumRequest request, CancellationToken cancellationToken)
     {
         return Task.FromResult(new DomainSocketsSumResponse(request.A + request.B));
     }
 
-    public Task<UdpSumResponse> ProcessRequest(UdpSumRequest request, CancellationToken cancellationToken)
+    public Task<UdpSumResponse> ProcessRequestAsync(UdpSumRequest request, CancellationToken cancellationToken)
     {
         return Task.FromResult(new UdpSumResponse(request.A + request.B));
     }

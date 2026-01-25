@@ -17,7 +17,7 @@ public sealed class GooglePubSubMessageProcessor : IMessageProcessor, IDisposabl
     private readonly Thread _receiveMessages;
     private readonly ISerializer _serializer;
     private readonly HashSet<Type> _topics;
-    private readonly AsyncSource<string> _topicsSource;
+    private readonly ChannelAsyncSource<string> _topicsSource;
     private bool _disposed;
 
     public GooglePubSubMessageProcessor(GooglePubSubConfig config,
@@ -41,7 +41,7 @@ public sealed class GooglePubSubMessageProcessor : IMessageProcessor, IDisposabl
         Dispose(false);
     }
 
-    public AsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
     {
         return _messageProcessor.AddRequester<T>(requestId);
     }
@@ -52,14 +52,14 @@ public sealed class GooglePubSubMessageProcessor : IMessageProcessor, IDisposabl
         GC.SuppressFinalize(this);
     }
 
-    public Task ProcessGenericMessageAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
-    {
-        return ProcessMessageAsync(new TransceiverMessage(data, _serializer), cancellationToken);
-    }
-
     public Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken)
     {
         return CreateQueueAsync(message.Header.Type, message, cancellationToken);
+    }
+
+    public Task ProcessUnserializedMessageAsync<T>(T message, CancellationToken cancellationToken) where T : IIdentifiable
+    {
+        return ProcessMessageAsync(new TransceiverMessage(message, _serializer), cancellationToken);
     }
 
     private async Task CreateQueueAsync(Type type, TransceiverMessage? message, CancellationToken cancellationToken)

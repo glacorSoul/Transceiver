@@ -10,7 +10,7 @@ public class ServiceDiscoveryRequestProcessor : IProcessor<ServiceDiscoveryReque
 {
     internal ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel> Transceiver { get; set; } = default!;
 
-    public Task<ServiceDiscoveryResponseModel> ProcessRequest(ServiceDiscoveryRequestModel request, CancellationToken cancellationToken)
+    public Task<ServiceDiscoveryResponseModel> ProcessRequestAsync(ServiceDiscoveryRequestModel request, CancellationToken cancellationToken)
     {
         IEnumerable<Type> transceiverTypes = [..Assembly.GetExecutingAssembly().DiscoverType(typeof(ITransceiver<,>))
             .Concat(Assembly.GetEntryAssembly()!.DiscoverType(typeof(ITransceiver<,>)))];

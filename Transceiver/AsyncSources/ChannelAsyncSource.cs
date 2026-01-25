@@ -7,14 +7,23 @@ using System.Threading.Channels;
 
 namespace Transceiver;
 
-public class AsyncSource<T>
+public class ChannelAsyncSource<T> : IAsyncSource<T>
 {
-    private readonly Channel<T> _channel = Channel.CreateUnbounded<T>(new UnboundedChannelOptions
+    private readonly Channel<T> _channel;
+
+    public ChannelAsyncSource() : this(new UnboundedChannelOptions()
     {
         SingleReader = false,
         SingleWriter = false,
         AllowSynchronousContinuations = false,
-    });
+    })
+    {
+    }
+
+    public ChannelAsyncSource(UnboundedChannelOptions options)
+    {
+        _channel = Channel.CreateUnbounded<T>(options);
+    }
 
     public void Complete()
     {
@@ -23,14 +32,21 @@ public class AsyncSource<T>
 
     public async IAsyncEnumerable<T> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        while (await _channel.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
         {
-            yield return await _channel.Reader.ReadAsync(cancellationToken);
+            while (_channel.Reader.TryRead(out T? item))
+            {
+                yield return item;
+            }
         }
     }
 
     public ValueTask WriteAsync(T item, CancellationToken cancellationToken)
     {
-        return _channel.Writer.WriteAsync(item, cancellationToken);
+        if (!_channel.Writer.TryWrite(item))
+        {
+            return _channel.Writer.WriteAsync(item, cancellationToken);
+        }
+        return new ValueTask(Task.CompletedTask);
     }
 }

@@ -4,11 +4,8 @@
 
 namespace Transceiver;
 
-public interface IMessageProcessor
+public interface IAsyncSource<T>
 {
-    IAsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable;
-
-    Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken);
-
-    Task ProcessUnserializedMessageAsync<T>(T message, CancellationToken cancellationToken) where T : IIdentifiable;
+    ValueTask WriteAsync(T item, CancellationToken cancellationToken);
+    IAsyncEnumerable<T> ReadAllAsync(CancellationToken cancellationToken);
 }

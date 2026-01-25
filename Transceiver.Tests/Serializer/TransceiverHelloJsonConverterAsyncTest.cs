@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Options;
 using Moq;
+using System.Net;
 using System.Text;
 
 namespace Transceiver.Tests.Serializer;
@@ -35,7 +36,7 @@ public class TransceiverHelloJsonConverterAsyncTest
     [Fact]
     public async Task DeserializeClientInfo_SingleDeserialize_ShouldDeserializeAllData()
     {
-        TransceiverHelloClientInfo clientInfo = new(new(), new(new("a", ProtocolTypeEnum.Tcp)));
+        TransceiverHelloClientInfo clientInfo = new(new(), new(new(new IPEndPoint(IPAddress.Loopback, 9779), "a", ProtocolTypeEnum.Tcp)));
         byte[] bytes = await _serializer.SerializeAsync(clientInfo, TestContext.Current.CancellationToken);
         TransceiverHelloClientInfo clientInfo2 = await _serializer.DeserializeAsync<TransceiverHelloClientInfo>(bytes, TestContext.Current.CancellationToken);
         Assert.Equivalent(clientInfo, clientInfo2);
@@ -53,7 +54,7 @@ public class TransceiverHelloJsonConverterAsyncTest
     [Fact]
     public async Task SerializeClientInfo_SingleSerialize_ShouldSerializeAllData()
     {
-        TransceiverHelloClientInfo clientInfo = new(new(), new(new("a", ProtocolTypeEnum.Tcp)));
+        TransceiverHelloClientInfo clientInfo = new(new(), new(new(new IPEndPoint(IPAddress.Loopback, 9779), "a", ProtocolTypeEnum.Tcp)));
         byte[] bytes = await _serializer.SerializeAsync(clientInfo, TestContext.Current.CancellationToken);
         string json = Encoding.UTF8.GetString(bytes);
         string expectedJson = $"{{\"Id\":\"{clientInfo.Id.Id}\",\"Data\":{{\"clientIdentifier\":{{\"endPoint\":\"a\",\"protocolType\":{{\"name\":\"{clientInfo.Data.ClientIdentifier.ProtocolType.Name}\",\"value\":{clientInfo.Data.ClientIdentifier.ProtocolType.Value}}}}}}}}}";
@@ -62,7 +63,7 @@ public class TransceiverHelloJsonConverterAsyncTest
 
     private async Task DeserializeAndAssertClientInfo(TransceiverHelloIdentifier identifier)
     {
-        TransceiverHelloClientInfo clientInfo = new(identifier, new(new("a", ProtocolTypeEnum.Tcp)));
+        TransceiverHelloClientInfo clientInfo = new(identifier, new(new(new IPEndPoint(IPAddress.Loopback, 9779), "a", ProtocolTypeEnum.Tcp)));
         byte[] bytes = await _serializer.SerializeAsync(clientInfo, TestContext.Current.CancellationToken);
         TransceiverHelloClientInfo clientInfo2 = await _serializer.DeserializeAsync<TransceiverHelloClientInfo>(bytes, TestContext.Current.CancellationToken);
         Assert.Equivalent(clientInfo, clientInfo2);
@@ -70,7 +71,7 @@ public class TransceiverHelloJsonConverterAsyncTest
 
     private async Task SerializeAndAssertClientInfo(TransceiverHelloIdentifier identifier, bool includeData)
     {
-        TransceiverHelloClientInfo clientInfo = new(identifier, new(new("a", ProtocolTypeEnum.Tcp)));
+        TransceiverHelloClientInfo clientInfo = new(identifier, new(new(new IPEndPoint(IPAddress.Loopback, 9779), "a", ProtocolTypeEnum.Tcp)));
         byte[] bytes = await _serializer.SerializeAsync(clientInfo, TestContext.Current.CancellationToken);
         string json = Encoding.UTF8.GetString(bytes);
 

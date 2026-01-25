@@ -32,9 +32,9 @@ public sealed class RabbitMqMessageProcessor : IMessageProcessor, IDisposable
         Dispose(false);
     }
 
-    public AsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
     {
-        AsyncSource<T> result = _processor.AddRequester<T>(requestId);
+        IAsyncSource<T> result = _processor.AddRequester<T>(requestId);
         CreateQueueAsync(typeof(T), null, CancellationToken.None).GetAwaiter().GetResult();
         _ = CreateConsumerAsync(typeof(T), CancellationToken.None);
         return result;
@@ -46,15 +46,15 @@ public sealed class RabbitMqMessageProcessor : IMessageProcessor, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public Task ProcessGenericMessageAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
-    {
-        return ProcessMessageAsync(new TransceiverMessage(data, _serializer), cancellationToken);
-    }
-
     public async Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken)
     {
         await CreateQueueAsync(message.Header.Type, message, cancellationToken);
         _ = CreateConsumerAsync(message.Header.Type, cancellationToken);
+    }
+
+    public Task ProcessUnserializedMessageAsync<T>(T message, CancellationToken cancellationToken) where T : IIdentifiable
+    {
+        return ProcessMessageAsync(new TransceiverMessage(message, _serializer), cancellationToken);
     }
 
     private async Task CreateConsumerAsync(Type type, CancellationToken cancellationToken)

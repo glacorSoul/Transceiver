@@ -27,7 +27,7 @@ internal class MetricsPipelineProcessor<TRequest, TResponse> : IPipelineProcesso
         _logger = logger;
     }
 
-    public async Task<TResponse> Process(TRequest request, Func<CancellationToken, Task<TResponse>> nextStep, CancellationToken cancellationToken)
+    public async Task<TResponse> ProcessAsync(TRequest request, Func<CancellationToken, Task<TResponse>> nextStep, CancellationToken cancellationToken)
     {
         long now = Stopwatch.GetTimestamp();
         try

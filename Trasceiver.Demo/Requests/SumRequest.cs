@@ -6,6 +6,14 @@ using Transceiver.Demo.Requests;
 
 namespace Transceiver.Demo;
 
+public sealed class SumProcessor : IProcessor<SumRequest, SumResponse>
+{
+    public Task<SumResponse> ProcessRequestAsync(SumRequest request, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(new SumResponse(request.A + request.B));
+    }
+}
+
 public sealed class SumRequest
 {
     public SumRequest()
@@ -36,17 +44,9 @@ public sealed class SumResponse
     public int Result { get; set; }
 }
 
-public sealed class SumProcessor : IProcessor<SumRequest, SumResponse>
-{
-    public Task<SumResponse> ProcessRequest(SumRequest request, CancellationToken cancellationToken)
-    {
-        return Task.FromResult(new SumResponse(request.A + request.B));
-    }
-}
-
 public sealed class SumProcessor2 : IProcessor<GeneratedRequests.Requests.SumRequest, GeneratedRequests.Responses.SumResponse>
 {
-    public Task<GeneratedRequests.Responses.SumResponse> ProcessRequest(GeneratedRequests.Requests.SumRequest request, CancellationToken cancellationToken)
+    public Task<GeneratedRequests.Responses.SumResponse> ProcessRequestAsync(GeneratedRequests.Requests.SumRequest request, CancellationToken cancellationToken)
     {
         return Task.FromResult(new GeneratedRequests.Responses.SumResponse { Result = request.A + request.B });
     }

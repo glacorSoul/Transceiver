@@ -41,7 +41,7 @@ public sealed class ZeroMqProtocol : ITransceiverProtocol, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public AsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
     {
         return _messageProcessor.AddRequester<T>(requestId);
     }

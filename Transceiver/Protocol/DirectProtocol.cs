@@ -13,18 +13,18 @@ public class DirectProtocol : ITransceiverProtocol
         _messageProcessor = messageProcessor;
     }
 
-    public AsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
     {
         return _messageProcessor.AddRequester<T>(requestId);
     }
 
     public Task SendObjectToClientAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
     {
-        return _messageProcessor.ProcessGenericMessageAsync(data, cancellationToken);
+        return _messageProcessor.ProcessUnserializedMessageAsync(data, cancellationToken);
     }
 
     public Task SendObjectToServerAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
     {
-        return _messageProcessor.ProcessGenericMessageAsync(data, cancellationToken);
+        return _messageProcessor.ProcessUnserializedMessageAsync(data, cancellationToken);
     }
 }

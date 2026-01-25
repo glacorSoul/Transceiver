@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Options;
 using Moq;
+using System.Net;
 using System.Text;
 
 namespace Transceiver.Tests.Serializer;
@@ -35,7 +36,7 @@ public class TransceiverHelloJsonConverterTest
     [Fact]
     public void DeserializeClientInfo_SingleDeserialize_ShouldDeserializeAllData()
     {
-        TransceiverHelloClientInfo clientInfo = new(new(), new(new("a", ProtocolTypeEnum.Tcp)));
+        TransceiverHelloClientInfo clientInfo = new(new(), new(new(new IPEndPoint(IPAddress.Loopback, 9779), "a", ProtocolTypeEnum.Tcp)));
         byte[] bytes = _serializer.Serialize(clientInfo);
         TransceiverHelloClientInfo clientInfo2 = _serializer.Deserialize<TransceiverHelloClientInfo>(bytes);
         Assert.Equivalent(clientInfo, clientInfo2);
@@ -53,7 +54,7 @@ public class TransceiverHelloJsonConverterTest
     [Fact]
     public void SerializeClientInfo_SingleSerialize_ShouldSerializeAllData()
     {
-        TransceiverHelloClientInfo clientInfo = new(new(), new(new("a", ProtocolTypeEnum.Tcp)));
+        TransceiverHelloClientInfo clientInfo = new(new(), new(new(new IPEndPoint(IPAddress.Loopback, 9779), "a", ProtocolTypeEnum.Tcp)));
         byte[] bytes = _serializer.Serialize(clientInfo);
         string json = Encoding.UTF8.GetString(bytes);
         string expectedJson = $"{{\"Id\":\"{clientInfo.Id.Id}\",\"Data\":{{\"clientIdentifier\":{{\"endPoint\":\"a\",\"protocolType\":{{\"name\":\"{clientInfo.Data.ClientIdentifier.ProtocolType.Name}\",\"value\":{clientInfo.Data.ClientIdentifier.ProtocolType.Value}}}}}}}}}";
@@ -62,7 +63,7 @@ public class TransceiverHelloJsonConverterTest
 
     private void DeserializeAndAssertClientInfo(TransceiverHelloIdentifier identifier)
     {
-        TransceiverHelloClientInfo clientInfo = new(identifier, new(new("a", ProtocolTypeEnum.Tcp)));
+        TransceiverHelloClientInfo clientInfo = new(identifier, new(new(new IPEndPoint(IPAddress.Loopback, 9779), "a", ProtocolTypeEnum.Tcp)));
         byte[] bytes = _serializer.Serialize(clientInfo);
         TransceiverHelloClientInfo clientInfo2 = _serializer.Deserialize<TransceiverHelloClientInfo>(bytes);
         Assert.Equivalent(clientInfo, clientInfo2);
@@ -70,7 +71,7 @@ public class TransceiverHelloJsonConverterTest
 
     private void SerializeAndAssertClientInfo(TransceiverHelloIdentifier identifier, bool includeData)
     {
-        TransceiverHelloClientInfo clientInfo = new(identifier, new(new("a", ProtocolTypeEnum.Tcp)));
+        TransceiverHelloClientInfo clientInfo = new(identifier, new(new(new IPEndPoint(IPAddress.Loopback, 9779), "a", ProtocolTypeEnum.Tcp)));
         byte[] bytes = _serializer.Serialize(clientInfo);
         string json = Encoding.UTF8.GetString(bytes);
 

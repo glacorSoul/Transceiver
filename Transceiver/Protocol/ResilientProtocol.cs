@@ -21,7 +21,7 @@ internal class ResilientProtocol : ITransceiverProtocol
         _config = config;
     }
 
-    public AsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
     {
         return _protocol.ReceiveObjects<T>(requestId);
     }

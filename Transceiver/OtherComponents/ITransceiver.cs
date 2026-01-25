@@ -10,7 +10,7 @@ public interface ITransceiver<TRequest, TResponse>
 
     Task StartProcessingRequestsAsync(IProcessor<TRequest, TResponse> processor, CancellationToken cancellationToken);
 
-    IAsyncEnumerable<TResponse> TransceiveMany(TRequest request, CancellationToken cancellationToken);
+    IAsyncEnumerable<TResponse> TransceiveManyAsync(TRequest request, CancellationToken cancellationToken);
 
     Task<TResponse> TransceiveOnceAsync(TRequest request, CancellationToken cancellationToken);
 }

@@ -38,7 +38,7 @@ public sealed class AmazonSqsMessageProcessor : IMessageProcessor, IDisposable
         Dispose(false);
     }
 
-    public AsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
     {
         return _processor.AddRequester<T>(requestId);
     }
@@ -47,11 +47,6 @@ public sealed class AmazonSqsMessageProcessor : IMessageProcessor, IDisposable
     {
         Dispose(true);
         GC.SuppressFinalize(this);
-    }
-
-    public Task ProcessGenericMessageAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
-    {
-        return ProcessMessageAsync(new TransceiverMessage(data, _serializer), cancellationToken);
     }
 
     public async Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken)
@@ -63,6 +58,11 @@ public sealed class AmazonSqsMessageProcessor : IMessageProcessor, IDisposable
             QueueUrl = queue.QueueUrl,
             MessageBody = message.ToCsv(),
         }, cancellationToken);
+    }
+
+    public Task ProcessUnserializedMessageAsync<T>(T message, CancellationToken cancellationToken) where T : IIdentifiable
+    {
+        return ProcessMessageAsync(new TransceiverMessage(message, _serializer), cancellationToken);
     }
 
     private CreateQueueResponse CreateOrGetQueue(Type type, CancellationToken cancellationToken)

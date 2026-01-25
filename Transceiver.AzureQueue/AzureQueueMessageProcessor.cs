@@ -33,7 +33,7 @@ public sealed class AzureQueueMessageProcessor : IMessageProcessor, IDisposable
         Dispose(false);
     }
 
-    public AsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
     {
         return _messageProcessor.AddRequester<T>(requestId);
     }
@@ -44,15 +44,15 @@ public sealed class AzureQueueMessageProcessor : IMessageProcessor, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public Task ProcessGenericMessageAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
-    {
-        return ProcessMessageAsync(new TransceiverMessage(data, _serializer), cancellationToken);
-    }
-
     public Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken)
     {
         QueueClient queueClient = CreateQueue(message.Header.Type);
         return queueClient.SendMessageAsync(message.ToCsv(), cancellationToken: cancellationToken);
+    }
+
+    public Task ProcessUnserializedMessageAsync<T>(T message, CancellationToken cancellationToken) where T : IIdentifiable
+    {
+        return ProcessMessageAsync(new TransceiverMessage(message, _serializer), cancellationToken);
     }
 
     private QueueClient CreateQueue(Type type)

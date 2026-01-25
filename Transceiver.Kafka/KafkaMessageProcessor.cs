@@ -19,7 +19,7 @@ public sealed class KafkaMessageProcessor : IMessageProcessor, IDisposable
     private readonly Thread _receiveMessages;
     private readonly ISerializer _serializer;
     private readonly HashSet<string> _topics;
-    private readonly AsyncSource<string> _topicsSource;
+    private readonly ChannelAsyncSource<string> _topicsSource;
     private bool _disposed;
 
     public KafkaMessageProcessor(AdminClientConfig adminConfig,
@@ -47,7 +47,7 @@ public sealed class KafkaMessageProcessor : IMessageProcessor, IDisposable
         Dispose(false);
     }
 
-    public AsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
     {
         return _processor.AddRequester<T>(requestId);
     }
@@ -58,16 +58,16 @@ public sealed class KafkaMessageProcessor : IMessageProcessor, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public Task ProcessGenericMessageAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
-    {
-        return ProcessMessageAsync(new TransceiverMessage(data, _serializer), cancellationToken);
-    }
-
     public async Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken)
     {
         string topic = await CreateTopicAsync(message.Header.Type);
         using IProducer<Null, byte[]> producer = new ProducerBuilder<Null, byte[]>(_producerConfig).Build();
         _ = await producer.ProduceAsync(topic, new Message<Null, byte[]> { Value = message.ToBytes() }, cancellationToken);
+    }
+
+    public Task ProcessUnserializedMessageAsync<T>(T message, CancellationToken cancellationToken) where T : IIdentifiable
+    {
+        return ProcessMessageAsync(new TransceiverMessage(message, _serializer), cancellationToken);
     }
 
     private async Task<string> CreateTopicAsync(Type type)

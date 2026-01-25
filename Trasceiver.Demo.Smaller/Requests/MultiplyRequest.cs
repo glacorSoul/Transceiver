@@ -36,7 +36,7 @@ public sealed class MultiplyResponse
 
 public sealed class MultiplyProcessor : IProcessor<MultiplyRequest, MultiplyResponse>
 {
-    public Task<MultiplyResponse> ProcessRequest(MultiplyRequest request, CancellationToken cancellationToken)
+    public Task<MultiplyResponse> ProcessRequestAsync(MultiplyRequest request, CancellationToken cancellationToken)
     {
         return Task.FromResult(new MultiplyResponse(request.A * request.B));
     }

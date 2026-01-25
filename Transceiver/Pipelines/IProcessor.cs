@@ -4,7 +4,7 @@
 
 namespace Transceiver;
 
-public interface IProcessor<TRequest, TResponse>
+public interface IProcessor<in TRequest, TResponse>
 {
-    Task<TResponse> ProcessRequest(TRequest request, CancellationToken cancellationToken);
+    Task<TResponse> ProcessRequestAsync(TRequest request, CancellationToken cancellationToken);
 }

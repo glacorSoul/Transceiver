@@ -6,7 +6,7 @@ namespace Transceiver;
 
 public interface ITransceiverProtocol
 {
-    AsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable;
+    IAsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable;
 
     Task SendObjectToClientAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable;
 

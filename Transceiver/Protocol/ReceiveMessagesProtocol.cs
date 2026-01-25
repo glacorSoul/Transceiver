@@ -72,7 +72,7 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
         }
     }
 
-    public AsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
     {
         return _messageProcessor.AddRequester<T>(requestId);
     }

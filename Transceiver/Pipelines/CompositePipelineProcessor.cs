@@ -13,7 +13,7 @@ public class CompositePipelineProcessor<TRequest, TResponse> : IPipelineProcesso
         _processors = processors;
     }
 
-    public Task<TResponse> Process(TRequest request, Func<CancellationToken, Task<TResponse>> nextStep, CancellationToken cancellationToken)
+    public Task<TResponse> ProcessAsync(TRequest request, Func<CancellationToken, Task<TResponse>> nextStep, CancellationToken cancellationToken)
     {
         Task<TResponse> Handle(CancellationToken token)
         {
@@ -23,7 +23,7 @@ public class CompositePipelineProcessor<TRequest, TResponse> : IPipelineProcesso
         Func<CancellationToken, Task<TResponse>> nextHandle = Handle;
         foreach (IPipelineProcessor<TRequest, TResponse> processor in _processors.Reverse())
         {
-            nextHandle = (token) => processor.Process(request, nextHandle, token);
+            nextHandle = (token) => processor.ProcessAsync(request, nextHandle, token);
         }
         return nextHandle(cancellationToken);
     }

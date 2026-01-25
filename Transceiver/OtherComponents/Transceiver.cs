@@ -33,15 +33,15 @@ public sealed class Transceiver<TRequest, TResponse> : ITransceiver<TRequest, TR
         {
             async Task<TResponse> Process(CancellationToken token)
             {
-                TResponse response = await processor.ProcessRequest(request.Data, token);
+                TResponse response = await processor.ProcessRequestAsync(request.Data, token);
                 await request.SendResponseAsync(response, token);
                 return response;
             }
-            _ = await _pipeline.Process(request.Data, Process, cancellationToken);
+            _ = await _pipeline.ProcessAsync(request.Data, Process, cancellationToken);
         }
     }
 
-    public async IAsyncEnumerable<TResponse> TransceiveMany(TRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<TResponse> TransceiveManyAsync(TRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         ClientRequest<TRequest, TResponse> clientRequest = await SendToServerAsync(request, cancellationToken);
         IAsyncEnumerable<ServerResponse<TRequest, TResponse>> responses = _protocol

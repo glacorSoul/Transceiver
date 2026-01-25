@@ -3,16 +3,24 @@
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
 using System.Reflection;
+using System.Threading.Channels;
 
 namespace Transceiver;
 
 public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
 {
     private readonly CancellationTokenSource _cts = new();
-    private readonly AsyncSource<IIdentifiable> _messages = new();
+
+    private readonly ChannelAsyncSource<IIdentifiable> _messages = new(new UnboundedChannelOptions
+    {
+        SingleReader = true,
+        SingleWriter = false,
+        AllowSynchronousContinuations = true,
+    });
+
     private readonly Thread _retainedMessagesProcessor;
     private readonly ISerializer _serializer;
-    private readonly ConcurrentDictionaryList<Guid, object> _streams = new();
+    private readonly ConcurrentDictionaryList<Guid, StreamEntry> _streams = new();
 
     public CorrelatedMessageProcessor(ISerializer serializer)
     {
@@ -21,10 +29,15 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         _retainedMessagesProcessor.Start();
     }
 
-    public AsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
     {
-        AsyncSource<T> result = new();
-        _streams.Add(requestId, result);
+        IAsyncSource<T> result = new ChannelAsyncSource<T>(new UnboundedChannelOptions
+        {
+            SingleWriter = true,
+            SingleReader = true,
+            AllowSynchronousContinuations = true
+        });
+        _streams.Add(requestId, new StreamEntry(result));
         return result;
     }
 
@@ -34,40 +47,63 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         _cts.Dispose();
     }
 
-    public async Task ProcessGenericMessageAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
-    {
-        await _messages.WriteAsync(data, cancellationToken);
-    }
-
     public async Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken)
     {
         IIdentifiable data = (IIdentifiable)_serializer.Deserialize(message.Header.Type, message.Data);
         await _messages.WriteAsync(data, cancellationToken);
     }
 
-    private async Task ProcessMessages()
+    public async Task ProcessUnserializedMessageAsync<T>(T message, CancellationToken cancellationToken) where T : IIdentifiable
+    {
+        await _messages.WriteAsync(message, cancellationToken);
+    }
+
+    private List<StreamEntry> GetStreams(IIdentifiable message)
+    {
+        Type messageType = message.GetType();
+        List<StreamEntry> streams = _streams.RemoveAll(message.Id, m => m.MessageType == messageType);
+        streams.AddRange(_streams.GetAll(Guid.Empty, m => m.MessageType == messageType));
+        return streams;
+    }
+
+    private async ValueTask ProcessMessages()
     {
         await foreach (IIdentifiable message in _messages.ReadAllAsync(_cts.Token))
         {
-            Type asyncType = typeof(AsyncSource<>).MakeGenericType(message.GetType());
-            MethodInfo sendDataMethod = asyncType.GetMethod(nameof(AsyncSource<>.WriteAsync))!;
+            List<StreamEntry> streams = GetStreams(message);
+            await SendMessage(message, streams);
 
-            List<object> streams = _streams.RemoveAll(message.Id, m => m.GetType().GetGenericArguments()[0] == message.GetType());
-            if (streams.Count == 0)
-            {
-                streams = _streams.GetAll(Guid.Empty, m => m.GetType().GetGenericArguments()[0] == message.GetType());
-            }
             if (streams.Count == 0)
             {
                 await _messages.WriteAsync(message, _cts.Token);
             }
-            else
-            {
-                foreach (object stream in streams)
-                {
-                    _ = sendDataMethod.Invoke(stream, [message, _cts.Token]);
-                }
-            }
         }
+    }
+
+    private async ValueTask SendMessage(IIdentifiable message, List<StreamEntry> streams)
+    {
+        if (streams.Count == 0)
+        {
+            return;
+        }
+        Type asyncType = typeof(IAsyncSource<>).MakeGenericType(message.GetType());
+        MethodInfo sendDataMethod = asyncType.GetMethod(nameof(IAsyncSource<>.WriteAsync))!;
+        foreach (StreamEntry stream in streams)
+        {
+            ValueTask task = (ValueTask)sendDataMethod.Invoke(stream.AsyncSource, [message, _cts.Token])!;
+            await task;
+        }
+    }
+
+    private sealed class StreamEntry
+    {
+        public StreamEntry(object asyncSouce)
+        {
+            AsyncSource = asyncSouce;
+            MessageType = asyncSouce.GetType().GetGenericArguments()[0];
+        }
+
+        public object AsyncSource { get; private set; }
+        public Type MessageType { get; private set; }
     }
 }
