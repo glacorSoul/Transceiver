@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.0](https://github.com/glacorSoul/Transceiver/compare/1.0.4...2.0.0)  (2026-01-25)
+
+### Features
+
+* SSL Now supports different host than localhost [e6c8c76](https://github.com/glacorSoul/Transceiver/commit/e6c8c7646298e0911b7d7036cfa1778356bc8dc8)
+* Improved Channels performance and external API [a944c94](https://github.com/glacorSoul/Transceiver/commit/a944c9410ab77c7ee802c198cb59ab6e31f3851f)
+* Improved performance of CorrelatedMessageProcessor [a944c94](https://github.com/glacorSoul/Transceiver/commit/a944c9410ab77c7ee802c198cb59ab6e31f3851f)
+* DictionaryList now uses .NET built-in concurrent collection types [a944c94](https://github.com/glacorSoul/Transceiver/commit/a944c9410ab77c7ee802c198cb59ab6e31f3851f)
+
 ## [1.0.4](https://github.com/glacorSoul/Transceiver/compare/1.0.3...1.0.4)  (2025-10-25)
 
 ### Features
