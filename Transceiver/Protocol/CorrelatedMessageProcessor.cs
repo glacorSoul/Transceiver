@@ -15,12 +15,13 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
     {
         SingleReader = true,
         SingleWriter = false,
-        AllowSynchronousContinuations = true,
+        AllowSynchronousContinuations = false,
     });
 
     private readonly Thread _retainedMessagesProcessor;
     private readonly ISerializer _serializer;
     private readonly ConcurrentDictionaryList<Guid, StreamEntry> _streams = new();
+    private bool disposedValue;
 
     public CorrelatedMessageProcessor(ISerializer serializer)
     {
@@ -35,17 +36,12 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         {
             SingleWriter = true,
             SingleReader = true,
-            AllowSynchronousContinuations = true
+            AllowSynchronousContinuations = false
         });
         _streams.Add(requestId, new StreamEntry(result));
         return result;
     }
 
-    public void Dispose()
-    {
-        _cts.Cancel();
-        _cts.Dispose();
-    }
 
     public async Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken)
     {
@@ -87,7 +83,7 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
             return;
         }
         Type asyncType = typeof(IAsyncSource<>).MakeGenericType(message.GetType());
-        MethodInfo sendDataMethod = asyncType.GetMethod(nameof(IAsyncSource<>.WriteAsync))!;
+        MethodInfo sendDataMethod = asyncType.GetMethod(nameof(IAsyncSource<>.WriteAsync)) ?? default!;
         foreach (StreamEntry stream in streams)
         {
             ValueTask task = (ValueTask)sendDataMethod.Invoke(stream.AsyncSource, [message, _cts.Token])!;
@@ -105,5 +101,30 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
 
         public object AsyncSource { get; private set; }
         public Type MessageType { get; private set; }
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                _cts.Cancel();
+                _cts.Dispose();
+            }
+
+            disposedValue = true;
+        }
+    }
+
+    ~CorrelatedMessageProcessor()
+    {
+        Dispose(disposing: false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

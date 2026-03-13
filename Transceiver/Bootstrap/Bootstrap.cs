@@ -4,6 +4,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
+using Transceiver.OtherComponents;
 
 namespace Transceiver;
 
@@ -26,6 +28,10 @@ public static class BootStrap
         }
         _ = services.AddSingleton<CorrelatedMessageProcessor>();
         _ = services.AddSingleton<TypeIdAssigner>();
+        _ = services.AddSingleton<ICertificateLoader>(provider =>
+        {
+            return new CertificateLoader(StoreName.My, StoreLocation.LocalMachine, X509FindType.FindByThumbprint);
+        });
         RegisterProcessors(services, currentAssembly);
         RegisterProcessors(services, typeof(BootStrap).Assembly);
         IEnumerable<Type> discoverableTransceivers = currentAssembly.DiscoverType(typeof(ITransceiver<,>))

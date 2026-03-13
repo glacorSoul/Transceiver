@@ -32,19 +32,20 @@ static ParserResult<object> ParseArguments(string[] args, IServiceCollection ser
 {
     ParserResult<object> result = Parser.Default.ParseArguments(
         args,
-        typeof(DirectOptions),
-        typeof(DomainSocketsOptions),
-        typeof(UdpSocketOptions),
-        typeof(TcpSocketOptions),
-        typeof(TcpServerOptions),
-        typeof(TcpClientOptions),
-        typeof(SslOptions),
-        typeof(ZeroMqOptions),
         typeof(AmazonSqsOptions),
         typeof(AzureQueueOptions),
-        typeof(RabbitMqOptions),
+        typeof(DirectOptions),
+        typeof(DomainSocketsOptions),
+        typeof(GooglePubSubOptions),
         typeof(KafkaOptions),
-        typeof(GooglePubSubOptions)
+        typeof(RabbitMqOptions),
+        typeof(SslOptions),
+        typeof(TcpClientOptions),
+        typeof(TcpServerOptions),
+        typeof(TcpSocketOptions),
+        typeof(UdpSocketOptions),
+        typeof(WebsocketsOptions),
+        typeof(ZeroMqOptions)
     );
     if (result.Value is BaseOptions baseOptions)
     {

@@ -23,11 +23,12 @@ internal sealed class SslProtocolSetup : ProtocolSpecificSetup
         Services.TryAddSingleton<ITransceiverProtocol>((provider) =>
         {
             IMessageProcessor messageProcessor = provider.GetRequiredService<IMessageProcessor>();
+            ICertificateLoader certificateLoader = provider.GetRequiredService<ICertificateLoader>();
             ISerializer serializer = provider.GetRequiredService<ISerializer>();
             ISocketFactory factory = provider.GetRequiredService<ISocketFactory>();
             ILogger<TransceiverSslProtocol> logger = provider.GetRequiredService<ILogger<TransceiverSslProtocol>>();
             IOptions<TransceiverConfiguration> configuration = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
-            TransceiverSslProtocol protocol = new(factory, messageProcessor, serializer, logger, configuration);
+            TransceiverSslProtocol protocol = new(factory, certificateLoader, messageProcessor, serializer, logger, configuration);
             Stream stream = protocol.SetupWriterAsync(CancellationToken.None).GetAwaiter().GetResult();
             _ = protocol.ReceiveMessagesAsync(stream, CancellationToken.None);
             return protocol;
@@ -40,11 +41,12 @@ internal sealed class SslProtocolSetup : ProtocolSpecificSetup
         _ = Services.AddSingleton<ITransceiverProtocol>((provider) =>
         {
             IMessageProcessor messageProcessor = provider.GetRequiredService<IMessageProcessor>();
+            ICertificateLoader certificateLoader = provider.GetRequiredService<ICertificateLoader>();
             ISerializer serializer = provider.GetRequiredService<ISerializer>();
             ISocketFactory factory = provider.GetRequiredService<ISocketFactory>();
             ILogger<TransceiverSslProtocol> logger = provider.GetRequiredService<ILogger<TransceiverSslProtocol>>();
             IOptions<TransceiverConfiguration> configuration = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
-            TransceiverSslProtocol protocol = new(factory, messageProcessor, serializer, logger, configuration);
+            TransceiverSslProtocol protocol = new(factory, certificateLoader, messageProcessor, serializer, logger, configuration);
             _ = protocol.ReceiveMessagesAsync(CancellationToken.None);
             Stream stream = protocol.SetupWriterAsync(CancellationToken.None).GetAwaiter().GetResult();
             _ = protocol.ReceiveMessagesAsync(stream, CancellationToken.None);

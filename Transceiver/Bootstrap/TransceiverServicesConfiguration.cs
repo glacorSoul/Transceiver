@@ -9,32 +9,31 @@ namespace Transceiver;
 
 public class TransceiverServicesConfiguration
 {
-    private IServiceCollection _services;
-
     internal TransceiverServicesConfiguration(IServiceCollection services, Type type)
     {
-        _services = services;
+        Services = services;
         Type = type;
     }
 
     public Type Type { get; }
+    public IServiceCollection Services { get; private set; }
 
     public ITransceiverSetup ConfigureCustomProtocol(Type protocolType)
     {
-        CustomProtocolSetup setup = new(Type, protocolType, _services);
+        CustomProtocolSetup setup = new(Type, protocolType, Services);
         return setup;
     }
 
     public ITransceiverSetup ConfigureDelegateToMessageProcessor()
     {
-        _services = _services.AddSingleton<ITransceiverProtocol, DelegateToMessageProcessorProtocol>();
-        BaseTransceiverSetup setup = new(Type, _services);
+        Services = Services.AddSingleton<ITransceiverProtocol, DelegateToMessageProcessorProtocol>();
+        BaseTransceiverSetup setup = new(Type, Services);
         return setup;
     }
 
     public ITransceiverSetup ConfigureDirectProtocol()
     {
-        DirectProtocolSetup setup = new(Type, _services);
+        DirectProtocolSetup setup = new(Type, Services);
         return setup;
     }
 
@@ -45,7 +44,7 @@ public class TransceiverServicesConfiguration
 
     public ITransceiverSetup ConfigureSsl(IPEndPoint serverEndPoint, string name)
     {
-        SslProtocolSetup setup = new(Type, _services, serverEndPoint, name);
+        SslProtocolSetup setup = new(Type, Services, serverEndPoint, name);
         return setup;
     }
 
@@ -56,7 +55,7 @@ public class TransceiverServicesConfiguration
 
     public ITransceiverSetup ConfigureTcp(IPEndPoint serverEndPoint, string name)
     {
-        ProtocolSpecificSetup setup = new(Type, _services, serverEndPoint, name, ProtocolTypeEnum.Tcp);
+        ProtocolSpecificSetup setup = new(Type, Services, serverEndPoint, name, ProtocolTypeEnum.Tcp);
         return setup;
     }
 
@@ -67,13 +66,13 @@ public class TransceiverServicesConfiguration
 
     public ITransceiverSetup ConfigureUdp(IPEndPoint serverEndPoint, string name)
     {
-        ProtocolSpecificSetup setup = new(Type, _services, serverEndPoint, name, ProtocolTypeEnum.Udp);
+        ProtocolSpecificSetup setup = new(Type, Services, serverEndPoint, name, ProtocolTypeEnum.Udp);
         return setup;
     }
 
     public ITransceiverSetup ConfigureUnknownSocket()
     {
-        SocketsSetup setup = new(Type, _services);
+        SocketsSetup setup = new(Type, Services);
         return setup;
     }
 }

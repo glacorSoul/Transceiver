@@ -12,7 +12,7 @@
 		<PackageProjectUrl>https://glacorsoul.github.io/Transceiver/</PackageProjectUrl>
 		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
-
+	
 	<ItemGroup>
 		<PackageReference Include="Roslynator.Analyzers">
 			<PrivateAssets>all</PrivateAssets>

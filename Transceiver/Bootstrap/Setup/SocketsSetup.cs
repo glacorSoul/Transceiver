@@ -17,17 +17,23 @@ public class SocketsSetup : BaseTransceiverSetup
     {
     }
 
+    private static TransceiverSocketProtocol CreateSocketProtocol(IServiceProvider provider)
+    {
+        IMessageProcessor messageProcessor = provider.GetRequiredService<IMessageProcessor>();
+        ISerializer serializer = provider.GetRequiredService<ISerializer>();
+        ISocketFactory factory = provider.GetRequiredService<ISocketFactory>();
+        ILogger<TransceiverSocketProtocol> logger = provider.GetRequiredService<ILogger<TransceiverSocketProtocol>>();
+        IOptions<TransceiverConfiguration> configuration = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
+        TransceiverSocketProtocol protocol = new(messageProcessor, factory, serializer, logger, configuration);
+        return protocol;
+    }
+
     public override void SetupClient()
     {
         base.SetupClient();
         Services.TryAddSingleton<ITransceiverProtocol>((provider) =>
         {
-            IMessageProcessor messageProcessor = provider.GetRequiredService<IMessageProcessor>();
-            ISerializer serializer = provider.GetRequiredService<ISerializer>();
-            ISocketFactory factory = provider.GetRequiredService<ISocketFactory>();
-            ILogger<TransceiverSocketProtocol> logger = provider.GetRequiredService<ILogger<TransceiverSocketProtocol>>();
-            IOptions<TransceiverConfiguration> configuration = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
-            TransceiverSocketProtocol protocol = new(messageProcessor, factory, serializer, logger, configuration);
+            TransceiverSocketProtocol protocol = CreateSocketProtocol(provider);
             Socket socket = protocol.SetupWriterAsync(CancellationToken.None).GetAwaiter().GetResult();
             _ = protocol.ReceiveMessagesAsync(socket, CancellationToken.None);
             return protocol;
@@ -39,12 +45,7 @@ public class SocketsSetup : BaseTransceiverSetup
         base.SetupServer(serverOnly);
         _ = Services.AddSingleton<ITransceiverProtocol>((provider) =>
         {
-            IMessageProcessor messageProcessor = provider.GetRequiredService<IMessageProcessor>();
-            ISerializer serializer = provider.GetRequiredService<ISerializer>();
-            ISocketFactory factory = provider.GetRequiredService<ISocketFactory>();
-            ILogger<TransceiverSocketProtocol> logger = provider.GetRequiredService<ILogger<TransceiverSocketProtocol>>();
-            IOptions<TransceiverConfiguration> configuration = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
-            TransceiverSocketProtocol protocol = new(messageProcessor, factory, serializer, logger, configuration);
+            TransceiverSocketProtocol protocol = CreateSocketProtocol(provider);
             _ = protocol.ReceiveMessagesAsync(CancellationToken.None);
             if (!serverOnly)
             {

@@ -35,7 +35,7 @@ public class DomainSocketFactory : SocketFactory
 
     protected override Socket Connect(object factoryIdentifier)
     {
-        string path = factoryIdentifier.ToString()!;
+        string path = factoryIdentifier.ToString() ?? default!;
         UnixDomainSocketEndPoint endPoint = new(path);
         Socket socket = new(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
         socket.Connect(endPoint);
@@ -44,7 +44,7 @@ public class DomainSocketFactory : SocketFactory
 
     protected override Socket Listen(object factoryIdentifier)
     {
-        string path = factoryIdentifier.ToString()!;
+        string path = factoryIdentifier.ToString() ?? default!;
         UnixDomainSocketEndPoint endPoint = new(path);
         Socket socket = new(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
         socket.Bind(endPoint);

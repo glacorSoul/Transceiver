@@ -240,6 +240,8 @@ dotnet_diagnostic.IDE0073.severity = warning
 dotnet_diagnostic.IDE0025.severity = none
 # IDE0057 Substring can be simplified
 dotnet_diagnostic.IDE0057.severity = none
+# IDE0370 Supression is unecessary
+dotnet_diagnostic.IDE0370.severity = none
 
 [Transceiver.Tests/**.cs]
 # CA1707 Members can contain underscores

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
+using Transceiver.OtherComponents;
 
 namespace Transceiver;
 
@@ -17,9 +18,11 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>
     private readonly Lazy<Task<Stream>> _setupWriter;
     private readonly ISocketFactory _socketFactory;
     private readonly SemaphoreSlim _writeLock = new(1, 1);
+    private readonly ICertificateLoader _certificateLoader;
 
     public TransceiverSslProtocol(
         ISocketFactory socketFactory,
+        ICertificateLoader certificateLoader,
         IMessageProcessor messageProcessor,
         ISerializer serializer,
         ILogger<TransceiverSslProtocol> logger,
@@ -27,6 +30,7 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>
         : base(messageProcessor, serializer, logger, configuration)
     {
         _socketFactory = socketFactory;
+        _certificateLoader = certificateLoader;
         _listenSocket = socketFactory.Listen();
         _connectSocket = socketFactory.Connect();
         _setupWriter = new(SetupWriter);
@@ -47,7 +51,7 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>
     {
         NetworkStream networkStream = new(await _socketFactory.AcceptAsync(_listenSocket), true);
         SslStream sslStream = new(networkStream, false);
-        await sslStream.AuthenticateAsServerAsync(LoadCertificate());
+        await sslStream.AuthenticateAsServerAsync(_certificateLoader.LoadCertificate(Configuration.Value.CertificateThumbprint));
         return sslStream;
     }
 
@@ -63,21 +67,6 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>
         {
             _ = _writeLock.Release();
         }
-    }
-
-    private X509Certificate2 LoadCertificate()
-    {
-        X509Store certStore = new(StoreName.My, StoreLocation.LocalMachine);
-        certStore.Open(OpenFlags.ReadOnly);
-
-        X509Certificate2Collection certificates = certStore.Certificates
-            .Find(X509FindType.FindByThumbprint, Configuration.Value.CertificateThumbprint, true);
-        if (certificates.Count == 0)
-        {
-            throw new FileNotFoundException("Certificate not found");
-        }
-
-        return certificates[0];
     }
 
     private async Task<Stream> SetupWriter()

@@ -8,6 +8,7 @@ public class ServerResponse<TRequest, TResponse> : IIdentifiable
 {
     public ServerResponse()
     {
+        Data = default!;
     }
 
     public ServerResponse(TResponse data, ClientRequest<TRequest, TResponse> request)
@@ -17,7 +18,7 @@ public class ServerResponse<TRequest, TResponse> : IIdentifiable
         Data = data;
     }
 
-    public TResponse Data { get; set; } = default!;
+    public TResponse Data { get; set; }
     public Guid Id { get; set; }
     public DateTimeOffset TimeStamp { get; set; }
 }

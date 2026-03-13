@@ -1,28 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net7.0;net8.0;net9.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
 	</PropertyGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)'=='net9.0' Or '$(TargetFramework)'=='net8.0'">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" VersionOverride="[9.0.0,]" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" VersionOverride="[9.0.0,]" />
-		<PackageReference Include="Microsoft.Extensions.Options" VersionOverride="[9.0.0,]" />
-		<PackageReference Include="System.Text.Json" VersionOverride="[8.0.5,]" />
-		<PackageReference Include="System.Threading.Channels" VersionOverride="[9.0.0,]" />
-		<PackageReference Include="System.Threading.RateLimiting" VersionOverride="[9.0.0,]" />
-	</ItemGroup>
-	
-	<ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" VersionOverride="[7.0.0,]" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" VersionOverride="[7.0.0,]" />
-		<PackageReference Include="Microsoft.Extensions.Options" VersionOverride="[7.0.0,]" />
-		<PackageReference Include="System.Text.Json" VersionOverride="[8.0.5,]" />
-		<PackageReference Include="System.Threading.Channels" VersionOverride="[6.0.0,]" />
-		<PackageReference Include="System.Threading.RateLimiting" VersionOverride="[7.0.0,]" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" VersionOverride="[7.0.0,]" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" VersionOverride="[7.0.0,]" />
 		<PackageReference Include="Microsoft.Extensions.Options" VersionOverride="[7.0.0,]" />

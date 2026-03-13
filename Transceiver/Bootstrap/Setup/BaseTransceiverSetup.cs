@@ -44,7 +44,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
             object pipeline = provider.GetRequiredService(CompositePipelineType);
             ITransceiverProtocol protocol = CreateResilientProtocol(provider);
 
-            object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline)!;
+            object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline) ?? default!;
             if (transceiver is ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel> serviceDiscoveryTransceiver)
             {
                 _ = serviceDiscoveryTransceiver.TransceiveOnceAsync(new(), CancellationToken.None)
@@ -64,7 +64,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
         {
             object pipeline = provider.GetRequiredService(PipelineType);
             ITransceiverProtocol protocol = CreateResilientProtocol(provider);
-            object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline)!;
+            object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline) ?? default!;
             object processor = transceiver;
             if (!ProcessorType.IsInstanceOfType(transceiver))
             {

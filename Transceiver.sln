@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36221.1
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11505.172 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver", "Transceiver\Transceiver.csproj", "{77EC0DAE-4ACA-8452-12B7-6D3BBB70A20A}"
 EndProject
@@ -35,6 +35,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.ServiceDiscoverer", "Transceiver.ServiceDiscoverer\Transceiver.ServiceDiscoverer.csproj", "{73EF48CF-C16E-4CE4-91F8-1D9F241F8BA6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.DomainSockets", "Transceiver.DomainSockets\Transceiver.DomainSockets.csproj", "{FB1971AA-1067-48EB-B3C1-779359FEBAB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Websockets", "Transceiver.Websockets\Transceiver.Websockets.csproj", "{B2107C59-D95D-4B54-8E63-C910E36940C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,6 +96,10 @@ Global
 		{FB1971AA-1067-48EB-B3C1-779359FEBAB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB1971AA-1067-48EB-B3C1-779359FEBAB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB1971AA-1067-48EB-B3C1-779359FEBAB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2107C59-D95D-4B54-8E63-C910E36940C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2107C59-D95D-4B54-8E63-C910E36940C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2107C59-D95D-4B54-8E63-C910E36940C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2107C59-D95D-4B54-8E63-C910E36940C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

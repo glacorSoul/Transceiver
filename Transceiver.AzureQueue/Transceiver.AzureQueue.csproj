@@ -8,7 +8,7 @@
 		<PackageReference Include="Azure.Storage.Queues" VersionOverride="[12.13.0,]" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-		<PackageReference Include="Azure.Storage.Queues" VersionOverride="[12.11.0,]" />
+		<PackageReference Include="Azure.Storage.Queues" VersionOverride="12.13.0" />
 	</ItemGroup>
 	
 	<ItemGroup>
