@@ -56,6 +56,14 @@
             "commandName": "Project",
             "commandLineArgs": "wss -c 1c39b7a9e05f5c8124189a950a51779ecd1fdf93"
         },
+        "Transciever.WebsocketsClient": {
+            "commandName": "Project",
+            "commandLineArgs": "wssClient -c 1c39b7a9e05f5c8124189a950a51779ecd1fdf93"
+        },
+        "Transciever.WebsocketsServer": {
+            "commandName": "Project",
+            "commandLineArgs": "wssServer -c 1c39b7a9e05f5c8124189a950a51779ecd1fdf93"
+        },
         "Transciever.ZeroMQ": {
             "commandName": "Project",
             "commandLineArgs": "zeroMq"

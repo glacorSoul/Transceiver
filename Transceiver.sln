@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.3.11505.172 d18.3
+VisualStudioVersion = 18.3.11505.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver", "Transceiver\Transceiver.csproj", "{77EC0DAE-4ACA-8452-12B7-6D3BBB70A20A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Demo", "Trasceiver.Demo\Transceiver.Demo.csproj", "{F442F826-CAD1-B64D-BA35-2EDB1F0237DF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
@@ -28,8 +26,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Kafka", "Transc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.GooglePubSub", "Transceiver.GooglePubSub\Transceiver.GooglePubSub.csproj", "{B676D7EA-BF1C-9D70-DE75-F107A8480590}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Demo.Smaller", "Trasceiver.Demo.Smaller\Transceiver.Demo.Smaller.csproj", "{B03A8BC6-860B-5657-C4AE-F23FD20D6ABD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Generator", "Transceiver.Generator\Transceiver.Generator.csproj", "{F01D2C08-3C55-41C5-AE48-BEB5091AC979}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.ServiceDiscoverer", "Transceiver.ServiceDiscoverer\Transceiver.ServiceDiscoverer.csproj", "{73EF48CF-C16E-4CE4-91F8-1D9F241F8BA6}"
@@ -37,6 +33,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.DomainSockets", "Transceiver.DomainSockets\Transceiver.DomainSockets.csproj", "{FB1971AA-1067-48EB-B3C1-779359FEBAB2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Websockets", "Transceiver.Websockets\Transceiver.Websockets.csproj", "{B2107C59-D95D-4B54-8E63-C910E36940C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Demo", "Transceiver.Demo\Transceiver.Demo.csproj", "{55617E6F-AE85-7338-ECDC-83E58CEAE8F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Demo.Smaller", "Transceiver.Demo.Smaller\Transceiver.Demo.Smaller.csproj", "{F51AA890-22E8-7CBD-B10F-8C0F86E82931}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,10 +48,6 @@ Global
 		{77EC0DAE-4ACA-8452-12B7-6D3BBB70A20A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77EC0DAE-4ACA-8452-12B7-6D3BBB70A20A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77EC0DAE-4ACA-8452-12B7-6D3BBB70A20A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F442F826-CAD1-B64D-BA35-2EDB1F0237DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F442F826-CAD1-B64D-BA35-2EDB1F0237DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F442F826-CAD1-B64D-BA35-2EDB1F0237DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F442F826-CAD1-B64D-BA35-2EDB1F0237DF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8347F2F0-96E1-41F8-B26E-CEF77C821571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8347F2F0-96E1-41F8-B26E-CEF77C821571}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8347F2F0-96E1-41F8-B26E-CEF77C821571}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -80,10 +76,6 @@ Global
 		{B676D7EA-BF1C-9D70-DE75-F107A8480590}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B676D7EA-BF1C-9D70-DE75-F107A8480590}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B676D7EA-BF1C-9D70-DE75-F107A8480590}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B03A8BC6-860B-5657-C4AE-F23FD20D6ABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B03A8BC6-860B-5657-C4AE-F23FD20D6ABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B03A8BC6-860B-5657-C4AE-F23FD20D6ABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B03A8BC6-860B-5657-C4AE-F23FD20D6ABD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F01D2C08-3C55-41C5-AE48-BEB5091AC979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F01D2C08-3C55-41C5-AE48-BEB5091AC979}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F01D2C08-3C55-41C5-AE48-BEB5091AC979}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -100,6 +92,14 @@ Global
 		{B2107C59-D95D-4B54-8E63-C910E36940C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2107C59-D95D-4B54-8E63-C910E36940C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2107C59-D95D-4B54-8E63-C910E36940C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55617E6F-AE85-7338-ECDC-83E58CEAE8F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55617E6F-AE85-7338-ECDC-83E58CEAE8F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55617E6F-AE85-7338-ECDC-83E58CEAE8F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55617E6F-AE85-7338-ECDC-83E58CEAE8F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F51AA890-22E8-7CBD-B10F-8C0F86E82931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F51AA890-22E8-7CBD-B10F-8C0F86E82931}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F51AA890-22E8-7CBD-B10F-8C0F86E82931}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F51AA890-22E8-7CBD-B10F-8C0F86E82931}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

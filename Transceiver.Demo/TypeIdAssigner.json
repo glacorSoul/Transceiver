@@ -1,0 +1,8 @@
+{
+  "ClientRequest\u003CServiceDiscoveryRequestModel,ServiceDiscoveryResponseModel\u003E": 0,
+  "ServerResponse\u003CServiceDiscoveryRequestModel,ServiceDiscoveryResponseModel\u003E": 1,
+  "ClientRequest\u003CMultiplyRequest,MultiplyResponse\u003E": 2,
+  "ServerResponse\u003CMultiplyRequest,MultiplyResponse\u003E": 3,
+  "ClientRequest\u003CSumRequest,SumResponse\u003E": 4,
+  "ServerResponse\u003CSumRequest,SumResponse\u003E": 5
+}
