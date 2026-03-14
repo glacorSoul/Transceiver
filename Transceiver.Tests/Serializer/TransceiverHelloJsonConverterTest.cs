@@ -57,7 +57,7 @@ public class TransceiverHelloJsonConverterTest
         TransceiverHelloClientInfo clientInfo = new(new(), new(new(new IPEndPoint(IPAddress.Loopback, 9779), "a", ProtocolTypeEnum.Tcp)));
         byte[] bytes = _serializer.Serialize(clientInfo);
         string json = Encoding.UTF8.GetString(bytes);
-        string expectedJson = $"{{\"Id\":\"{clientInfo.Id.Id}\",\"Data\":{{\"clientIdentifier\":{{\"endPoint\":\"a\",\"protocolType\":{{\"name\":\"{clientInfo.Data.ClientIdentifier.ProtocolType.Name}\",\"value\":{clientInfo.Data.ClientIdentifier.ProtocolType.Value}}}}}}}}}";
+        string expectedJson = $$$$"""{"Id":"{{{{clientInfo.Id.Id}}}}","Data":{"clientIdentifier":{"address":"tcp:\\127.0.0.1:9779","name":"a"}}}""";
         Assert.Equal(expectedJson, json);
     }
 
@@ -76,7 +76,7 @@ public class TransceiverHelloJsonConverterTest
         string json = Encoding.UTF8.GetString(bytes);
 
         string expectedJson = includeData
-            ? $"{{\"Id\":\"{clientInfo.Id.Id}\",\"Data\":{{\"clientIdentifier\":{{\"endPoint\":\"a\",\"protocolType\":{{\"name\":\"{clientInfo.Data.ClientIdentifier.ProtocolType.Name}\",\"value\":{clientInfo.Data.ClientIdentifier.ProtocolType.Value}}}}}}}}}"
+            ? $$$$"""{"Id":"{{{{clientInfo.Id.Id}}}}","Data":{"clientIdentifier":{"address":"tcp:\\127.0.0.1:9779","name":"a"}}}"""
             : $"{{\"Id\":\"{clientInfo.Id.Id}\"}}";
 
         Assert.Equal(expectedJson, json);

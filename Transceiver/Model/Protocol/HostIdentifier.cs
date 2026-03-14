@@ -3,6 +3,7 @@
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
 using System.Net;
+using System.Text.Json.Serialization;
 
 namespace Transceiver;
 
@@ -13,11 +14,18 @@ public class HostIdentifier
         Name = name;
         Address = new Uri($"{protocolType.Name.ToLowerInvariant()}:\\{endpoint.Address}:{endpoint.Port}");
     }
+    [JsonConstructor]
+    public HostIdentifier(Uri address, string name)
+    {
+        Name = name;
+        Address = address;
+    }
 
     public Uri Address { get; private set; }
 
     public string Name { get; private set; }
 
+    [JsonIgnore]
     public ProtocolTypeEnum ProtocolType
     {
         get
