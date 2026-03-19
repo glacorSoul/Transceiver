@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.0.1](https://github.com/glacorSoul/Transceiver/compare/2.0.0...2.0.1)  (2026-03-16)
+
+### Features
+
+* Certificates can now be loaded from different stores [8dd517c](https://github.com/glacorSoul/Transceiver/commit/8dd517c61f797763ba2eda02f08db5c944a35d48)
+
+### Bug Fixes
+
+* TCP client and server examples are now set up correctly.
+* Channels were configured to work correctly within in-process message sending.
+
+### Security Fixes
+
+* Vulnerability fix on ZeroMQ related to .net standard 2.0 packages [8dd517c](https://github.com/glacorSoul/Transceiver/commit/8dd517c61f797763ba2eda02f08db5c944a35d48)
+
 ## [2.0.0](https://github.com/glacorSoul/Transceiver/compare/1.0.4...2.0.0)  (2026-01-25)
 
 ### Features
