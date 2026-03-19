@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.1.0](https://github.com/glacorSoul/Transceiver/compare/2.0.1...2.1.0)
+
+### Features
+
+Implemented Websocket plugin
+
+### Bug Fixes
+
+Allow multiple clients to connect to server with all protocols
+
 ## [2.0.1](https://github.com/glacorSoul/Transceiver/compare/2.0.0...2.0.1)  (2026-03-16)
 
 ### Features
