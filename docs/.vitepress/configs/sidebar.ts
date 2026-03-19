@@ -31,12 +31,13 @@ export const sidebar: DefaultTheme.Sidebar = {
          text: 'Integrations',
          items: [
             { text: 'Built-in integrations', link: 'guide/Integrations/builtin' },
-            { text: 'Domain Sockets', link: '/guide/Integrations/domainSockets' },
             { text: 'Amazon Sqs', link: '/guide/Integrations/awsSqs' },
             { text: 'Azure Queues', link: '/guide/Integrations/azureQueues' },
+            { text: 'Domain Sockets', link: '/guide/Integrations/domainSockets' },
             { text: 'Google Pub/Sub', link: '/guide/Integrations/googlePubSub' },
-            { text: 'RabbitMQ', link: '/guide/Integrations/rabbitMQ' },
             { text: 'Kafka', link: '/guide/Integrations/kafka' },
+            { text: 'RabbitMQ', link: '/guide/Integrations/rabbitMQ' },
+            { text: 'Websockets', link: '/guide/Integrations/webSockets' },
             { text: 'ZeroMQ', link: '/guide/Integrations/zeroMQ' },
          ]
       }

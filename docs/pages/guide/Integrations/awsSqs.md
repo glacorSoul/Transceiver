@@ -6,7 +6,7 @@
 dotnet add package Transceiver.AmazonSqs
 ```
 
-This is an example on how you can set up `Transceiver` with AmazonSqs. This example can be viewed on [git](https://github.com/glacorSoul/Transceiver/blob/main/Trasceiver.Demo/Options/AmazonSqsOptions.cs)
+This is an example on how you can set up `Transceiver` with AmazonSqs. This example can be viewed on [git](https://github.com/glacorSoul/Transceiver/blob/main/Transceiver.Demo/Options/AmazonSqsOptions.cs)
 
 ```csharp
 public void Run(IServiceCollection services, CancellationToken cancellationToken)

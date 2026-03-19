@@ -6,7 +6,7 @@
 dotnet add package Transceiver.ZeroMQ
 ```
 
-This is an example on how you can set up `Transceiver` with ZeroMQ. This example can be viewed on [git](https://github.com/glacorSoul/Transceiver/blob/main/Trasceiver.Demo/Options/ZeroMqOptions.cs)
+This is an example on how you can set up `Transceiver` with ZeroMQ. This example can be viewed on [git](https://github.com/glacorSoul/Transceiver/blob/main/Transceiver.Demo/Options/ZeroMqOptions.cs)
 
 ```csharp
 public override void Run(IServiceCollection services, CancellationToken cancellationToken)

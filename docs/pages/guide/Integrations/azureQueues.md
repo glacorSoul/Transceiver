@@ -6,7 +6,7 @@
 dotnet add package Transceiver.AzureQueue
 ```
 
-This is an example on how you can set up `Transceiver` with Azure Queues. This example can be viewed on [git](https://github.com/glacorSoul/Transceiver/blob/main/Trasceiver.Demo/Options/AzureQueueOptions.cs)
+This is an example on how you can set up `Transceiver` with Azure Queues. This example can be viewed on [git](https://github.com/glacorSoul/Transceiver/blob/main/Transceiver.Demo/Options/AzureQueueOptions.cs)
 
 ```csharp
 public void Run(IServiceCollection services, CancellationToken cancellationToken)

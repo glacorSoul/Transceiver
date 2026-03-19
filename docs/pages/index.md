@@ -8,7 +8,7 @@ hero:
 
 features:
   - title: Flexible
-    details: Transceiver integrates with many message libraries and communcation protocols such as AwsSqs, Azure Queues, Google Pub/sub, ZeroMq, RabbitMq, Kafka, Tcp, Udp, SSL, DomainSockets
+    details: Transceiver integrates with many message libraries and communcation protocols such as AwsSqs, Azure Queues, Google Pub/sub, ZeroMq, RabbitMq, Kafka, Tcp, Udp, SSL, DomainSockets and Websockets
   - title: Dev friendly
     details: Transceiver implements Depedency Injection and Telemetry by default. It allows developers to be focused on developing core business logic rather than thinking about infraestructure and messaging protocol details.
   - title: Pipelines and mediator

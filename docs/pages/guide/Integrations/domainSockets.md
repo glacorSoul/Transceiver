@@ -7,7 +7,7 @@ Domain Sockets is a protocol that allows you to exchange messages between two pr
 dotnet add package Transceiver.DomainSockets
 ```
 
-This is an example on how you can set up `Transceiver` with DomainSockets. This example can be viewed on [git](https://github.com/glacorSoul/Transceiver/blob/main/Trasceiver.Demo/Options/DomainSocketsOptions.cs)
+This is an example on how you can set up `Transceiver` with DomainSockets. This example can be viewed on [git](https://github.com/glacorSoul/Transceiver/blob/main/Transceiver.Demo/Options/DomainSocketsOptions.cs)
 
 ```csharp
 public override void Run(IServiceCollection services, CancellationToken cancellationToken)
