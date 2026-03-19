@@ -19,14 +19,16 @@ public sealed class WebsocketsSeverOptions : BaseOptions
 
     public override void Run(IServiceCollection services, CancellationToken cancellationToken)
     {
-        _ = services.AddTransceiverWebSockets(setup =>
-        {
-            setup.SetupServer(true);
-        }, new Uri(Uri), typeof(Program).Assembly);
         _ = services.Configure<TransceiverConfiguration>(cfg =>
         {
             cfg.CertificateThumbprint = CertificateThumbprint;
         });
-        RunSamples(services, cancellationToken);
+        _ = services.AddTransceiverWebSockets(setup =>
+        {
+            setup.SetupServer(true);
+        }, new Uri(Uri), typeof(Program).Assembly);
+
+        ServiceProvider provider = services.BuildServiceProvider();
+        provider.ConfigureTransceiverProvider(typeof(BaseOptions).Assembly);
     }
 }

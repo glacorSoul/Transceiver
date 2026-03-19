@@ -112,10 +112,8 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
 
     protected abstract Task WriteAsync(TTransceiver transceiver, object client, byte[] data, CancellationToken cancellationToken);
 
-    private async Task ReceiveMessage(CancellationToken cancellationToken)
+    private async Task ProcessIncomingMessages(TTransceiver reader, CancellationToken cancellationToken)
     {
-        TTransceiver reader = await SetupReadAsync(cancellationToken);
-
         PartitionedMessage partitionedMessage = new();
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -146,6 +144,15 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
             {
                 Logger?.LogWarning(ex, "Receiving message was cancelled: {Message}", ex.Message);
             }
+        }
+    }
+
+    private async Task ReceiveMessage(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            TTransceiver reader = await SetupReadAsync(cancellationToken);
+            _ = ProcessIncomingMessages(reader, cancellationToken);
         }
     }
 }
