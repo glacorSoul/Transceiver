@@ -9,7 +9,7 @@ using Transceiver.Requests;
 
 namespace Transceiver;
 
-public sealed class TypeIdAssigner
+public sealed class TypeIdAssigner : IDisposable
 {
     private static readonly Type[] SystemTypes = [
         typeof(ClientRequest<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel>),
@@ -17,6 +17,7 @@ public sealed class TypeIdAssigner
     ];
 
     private readonly ManualResetEventSlim _hasBeenInitialized = new(false);
+    private bool disposedValue;
 
     public TypeIdAssigner()
     {
@@ -202,5 +203,29 @@ public sealed class TypeIdAssigner
     {
         string json = JsonSerializer.Serialize(TypeToIdMap, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText($"{nameof(TypeIdAssigner)}.json", json);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                _hasBeenInitialized.Dispose();
+            }
+
+            disposedValue = true;
+        }
+    }
+
+    ~TypeIdAssigner()
+    {
+        Dispose(disposing: false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

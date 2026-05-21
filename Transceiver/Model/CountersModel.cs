@@ -24,7 +24,7 @@ public class CountersModel
         Instances.Add(this);
     }
 
-    public static Meter Meter { get; private set; }
+    public static Meter Meter { get; }
     public Histogram<double> ErrorsPerSecond { get; protected set; } = default!;
     public TimeSpan ExecutionSla { get; } = TimeSpan.FromMilliseconds(500);
     public Histogram<double> ExecutionTimeCounter { get; protected set; } = default!;
@@ -35,10 +35,11 @@ public class CountersModel
     public Histogram<double> RequestsPerSecond { get; protected set; } = default!;
 }
 
-internal sealed class CountersModel<TRequest, TResponse> : CountersModel
+internal sealed class CountersModel<TRequest, TResponse> : CountersModel, IDisposable
 {
     private readonly MeterListener _nErrorsListener;
     private readonly MeterListener _nRequestsListener;
+    private bool disposedValue;
 
     public CountersModel()
     {
@@ -87,5 +88,29 @@ internal sealed class CountersModel<TRequest, TResponse> : CountersModel
                 ErrorsPerSecond.Record(requestsPerSecond, tags);
             }
         });
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                _nRequestsListener.Dispose();
+            }
+
+            disposedValue = true;
+        }
+    }
+
+    ~CountersModel()
+    {
+        Dispose(disposing: false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

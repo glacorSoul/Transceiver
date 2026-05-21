@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Transceiver;
 
-public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>
+public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>, IDisposable
 {
     private readonly Socket _connectSocket;
     private readonly Socket _listenSocket;
@@ -18,6 +18,7 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>
     private readonly ISocketFactory _socketFactory;
     private readonly SemaphoreSlim _writeLock = new(1, 1);
     private readonly ICertificateLoader _certificateLoader;
+    private bool disposedValue;
 
     public TransceiverSslProtocol(
         ISocketFactory socketFactory,
@@ -88,5 +89,29 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>
 
         Logger.LogWarning("Certificate error: {SslError}", sslPolicyErrors);
         return false;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                _writeLock.Dispose();
+            }
+
+            disposedValue = true;
+        }
+    }
+
+    ~TransceiverSslProtocol()
+    {
+        Dispose(disposing: false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

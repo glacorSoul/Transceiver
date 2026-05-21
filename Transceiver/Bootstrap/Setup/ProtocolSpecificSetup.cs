@@ -27,7 +27,7 @@ public class ProtocolSpecificSetup : SocketsSetup
         _protocolType = protocolType;
     }
 
-    public HostIdentifier Server { get; private set; }
+    public HostIdentifier Server { get; }
 
     public override void SetupClient()
     {

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace Transceiver;
 
-public class KestrelWebsocketSource
+public class KestrelWebsocketSource : IDisposable
 {
     private readonly Uri _serverEndpoint;
     private readonly ICertificateLoader _certificateLoader;
@@ -16,6 +16,7 @@ public class KestrelWebsocketSource
     private readonly WebApplication _app;
     private readonly BlockingCollection<WebSocketStream> _pendingConnections = [];
     private readonly SemaphoreSlim _semaphore;
+    private bool disposedValue;
 
     public KestrelWebsocketSource(Uri serverEndpoint,
         ICertificateLoader certificateLoader,
@@ -54,7 +55,7 @@ public class KestrelWebsocketSource
     public async Task<WebSocketStream> AcceptWebSocketAsync(CancellationToken cancellationToken)
     {
         await _semaphore.WaitAsync(cancellationToken);
-        WebSocketStream stream = _pendingConnections.Take();
+        WebSocketStream stream = _pendingConnections.Take(cancellationToken);
         return stream;
     }
 
@@ -91,5 +92,27 @@ public class KestrelWebsocketSource
         return app;
     }
 
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                _semaphore.Dispose();
+            }
 
+            disposedValue = true;
+        }
+    }
+
+    ~KestrelWebsocketSource()
+    {
+        Dispose(disposing: false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 }

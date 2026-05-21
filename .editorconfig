@@ -218,6 +218,15 @@ dotnet_style_qualification_for_event = false:suggestion
 # S1450 fields should be local variables if they are not used. Sometimes we need to use fields so the object is not garbage collected.
 dotnet_diagnostic.S1450.severity = none
 
+
+# CA2012 GetWaiter should not be used on Value Tasks
+dotnet_diagnostic.CA2012.severity = warning
+# CA2016 foward cancellation token
+dotnet_diagnostic.CA2016.severity = warning
+# CA1835 use correct WriteAsync/ReadAsync method overloads with spans
+dotnet_diagnostic.CA1835.severity = suggestion
+# CA1001 classes with disposable fields should be disposable
+dotnet_diagnostic.CA1001.severity = warning
 # CA1859 use most specific type for performance
 dotnet_diagnostic.CA1859.severity = warning
 # CA1051 do not use public fields
@@ -226,13 +235,20 @@ dotnet_diagnostic.CA1051.severity = warning
 dotnet_diagnostic.CA1805.severity = warning
 # CA1720 members should not have type name
 dotnet_diagnostic.CA1720.severity = warning
+
+# RCS1261 use await using instead of using
+dotnet_diagnostic.RCS1261.severity = suggestion
 # RCS1021 use expression body lambda
 dotnet_diagnostic.RCS1021.severity = none
 # RCS1163 unused parameter
 dotnet_diagnostic.RCS1163.severity = none
+# RCS1170 read only auto property can be used
+dotnet_diagnostic.RCS1170.severity = warning
+
 # S3267 Simplify using Select.
 dotnet_diagnostic.S3267.severity = none
 # IDE0045 Simplify if statement
+
 dotnet_diagnostic.IDE0045.severity = none
 # IDE0073 License header
 dotnet_diagnostic.IDE0073.severity = warning

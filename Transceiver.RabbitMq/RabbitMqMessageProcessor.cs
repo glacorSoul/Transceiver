@@ -71,7 +71,7 @@ public sealed class RabbitMqMessageProcessor : IMessageProcessor, IDisposable
 
         string queueName = type.ToShortPrettyString().ToLettersOnly().ToLowerInvariant();
         IConnection connection = await _connection.Value;
-        using IChannel channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        await using IChannel channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
         AsyncEventingBasicConsumer consumer = new(channel);
         consumer.ReceivedAsync += (sender, ea) =>
         {
@@ -86,7 +86,7 @@ public sealed class RabbitMqMessageProcessor : IMessageProcessor, IDisposable
     {
         string queueName = type.ToShortPrettyString().ToLettersOnly().ToLowerInvariant();
         IConnection connection = await _connection.Value;
-        using IChannel channel = await connection.CreateChannelAsync();
+        await using IChannel channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
         bool isNewQueueType = false;
         lock (_queueTypes)
         {
@@ -94,7 +94,7 @@ public sealed class RabbitMqMessageProcessor : IMessageProcessor, IDisposable
         }
         if (isNewQueueType)
         {
-            _ = await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false);
+            _ = await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: cancellationToken);
         }
         if (message is not null)
         {

@@ -14,9 +14,10 @@
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" VersionOverride="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" VersionOverride="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" VersionOverride="10.0.3" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" VersionOverride="10.0.3"/>
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" VersionOverride="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Logging" VersionOverride="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" VersionOverride="10.0.3" />
+		<PackageReference Include="System.Security.Cryptography.Xml" />
 	</ItemGroup>
 
 	<ItemGroup>

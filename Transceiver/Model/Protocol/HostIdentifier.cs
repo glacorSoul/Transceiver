@@ -21,9 +21,9 @@ public class HostIdentifier
         Address = address;
     }
 
-    public Uri Address { get; private set; }
+    public Uri Address { get; }
 
-    public string Name { get; private set; }
+    public string Name { get; }
 
     [JsonIgnore]
     public ProtocolTypeEnum ProtocolType

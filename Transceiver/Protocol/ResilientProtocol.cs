@@ -41,7 +41,7 @@ internal class ResilientProtocol : ITransceiverProtocol
                 int jit = Random.Next(-1 * _config.Value.DelayBetweenRetriesMs / 10, _config.Value.DelayBetweenRetriesMs / 10);
                 TimeSpan delay = TimeSpan.FromMilliseconds((_config.Value.DelayBetweenRetriesMs * (i + 1)) + jit);
                 _logger.LogError(ex, "An error occured when sending data to client");
-                await Task.Delay(delay);
+                await Task.Delay(delay, cancellationToken);
             }
         }
     }
@@ -61,7 +61,7 @@ internal class ResilientProtocol : ITransceiverProtocol
                 int jit = Random.Next(-1 * _config.Value.DelayBetweenRetriesMs / 10, _config.Value.DelayBetweenRetriesMs / 10);
                 TimeSpan delay = TimeSpan.FromMilliseconds((_config.Value.DelayBetweenRetriesMs * (i + 1)) + jit);
                 _logger.LogError(ex, "An error occured when sending data to server");
-                await Task.Delay(delay);
+                await Task.Delay(delay, cancellationToken);
             }
         }
     }

@@ -7,7 +7,7 @@ using System.Threading.RateLimiting;
 
 namespace Transceiver.Demo;
 
-public abstract class Example<TRequest, TResponse>
+public abstract class Example<TRequest, TResponse> : IDisposable
 {
     private readonly RateLimiter _logLimiter = new FixedWindowRateLimiter(
         new FixedWindowRateLimiterOptions
@@ -19,6 +19,7 @@ public abstract class Example<TRequest, TResponse>
         });
 
     private readonly ITransceiver<TRequest, TResponse> _transceiver;
+    private bool disposedValue;
 
     protected Example(ITransceiver<TRequest, TResponse> transceiver)
     {
@@ -49,4 +50,28 @@ public abstract class Example<TRequest, TResponse>
     public abstract Task<TResponse> ProcessRequest(TRequest request, CancellationToken cancellationToken);
 
     public abstract void ProcessResponse(RateLimitLease lease, TRequest request, TResponse response);
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                _logLimiter.Dispose();
+            }
+
+            disposedValue = true;
+        }
+    }
+
+    ~Example()
+    {
+        Dispose(disposing: false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 }

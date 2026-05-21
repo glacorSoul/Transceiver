@@ -7,12 +7,13 @@ using Microsoft.Extensions.Options;
 
 namespace Transceiver;
 
-public class WebsocketsProtocol : ReceiveMessagesProtocol<WebSocketStream>
+public class WebsocketsProtocol : ReceiveMessagesProtocol<WebSocketStream>, IDisposable
 {
     private readonly Uri _serverEndpoint;
     private readonly SemaphoreSlim _writeLock = new(1, 1);
     private readonly KestrelWebsocketSource? _kestrelWebsocketSource;
     private readonly Lazy<Task<WebSocketStream>> _clientStream;
+    private bool disposedValue;
 
     public WebsocketsProtocol(Uri serverEndpoint,
         IMessageProcessor messageProcessor,
@@ -40,7 +41,7 @@ public class WebsocketsProtocol : ReceiveMessagesProtocol<WebSocketStream>
 
     protected override async Task<(int, object)> ReadAsync(WebSocketStream reader, byte[] buffer, CancellationToken cancellationToken)
     {
-        int bytesRead = await reader.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+        int bytesRead = await reader.ReadAsync(buffer, cancellationToken);
         return (bytesRead, reader);
     }
 
@@ -59,12 +60,36 @@ public class WebsocketsProtocol : ReceiveMessagesProtocol<WebSocketStream>
         await _writeLock.WaitAsync(cancellationToken);
         try
         {
-            await transceiver.WriteAsync(data, 0, data.Length, cancellationToken);
+            await transceiver.WriteAsync(data, cancellationToken);
             await transceiver.FlushAsync(cancellationToken);
         }
         finally
         {
             _ = _writeLock.Release();
         }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                _writeLock.Dispose();
+            }
+
+            disposedValue = true;
+        }
+    }
+
+    ~WebsocketsProtocol()
+    {
+        Dispose(disposing: false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

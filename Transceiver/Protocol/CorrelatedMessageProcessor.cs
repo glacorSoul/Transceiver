@@ -26,7 +26,7 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
     public CorrelatedMessageProcessor(ISerializer serializer)
     {
         _serializer = serializer;
-        _retainedMessagesProcessor = new(() => ProcessMessages().GetAwaiter().GetResult());
+        _retainedMessagesProcessor = new(() => ProcessMessages().AsTask().GetAwaiter().GetResult());
         _retainedMessagesProcessor.Start();
     }
 
@@ -99,8 +99,8 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
             MessageType = asyncSouce.GetType().GetGenericArguments()[0];
         }
 
-        public object AsyncSource { get; private set; }
-        public Type MessageType { get; private set; }
+        public object AsyncSource { get; }
+        public Type MessageType { get; }
     }
 
     private void Dispose(bool disposing)
