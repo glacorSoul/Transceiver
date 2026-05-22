@@ -7,6 +7,10 @@
     "Transciever.TCPClient": {
       "commandName": "Project",
       "commandLineArgs": "tcpClient -p 2244"
+    },
+    "Container (.NET SDK)": {
+        "commandName": "SdkContainer",
+        "commandLineArgs": "tcpClient -p 2244"
     }
   }
 }

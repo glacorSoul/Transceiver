@@ -1,0 +1,11 @@
+services:
+  transceiver.demo.smaller:
+    image: ${DOCKER_REGISTRY-}transceiverdemosmaller
+    build:
+      context: .
+      dockerfile: Transceiver.Demo.Smaller/Dockerfile
+    command:
+        - "tcpClient"
+        - "-p 2244"
+    extra_hosts:
+        - "dockerhost:192.168.0.134"
