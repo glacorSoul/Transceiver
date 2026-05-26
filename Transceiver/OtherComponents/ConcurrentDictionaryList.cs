@@ -7,7 +7,7 @@ namespace Transceiver;
 
 public sealed class ConcurrentDictionaryList<Tkey, TValue>
     where Tkey : notnull
-    where TValue : class
+    where TValue : notnull
 {
     private readonly ConcurrentDictionary<Tkey, ConcurrentBag<TValue>> _dictionary = [];
 
@@ -18,6 +18,61 @@ public sealed class ConcurrentDictionaryList<Tkey, TValue>
             bag.Add(value);
             return bag;
         });
+    }
+
+    public async Task WaitForKey(Tkey key, CancellationToken cancellationToken)
+    {
+        while (!_dictionary.ContainsKey(key))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await Task.Yield();
+        }
+    }
+
+    private void RemoveElement(Tkey key, TValue value, List<TValue> result)
+    {
+        if (_dictionary.TryGetValue(key, out ConcurrentBag<TValue>? bag))
+        {
+            TValue[] items = [.. bag];
+            result.AddRange(items.Where(e => e.Equals(value)));
+            TValue[] kept = [.. items.Where(e => !e.Equals(value))];
+            if (kept.Length == 0)
+            {
+                _ = _dictionary.TryRemove(key, out _);
+            }
+            else
+            {
+                ConcurrentBag<TValue> newBag = [.. kept];
+                _ = _dictionary.TryUpdate(key, newBag, bag);
+            }
+        }
+    }
+
+    public List<TValue> GetAndRemoveAll(Tkey getKey, Tkey removeKey, Predicate<TValue> predicate)
+    {
+        List<TValue> result = [];
+        if (_dictionary.TryGetValue(getKey, out ConcurrentBag<TValue>? bag))
+        {
+            foreach (TValue item in bag)
+            {
+                if (predicate(item))
+                {
+                    result.Add(item);
+                }
+            }
+        }
+
+        if (_dictionary.TryGetValue(removeKey, out ConcurrentBag<TValue>? bag2))
+        {
+            foreach (TValue item in bag2)
+            {
+                if (predicate(item))
+                {
+                    RemoveElement(removeKey, item, result);
+                }
+            }
+        }
+        return result;
     }
 
     public List<TValue> GetAll(Tkey key, Predicate<TValue> condition)

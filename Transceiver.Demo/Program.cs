@@ -47,7 +47,8 @@ static ParserResult<object> ParseArguments(string[] args, IServiceCollection ser
         typeof(WebsocketsOptions),
         typeof(WebsocketsClientOptions),
         typeof(WebsocketsSeverOptions),
-        typeof(ZeroMqOptions)
+        typeof(ZeroMqOptions),
+        typeof(SpeedyOptions)
     );
     if (result.Value is BaseOptions baseOptions)
     {

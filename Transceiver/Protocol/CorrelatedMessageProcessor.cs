@@ -57,8 +57,7 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
     private List<StreamEntry> GetStreams(IIdentifiable message)
     {
         Type messageType = message.GetType();
-        List<StreamEntry> streams = _streams.RemoveAll(message.Id, m => m.MessageType == messageType);
-        streams.AddRange(_streams.GetAll(Guid.Empty, m => m.MessageType == messageType));
+        List<StreamEntry> streams = _streams.GetAndRemoveAll(Guid.Empty, message.Id, m => m.MessageType == messageType);
         return streams;
     }
 
@@ -82,11 +81,9 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         {
             return;
         }
-        Type asyncType = typeof(IAsyncSource<>).MakeGenericType(message.GetType());
-        MethodInfo sendDataMethod = asyncType.GetMethod(nameof(IAsyncSource<>.WriteAsync)) ?? default!;
         foreach (StreamEntry stream in streams)
         {
-            ValueTask task = (ValueTask)sendDataMethod.Invoke(stream.AsyncSource, [message, _cts.Token])!;
+            ValueTask task = (ValueTask)stream.WriteAsyncMethod.Invoke(stream.AsyncSource, [message, _cts.Token])!;
             await task;
         }
     }
@@ -97,10 +94,12 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         {
             AsyncSource = asyncSouce;
             MessageType = asyncSouce.GetType().GetGenericArguments()[0];
+            WriteAsyncMethod = asyncSouce.GetType().GetMethod(nameof(IAsyncSource<>.WriteAsync)) ?? default!;
         }
 
         public object AsyncSource { get; }
         public Type MessageType { get; }
+        public MethodInfo WriteAsyncMethod { get; }
     }
 
     private void Dispose(bool disposing)

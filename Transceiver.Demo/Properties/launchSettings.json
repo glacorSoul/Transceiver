@@ -67,6 +67,10 @@
         "Transciever.ZeroMQ": {
             "commandName": "Project",
             "commandLineArgs": "zeroMq"
+        },
+        "Transciever.speedy": {
+            "commandName": "Project",
+            "commandLineArgs": "speedy"
         }
     }
 }
