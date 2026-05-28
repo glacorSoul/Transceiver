@@ -25,7 +25,7 @@ public static class BootStrap
         {
             _ = services.AddSingleton(serializer);
         }
-        _ = services.AddSingleton<CorrelatedMessageProcessor>();
+        _ = services.AddTransient<CorrelatedMessageProcessor>();
         _ = services.AddSingleton<TypeIdAssigner>();
         _ = services.AddSingleton<ICertificateLoader>(provider =>
         {

@@ -23,8 +23,8 @@ public class BaseTransceiverSetup : ITransceiverSetup
         CompositePipelineType = typeof(CompositePipelineProcessor<,>).MakeGenericType(genericArguments);
         Type metricsPipelineType = typeof(MetricsPipelineProcessor<,>).MakeGenericType(genericArguments);
         Services = services;
-        _ = services.AddSingleton<CorrelatedMessageProcessor>()
-            .AddSingleton<IMessageProcessor, CorrelatedMessageProcessor>(provider => provider.GetRequiredService<CorrelatedMessageProcessor>())
+        _ = services.AddTransient<CorrelatedMessageProcessor>()
+            .AddTransient<IMessageProcessor, CorrelatedMessageProcessor>(provider => provider.GetRequiredService<CorrelatedMessageProcessor>())
             .AddTransient(PipelineType, metricsPipelineType)
             .AddTransient(CompositePipelineType);
     }

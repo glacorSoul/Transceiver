@@ -15,9 +15,7 @@ public sealed class DirectOptions : BaseOptions
     {
         _ = services.AddTransceiver(config =>
         {
-            ITransceiverSetup setup = config.ConfigureDirectProtocol();
-            setup.SetupServer(false);
-            setup.SetupClient();
+            _ = config.ConfigureDirectProtocol();
         }, typeof(Program).Assembly);
         RunSamples(services, cancellationToken);
     }
