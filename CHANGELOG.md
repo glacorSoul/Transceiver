@@ -1,6 +1,18 @@
 # Changelog
 
-## [2.1.0](https://github.com/glacorSoul/Transceiver/compare/2.0.1...2.1.0)
+
+## [3.0.0](https://github.com/glacorSoul/Transceiver/compare/2.1.0...3.0.0)  (2026-05-28)
+
+### Features
+
+Improved performance of in-process message processment by 40x~ [1d5b288](https://github.com/glacorSoul/Transceiver/commit/1d5b288c1df57cb2e6ca57b535921a56fbddba02)
+
+### Notes
+
+I did extensive performance analasys and identified a very high bottleneck in a component of transceiver.
+I wonder if other types of contexts (queues, network) could benefit from a similar approach addopted on this version.
+
+## [2.1.0](https://github.com/glacorSoul/Transceiver/compare/2.0.1...2.1.0)  (2026-03-19)
 
 ### Features
 
