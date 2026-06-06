@@ -2,7 +2,7 @@
   "profiles": {
     "Transciever.TCPServer": {
       "commandName": "Project",
-      "commandLineArgs": "tcpServer"
+      "commandLineArgs": "tcpServer -p 2244"
     },
     "Transciever.TCPClient": {
       "commandName": "Project",

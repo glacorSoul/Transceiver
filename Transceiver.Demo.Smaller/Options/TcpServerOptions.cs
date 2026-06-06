@@ -12,14 +12,14 @@ namespace Transceiver.Demo.Smaller;
 [Verb(name: "tcpServer", isDefault: false)]
 public sealed class TcpServerOptions : BaseOptions
 {
-    [Option('s', "serverPort", Required = false, HelpText = "Server port to connect to.", Default = 11111)]
+    [Option('p', "port", Required = false, HelpText = "Server port to connect to.", Default = 11111)]
     public int ServerPort { get; set; } = 11111;
 
     public override void Run(IServiceCollection services, CancellationToken cancellationToken)
     {
         _ = services.AddTransceiver((config) =>
         {
-            ITransceiverSetup setup = config.ConfigureTcp(new(IPAddress.Loopback, ServerPort));
+            ITransceiverSetup setup = config.ConfigureTcp(new(IPAddress.Parse("192.168.0.134"), ServerPort));
             setup.SetupServer(true);
         }, typeof(Program).Assembly);
         RunServer(services);

@@ -17,13 +17,14 @@ public sealed class DirectTransceiver<TRequest, TResponse> : ITransceiver<TReque
 
     public async Task<ClientRequest<TRequest, TResponse>> SendToServerAsync(TRequest request, CancellationToken cancellationToken)
     {
+        ClientRequest<TRequest, TResponse> clientRequest = new(request);
         async Task<TResponse> Process(CancellationToken token)
         {
-            TResponse response = await _processor.ProcessRequestAsync(request, token);
+            TResponse response = await _processor.ProcessRequestAsync(clientRequest, token);
             return response;
         }
         _ = await _pipeline.ProcessAsync(request, Process, cancellationToken);
-        return new ClientRequest<TRequest, TResponse>(request);
+        return clientRequest;
     }
 
     public Task StartProcessingRequestsAsync(IProcessor<TRequest, TResponse> processor, CancellationToken cancellationToken)
@@ -40,7 +41,8 @@ public sealed class DirectTransceiver<TRequest, TResponse> : ITransceiver<TReque
     {
         async Task<TResponse> Process(CancellationToken token)
         {
-            TResponse result = await _processor.ProcessRequestAsync(request, token);
+            ClientRequest<TRequest, TResponse> clientRequest = new(request);
+            TResponse result = await _processor.ProcessRequestAsync(clientRequest, token);
             return result;
         }
         TResponse response = await _pipeline.ProcessAsync(request, Process, cancellationToken);

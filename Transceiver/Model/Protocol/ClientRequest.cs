@@ -8,8 +8,15 @@ using System.Text.Json.Serialization;
 
 namespace Transceiver;
 
+internal static class ClientRequest
+{
+    internal static readonly ITransceiverProtocol Protocol = BootStrap.ServiceProvider.GetRequiredService<ITransceiverProtocol>();
+}
+
 public class ClientRequest<TRequest, TResponse> : IIdentifiable
 {
+
+
     [JsonConstructor]
     [EditorBrowsable(EditorBrowsableState.Never)]
     public ClientRequest(TRequest data, Guid id, DateTimeOffset timeStamp)
@@ -29,8 +36,11 @@ public class ClientRequest<TRequest, TResponse> : IIdentifiable
 
     public Task SendResponseAsync(TResponse response, CancellationToken cancellationToken)
     {
+        if(ClientRequest.Protocol is DirectProtocol)
+        {
+            return Task.CompletedTask;
+        }
         ServerResponse<TRequest, TResponse> serverResponse = new(response, this);
-        ITransceiverProtocol protocol = BootStrap.ServiceProvider.GetRequiredService<ITransceiverProtocol>();
-        return protocol.SendObjectToClientAsync(serverResponse, cancellationToken);
+        return ClientRequest.Protocol.SendObjectToClientAsync(serverResponse, cancellationToken);
     }
 }

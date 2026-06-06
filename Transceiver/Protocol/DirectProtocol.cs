@@ -6,25 +6,22 @@ namespace Transceiver;
 
 public class DirectProtocol : ITransceiverProtocol
 {
-    private readonly IMessageProcessor _messageProcessor;
-
-    public DirectProtocol(IMessageProcessor messageProcessor)
+    public DirectProtocol()
     {
-        _messageProcessor = messageProcessor;
     }
 
     public IAsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
     {
-        return _messageProcessor.AddRequester<T>(requestId);
+        return null!;
     }
 
     public Task SendObjectToClientAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
     {
-        return _messageProcessor.ProcessUnserializedMessageAsync(data, cancellationToken);
+        return Task.CompletedTask;
     }
 
     public Task SendObjectToServerAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
     {
-        return _messageProcessor.ProcessUnserializedMessageAsync(data, cancellationToken);
+        return Task.CompletedTask;
     }
 }

@@ -12,6 +12,7 @@ internal sealed class DirectProtocolSetup : BaseTransceiverSetup
 {
     public DirectProtocolSetup(Type transceiverType, IServiceCollection services) : base(transceiverType, services)
     {
+        _ = services.AddSingleton<ITransceiverProtocol, DirectProtocol>();
         SetupServer(true);
     }
 

@@ -8,11 +8,13 @@ namespace Transceiver.Demo;
 
 public sealed class MultiplyProcessor : IProcessor<GeneratedRequests.Requests.MultiplyRequest, GeneratedRequests.Responses.MultiplyResponse>
 {
-    public Task<GeneratedRequests.Responses.MultiplyResponse> ProcessRequestAsync(GeneratedRequests.Requests.MultiplyRequest request, CancellationToken cancellationToken)
+    public async Task<GeneratedRequests.Responses.MultiplyResponse> ProcessRequestAsync(ClientRequest<GeneratedRequests.Requests.MultiplyRequest, GeneratedRequests.Responses.MultiplyResponse> request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new GeneratedRequests.Responses.MultiplyResponse
+        GeneratedRequests.Responses.MultiplyResponse response = new()
         {
-            Result = request.A * request.B
-        });
+            Result = request.Data.A * request.Data.B,
+        };
+        await request.SendResponseAsync(response, cancellationToken);
+        return response;
     }
 }

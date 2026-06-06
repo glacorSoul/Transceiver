@@ -8,9 +8,11 @@ namespace Transceiver.Demo;
 
 public sealed class SumProcessor : IProcessor<SumRequest, SumResponse>
 {
-    public Task<SumResponse> ProcessRequestAsync(SumRequest request, CancellationToken cancellationToken)
+    public async Task<SumResponse> ProcessRequestAsync(ClientRequest<SumRequest, SumResponse> request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new SumResponse(request.A + request.B));
+        SumResponse response = new(request.Data.A + request.Data.B);
+        await request.SendResponseAsync(response, cancellationToken);
+        return response;
     }
 }
 
@@ -46,8 +48,13 @@ public sealed class SumResponse
 
 public sealed class SumProcessor2 : IProcessor<GeneratedRequests.Requests.SumRequest, GeneratedRequests.Responses.SumResponse>
 {
-    public Task<GeneratedRequests.Responses.SumResponse> ProcessRequestAsync(GeneratedRequests.Requests.SumRequest request, CancellationToken cancellationToken)
+    public async Task<GeneratedRequests.Responses.SumResponse> ProcessRequestAsync(ClientRequest<GeneratedRequests.Requests.SumRequest, GeneratedRequests.Responses.SumResponse> request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new GeneratedRequests.Responses.SumResponse { Result = request.A + request.B });
+        GeneratedRequests.Responses.SumResponse response = new()
+        {
+            Result = request.Data.A + request.Data.B,
+        };
+        await request.SendResponseAsync(response, cancellationToken);
+        return response;
     }
 }

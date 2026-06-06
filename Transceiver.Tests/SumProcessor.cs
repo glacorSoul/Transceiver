@@ -10,23 +10,31 @@ public class SumProcessor :
     IProcessor<ChannelsSumRequest, ChannelsSumResponse>,
     IProcessor<UdpSumRequest, UdpSumResponse>
 {
-    public Task<TcpSumResponse> ProcessRequestAsync(TcpSumRequest request, CancellationToken cancellationToken)
+    public async Task<TcpSumResponse> ProcessRequestAsync(ClientRequest<TcpSumRequest, TcpSumResponse> request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new TcpSumResponse(request.A + request.B));
+        TcpSumResponse response = new(request.Data.A + request.Data.B);
+        await request.SendResponseAsync(response, cancellationToken);
+        return response;
     }
 
-    public Task<ChannelsSumResponse> ProcessRequestAsync(ChannelsSumRequest request, CancellationToken cancellationToken)
+    public async Task<ChannelsSumResponse> ProcessRequestAsync(ClientRequest<ChannelsSumRequest, ChannelsSumResponse> request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new ChannelsSumResponse(request.A + request.B));
+        ChannelsSumResponse response = new(request.Data.A + request.Data.B);
+        await request.SendResponseAsync(response, cancellationToken);
+        return response;
     }
 
-    public Task<DomainSocketsSumResponse> ProcessRequestAsync(DomainSocketsSumRequest request, CancellationToken cancellationToken)
+    public async Task<DomainSocketsSumResponse> ProcessRequestAsync(ClientRequest<DomainSocketsSumRequest, DomainSocketsSumResponse> request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new DomainSocketsSumResponse(request.A + request.B));
+        DomainSocketsSumResponse response = new(request.Data.A + request.Data.B);
+        await request.SendResponseAsync(response, cancellationToken);
+        return response;
     }
 
-    public Task<UdpSumResponse> ProcessRequestAsync(UdpSumRequest request, CancellationToken cancellationToken)
+    public async Task<UdpSumResponse> ProcessRequestAsync(ClientRequest<UdpSumRequest, UdpSumResponse> request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new UdpSumResponse(request.A + request.B));
+        UdpSumResponse response = new(request.Data.A + request.Data.B);
+        await request.SendResponseAsync(response, cancellationToken);
+        return response;
     }
 }

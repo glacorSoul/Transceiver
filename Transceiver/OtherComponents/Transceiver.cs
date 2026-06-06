@@ -33,8 +33,7 @@ public sealed class Transceiver<TRequest, TResponse> : ITransceiver<TRequest, TR
         {
             async Task<TResponse> Process(CancellationToken token)
             {
-                TResponse response = await processor.ProcessRequestAsync(request.Data, token);
-                await request.SendResponseAsync(response, token);
+                TResponse response = await processor.ProcessRequestAsync(request, token);
                 return response;
             }
             _ = await _pipeline.ProcessAsync(request.Data, Process, cancellationToken);
@@ -60,14 +59,15 @@ public sealed class Transceiver<TRequest, TResponse> : ITransceiver<TRequest, TR
             .ReceiveObjects<ServerResponse<TRequest, TResponse>>(clientRequest.Id)
             .ReadAllAsync(cancellationToken);
 
-        TResponse result = default!;
-        await foreach (ServerResponse<TRequest, TResponse> serverResponse in responses)
+        IAsyncEnumerator<ServerResponse<TRequest, TResponse>> enumerator = responses.GetAsyncEnumerator(cancellationToken);
+        try
         {
-#pragma warning disable S1751 // Loops with at most one iteration should be refactored
-            result = serverResponse.Data;
-            break;
-#pragma warning restore S1751 // Loops with at most one iteration should be refactored
+            _ = await enumerator.MoveNextAsync();
+            return enumerator.Current.Data;
         }
-        return result;
+        finally
+        {
+            await enumerator.DisposeAsync();
+        }
     }
 }
