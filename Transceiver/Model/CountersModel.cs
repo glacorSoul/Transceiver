@@ -26,7 +26,6 @@ public class CountersModel
 
     public static Meter Meter { get; }
     public Histogram<double> ErrorsPerSecond { get; protected set; } = default!;
-    public TimeSpan ExecutionSla { get; } = TimeSpan.FromMilliseconds(500);
     public Histogram<double> ExecutionTimeCounter { get; protected set; } = default!;
     public string Name { get; protected set; } = default!;
     public Counter<long> NErrorsCounter { get; protected set; } = default!;
@@ -55,7 +54,7 @@ internal sealed class CountersModel<TRequest, TResponse> : CountersModel, IDispo
         );
         NSlowRequestsCounter = Meter.CreateCounter<long>($"requests_slow_total_{metricName}",
             "requests",
-            $"Total number of requests that exceeded the execution SLA {ExecutionSla.TotalMilliseconds} ms"
+            $"Total number of requests that exceeded the execution SLA"
         );
         ExecutionTimeCounter = Meter.CreateHistogram<double>($"request_execution_time_ms_{metricName}",
             "ms",

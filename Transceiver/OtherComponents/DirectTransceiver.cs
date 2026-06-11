@@ -2,6 +2,8 @@
 // Transceiver is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
+using System.Runtime.CompilerServices;
+
 namespace Transceiver;
 
 public sealed class DirectTransceiver<TRequest, TResponse> : ITransceiver<TRequest, TResponse>
@@ -18,10 +20,9 @@ public sealed class DirectTransceiver<TRequest, TResponse> : ITransceiver<TReque
     public async Task<ClientRequest<TRequest, TResponse>> SendToServerAsync(TRequest request, CancellationToken cancellationToken)
     {
         ClientRequest<TRequest, TResponse> clientRequest = new(request);
-        async Task<TResponse> Process(CancellationToken token)
+        Task<TResponse> Process(CancellationToken token)
         {
-            TResponse response = await _processor.ProcessRequestAsync(clientRequest, token);
-            return response;
+            return _processor.ProcessRequestAsync(clientRequest, token);
         }
         _ = await _pipeline.ProcessAsync(request, Process, cancellationToken);
         return clientRequest;
@@ -32,18 +33,23 @@ public sealed class DirectTransceiver<TRequest, TResponse> : ITransceiver<TReque
         throw new NotImplementedException();
     }
 
-    public IAsyncEnumerable<TResponse> TransceiveManyAsync(TRequest request, CancellationToken cancellationToken)
+    public async IAsyncEnumerable<TResponse> TransceiveManyAsync(TRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        Task<TResponse> Process(CancellationToken token)
+        {
+            ClientRequest<TRequest, TResponse> clientRequest = new(request);
+            return _processor.ProcessRequestAsync(clientRequest, token);
+        }
+        TResponse response = await _pipeline.ProcessAsync(request, Process, cancellationToken);
+        yield return response;
     }
 
     public async Task<TResponse> TransceiveOnceAsync(TRequest request, CancellationToken cancellationToken)
     {
-        async Task<TResponse> Process(CancellationToken token)
+        Task<TResponse> Process(CancellationToken token)
         {
             ClientRequest<TRequest, TResponse> clientRequest = new(request);
-            TResponse result = await _processor.ProcessRequestAsync(clientRequest, token);
-            return result;
+            return _processor.ProcessRequestAsync(clientRequest, token);
         }
         TResponse response = await _pipeline.ProcessAsync(request, Process, cancellationToken);
         return response;

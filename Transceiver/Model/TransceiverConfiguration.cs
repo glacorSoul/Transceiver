@@ -15,7 +15,7 @@ public class TransceiverConfiguration
     /// Can be set to true when application is not expected to be restarted.
     /// </summary>
     public bool OptimizeHelloSerialization { get; set; }
-
+    public int ExecutionSLA { get; set; } = 500;
     public TimeSpan RequestTimeout { get; set; } = TimeSpan.FromSeconds(30);
     internal HostIdentifier Server { get; set; } = default!;
 }

@@ -3,6 +3,7 @@
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Threading.RateLimiting;
 
@@ -21,10 +22,12 @@ internal class MetricsPipelineProcessor<TRequest, TResponse> : IPipelineProcesso
 
     private static readonly CountersModel<TRequest, TResponse> Counters = new();
     private readonly ILogger<MetricsPipelineProcessor<TRequest, TResponse>> _logger;
+    private readonly IOptions<TransceiverConfiguration> _config;
 
-    public MetricsPipelineProcessor(ILogger<MetricsPipelineProcessor<TRequest, TResponse>> logger)
+    public MetricsPipelineProcessor(ILogger<MetricsPipelineProcessor<TRequest, TResponse>> logger, IOptions<TransceiverConfiguration> config)
     {
         _logger = logger;
+        _config = config;
     }
 
     public async Task<TResponse> ProcessAsync(TRequest request, Func<CancellationToken, Task<TResponse>> nextStep, CancellationToken cancellationToken)
@@ -48,7 +51,7 @@ internal class MetricsPipelineProcessor<TRequest, TResponse> : IPipelineProcesso
             {
                 _logger.LogInformation("Processed request of type {RequestType} in {ExecutionTime}", typeof(TRequest), elapsed);
             }
-            if (elapsed > Counters.ExecutionSla)
+            if (elapsed.TotalMilliseconds > _config.Value.ExecutionSLA)
             {
                 Counters.NSlowRequestsCounter.Add(1, new("request", request), new("elapsed", elapsed));
             }

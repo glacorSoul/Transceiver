@@ -2,16 +2,10 @@
 // Transceiver is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
-using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace Transceiver;
-
-internal static class ClientRequest
-{
-    internal static readonly ITransceiverProtocol Protocol = BootStrap.ServiceProvider.GetRequiredService<ITransceiverProtocol>();
-}
 
 public class ClientRequest<TRequest, TResponse> : IIdentifiable
 {
@@ -36,11 +30,11 @@ public class ClientRequest<TRequest, TResponse> : IIdentifiable
 
     public Task SendResponseAsync(TResponse response, CancellationToken cancellationToken)
     {
-        if(ClientRequest.Protocol is DirectProtocol)
+        if(Constants.Protocol is DirectProtocol)
         {
             return Task.CompletedTask;
         }
         ServerResponse<TRequest, TResponse> serverResponse = new(response, this);
-        return ClientRequest.Protocol.SendObjectToClientAsync(serverResponse, cancellationToken);
+        return Constants.Protocol.SendObjectToClientAsync(serverResponse, cancellationToken);
     }
 }
