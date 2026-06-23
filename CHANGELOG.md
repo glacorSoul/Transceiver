@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.0](https://github.com/glacorSoul/Transceiver/compare/4.0.0...3.0.0)  (2026-06-23)
+
+### Features
+
+Removed bottleneck from requeuing in synchronization mechanism (Better performance!)
+Enable publish-subscribe pattern
+Execution SLA is now configurable
 
 ## [3.0.0](https://github.com/glacorSoul/Transceiver/compare/2.1.0...3.0.0)  (2026-05-28)
 
