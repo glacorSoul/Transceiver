@@ -30,6 +30,14 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
     protected IOptions<TransceiverConfiguration> Configuration { get; }
     protected ILogger Logger { get; }
 
+    public abstract Task<TTransceiver> SetupWriterAsync(CancellationToken cancellationToken);
+
+    protected abstract Task<(int, object)> ReadAsync(TTransceiver reader, byte[] buffer, CancellationToken cancellationToken);
+
+    protected abstract Task<TTransceiver> SetupReadAsync(CancellationToken cancellationToken);
+
+    protected abstract Task WriteAsync(TTransceiver transceiver, object client, byte[] data, CancellationToken cancellationToken);
+
     public async Task ReceiveMessagesAsync(TTransceiver reader, CancellationToken cancellationToken)
     {
         PartitionedMessage partitionedMessage = new();
@@ -72,9 +80,9 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
         }
     }
 
-    public IAsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncEnumerable<T> ReceiveObjectsAsync<T>(Guid requestId, CancellationToken cancellationToken) where T : IIdentifiable
     {
-        return _messageProcessor.AddRequester<T>(requestId);
+        return _messageProcessor.AddRequester<T>(requestId).ReadAllAsync(cancellationToken);
     }
 
     public Task SendObjectToClientAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
@@ -98,19 +106,11 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
         await WriteAsync(writer, null!, buffer, cancellationToken);
     }
 
-    public abstract Task<TTransceiver> SetupWriterAsync(CancellationToken cancellationToken);
-
-    protected abstract Task<(int, object)> ReadAsync(TTransceiver reader, byte[] buffer, CancellationToken cancellationToken);
-
-    protected abstract Task<TTransceiver> SetupReadAsync(CancellationToken cancellationToken);
-
     protected byte[] ToDataArray<T>(T data) where T : IIdentifiable
     {
         TransceiverMessage message = new(data, _serializer);
         return message.ToBytes();
     }
-
-    protected abstract Task WriteAsync(TTransceiver transceiver, object client, byte[] data, CancellationToken cancellationToken);
 
     private async Task ProcessIncomingMessages(TTransceiver reader, CancellationToken cancellationToken)
     {

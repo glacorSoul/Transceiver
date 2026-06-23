@@ -17,24 +17,26 @@ public sealed class Transceiver<TRequest, TResponse> : ITransceiver<TRequest, TR
         _pipeline = pipeline;
     }
 
-    public async Task<ClientRequest<TRequest, TResponse>> SendToServerAsync(TRequest request, CancellationToken cancellationToken)
+    public Task<ClientRequest<TRequest, TResponse>> SendToServerAsync(TRequest request, CancellationToken cancellationToken)
     {
-        ClientRequest<TRequest, TResponse> clientRequest = new(request);
-        await _protocol.SendObjectToServerAsync(clientRequest, cancellationToken);
-        return clientRequest;
+        return SendToServerAsync(new ClientRequest<TRequest, TResponse>(request), cancellationToken);
+    }
+
+    public async Task<ClientRequest<TRequest, TResponse>> SendToServerAsync(ClientRequest<TRequest, TResponse> request, CancellationToken cancellationToken)
+    {
+        await _protocol.SendObjectToServerAsync(request, cancellationToken);
+        return request;
     }
 
     public async Task StartProcessingRequestsAsync(IProcessor<TRequest, TResponse> processor, CancellationToken cancellationToken)
     {
         IAsyncEnumerable<ClientRequest<TRequest, TResponse>> requests = _protocol
-            .ReceiveObjects<ClientRequest<TRequest, TResponse>>(Guid.Empty)
-            .ReadAllAsync(cancellationToken);
+            .ReceiveObjectsAsync<ClientRequest<TRequest, TResponse>>(Guid.Empty, cancellationToken);
         await foreach (ClientRequest<TRequest, TResponse> request in requests)
         {
-            async Task<TResponse> Process(CancellationToken token)
+            Task<TResponse> Process(CancellationToken token)
             {
-                TResponse response = await processor.ProcessRequestAsync(request, token);
-                return response;
+                return processor.ProcessRequestAsync(request, token);
             }
             _ = await _pipeline.ProcessAsync(request.Data, Process, cancellationToken);
         }
@@ -42,10 +44,11 @@ public sealed class Transceiver<TRequest, TResponse> : ITransceiver<TRequest, TR
 
     public async IAsyncEnumerable<TResponse> TransceiveManyAsync(TRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        ClientRequest<TRequest, TResponse> clientRequest = await SendToServerAsync(request, cancellationToken);
+        ClientRequest<TRequest, TResponse> clientRequest = new(request);
         IAsyncEnumerable<ServerResponse<TRequest, TResponse>> responses = _protocol
-            .ReceiveObjects<ServerResponse<TRequest, TResponse>>(clientRequest.Id)
-            .ReadAllAsync(cancellationToken);
+            .ReceiveObjectsAsync<ServerResponse<TRequest, TResponse>>(clientRequest.Id, cancellationToken);
+        _ = await SendToServerAsync(clientRequest, cancellationToken);
+
         await foreach (ServerResponse<TRequest, TResponse> serverResponse in responses)
         {
             yield return serverResponse.Data;
@@ -54,10 +57,10 @@ public sealed class Transceiver<TRequest, TResponse> : ITransceiver<TRequest, TR
 
     public async Task<TResponse> TransceiveOnceAsync(TRequest request, CancellationToken cancellationToken)
     {
-        ClientRequest<TRequest, TResponse> clientRequest = await SendToServerAsync(request, cancellationToken);
+        ClientRequest<TRequest, TResponse> clientRequest = new(request);
         IAsyncEnumerable<ServerResponse<TRequest, TResponse>> responses = _protocol
-            .ReceiveObjects<ServerResponse<TRequest, TResponse>>(clientRequest.Id)
-            .ReadAllAsync(cancellationToken);
+            .ReceiveObjectsAsync<ServerResponse<TRequest, TResponse>>(clientRequest.Id, cancellationToken);
+        _ = await SendToServerAsync(clientRequest, cancellationToken);
 
         IAsyncEnumerator<ServerResponse<TRequest, TResponse>> enumerator = responses.GetAsyncEnumerator(cancellationToken);
         try

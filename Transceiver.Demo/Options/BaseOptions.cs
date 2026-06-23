@@ -3,6 +3,7 @@
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
 using Microsoft.Extensions.DependencyInjection;
+using Transceiver.Demo.Examples;
 
 namespace Transceiver.Demo.Options;
 
@@ -14,7 +15,8 @@ public abstract class BaseOptions
     {
         services = services
             .AddSingleton<SumExample>()
-            .AddSingleton<MultiplyExample>();
+            .AddSingleton<MultiplyExample>()
+            .AddSingleton<FiboExample>();
         ServiceProvider provider = services.BuildServiceProvider();
         provider.ConfigureTransceiverProvider(typeof(BaseOptions).Assembly);
 
@@ -23,5 +25,8 @@ public abstract class BaseOptions
 
         MultiplyExample multiplyExample = provider.GetRequiredService<MultiplyExample>();
         _ = ThreadPool.QueueUserWorkItem((ctx) => _ = multiplyExample.Execute(cancellationToken));
+
+        FiboExample fiboExample = provider.GetRequiredService<FiboExample>();
+        _ = ThreadPool.QueueUserWorkItem((ctx) => _ = fiboExample.Execute(cancellationToken));
     }
 }

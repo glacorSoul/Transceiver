@@ -10,7 +10,7 @@ public class DirectProtocol : ITransceiverProtocol
     {
     }
 
-    public IAsyncSource<T> ReceiveObjects<T>(Guid requestId) where T : IIdentifiable
+    public IAsyncEnumerable<T> ReceiveObjectsAsync<T>(Guid requestId, CancellationToken cancellationToken) where T : IIdentifiable
     {
         return null!;
     }

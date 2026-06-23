@@ -30,7 +30,7 @@ public class ClientRequest<TRequest, TResponse> : IIdentifiable
 
     public Task SendResponseAsync(TResponse response, CancellationToken cancellationToken)
     {
-        if(Constants.Protocol is DirectProtocol)
+        if (Constants.Protocol is DirectProtocol)
         {
             return Task.CompletedTask;
         }

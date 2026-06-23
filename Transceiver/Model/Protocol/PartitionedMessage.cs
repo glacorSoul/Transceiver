@@ -61,7 +61,7 @@ internal class PartitionedMessage
         int offset = 0;
         foreach (ArraySegment<byte> oldBuffer in _buffers)
         {
-            Array.Copy(oldBuffer.Array!, oldBuffer.Offset, buffer, offset, Header.MessageSize - offset);
+            Array.Copy(oldBuffer.Array!, oldBuffer.Offset, buffer, offset, Math.Min(Header.MessageSize - offset, oldBuffer.Count));
             offset += oldBuffer.Count;
         }
 
