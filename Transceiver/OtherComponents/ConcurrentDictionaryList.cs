@@ -36,11 +36,7 @@ public sealed class ConcurrentDictionaryList<Tkey, TValue>
             TValue[] items = [.. bag];
             result.AddRange(items.Where(e => e.Equals(value)));
             TValue[] kept = [.. items.Where(e => !e.Equals(value))];
-            if (kept.Length == 0)
-            {
-                _ = _dictionary.TryRemove(key, out _);
-            }
-            else
+            if (kept.Length != 0)
             {
                 ConcurrentBag<TValue> newBag = [.. kept];
                 _ = _dictionary.TryUpdate(key, newBag, bag);
