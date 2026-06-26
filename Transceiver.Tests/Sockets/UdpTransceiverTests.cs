@@ -23,7 +23,7 @@ public class UdpTransceiverTests : IClassFixture<TestFixture>
     public async Task SendAsync_ShouldNotError()
     {
         UdpSumRequest request = new(1, 2);
-        ClientRequest<UdpSumRequest, UdpSumResponse> clientRequest = await _transceiver.SendToServerAsync(request, TestContext.Current.CancellationToken);
+        IClientRequest<UdpSumRequest, UdpSumResponse> clientRequest = await _transceiver.SendToServerAsync(request, TestContext.Current.CancellationToken);
         Assert.Equivalent(clientRequest.Data, request);
     }
 

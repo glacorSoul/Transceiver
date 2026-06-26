@@ -28,6 +28,7 @@
 		<ProjectReference Include="..\Transceiver.GooglePubSub\Transceiver.GooglePubSub.csproj" />
 		<ProjectReference Include="..\Transceiver.Kafka\Transceiver.Kafka.csproj" />
 		<ProjectReference Include="..\Transceiver.RabbitMq\Transceiver.RabbitMq.csproj" />
+		<ProjectReference Include="..\Transceiver.Serializer.SerializerMessagePack\Transceiver.Serializer.SerializerMessagePack.csproj" />
 		<ProjectReference Include="..\Transceiver.Websockets\Transceiver.Websockets.csproj" />
 		<ProjectReference Include="..\Transceiver.ZeroMq\Transceiver.ZeroMq.csproj" />
 		<ProjectReference Include="..\Transceiver\Transceiver.csproj" />

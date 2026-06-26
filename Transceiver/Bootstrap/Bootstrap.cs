@@ -3,8 +3,10 @@
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using Transceiver.Serializer;
 
 namespace Transceiver;
 
@@ -23,8 +25,14 @@ public static class BootStrap
         }
         else
         {
-            _ = services.AddSingleton(serializer);
+            _ = services.AddSingleton<ISerializer>(provider =>
+            {
+                IOptions<TransceiverConfiguration> options = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
+                return new SerializerTransceiver(serializer, options);
+            });
         }
+
+        _ = services.AddSingleton<IRequestResponseFactory, RequestResponseFactory>();
         _ = services.AddTransient<CorrelatedMessageProcessor>();
         _ = services.AddSingleton<TypeIdAssigner>();
         _ = services.AddSingleton<ICertificateLoader>(provider =>

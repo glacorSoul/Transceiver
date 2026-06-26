@@ -6,7 +6,7 @@ namespace Transceiver;
 
 public interface ITransceiver<TRequest, TResponse>
 {
-    Task<ClientRequest<TRequest, TResponse>> SendToServerAsync(TRequest request, CancellationToken cancellationToken);
+    Task<IClientRequest<TRequest, TResponse>> SendToServerAsync(TRequest request, CancellationToken cancellationToken);
 
     Task StartProcessingRequestsAsync(IProcessor<TRequest, TResponse> processor, CancellationToken cancellationToken);
 

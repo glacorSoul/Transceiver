@@ -36,7 +36,7 @@ public class GlobalFixture
             }
             else
             {
-                ITransceiverSetup setup = config.ConfigureDirectProtocol();
+                ITransceiverSetup setup = config.ConfigureTcp(new(IPAddress.Loopback, 8889));
                 setup.SetupServer(false);
                 setup.SetupClient();
             }

@@ -36,15 +36,22 @@ public class BaseTransceiverSetup : ITransceiverSetup
     protected IServiceCollection Services { get; }
     protected Type TransceiverType { get; }
 
+    private object CreateTransceiver(IServiceProvider provider)
+    {
+        ITransceiverProtocol protocol = CreateResilientProtocol(provider);
+        object pipeline = provider.GetRequiredService(PipelineType);
+        IRequestResponseFactory requestResponseFactory = provider.GetRequiredService<IRequestResponseFactory>();
+
+        object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline, requestResponseFactory) ?? default!;
+        return transceiver;
+    }
+
     public virtual void SetupClient()
     {
         Services.TryAddSingleton<TypeIdAssigner>();
         Services.TryAddSingleton(ITransceiverType, provider =>
         {
-            object pipeline = provider.GetRequiredService(CompositePipelineType);
-            ITransceiverProtocol protocol = CreateResilientProtocol(provider);
-
-            object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline) ?? default!;
+            object transceiver = CreateTransceiver(provider);
             if (transceiver is ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel> serviceDiscoveryTransceiver)
             {
                 _ = serviceDiscoveryTransceiver.TransceiveOnceAsync(new(), CancellationToken.None)
@@ -62,9 +69,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
     {
         _ = Services.AddSingleton(ITransceiverType, provider =>
         {
-            object pipeline = provider.GetRequiredService(PipelineType);
-            ITransceiverProtocol protocol = CreateResilientProtocol(provider);
-            object transceiver = Activator.CreateInstance(TransceiverType, protocol, pipeline) ?? default!;
+            object transceiver = CreateTransceiver(provider);
             object processor = transceiver;
             if (!ProcessorType.IsInstanceOfType(transceiver))
             {
@@ -79,7 +84,8 @@ public class BaseTransceiverSetup : ITransceiverSetup
         });
         _ = Services.AddSingleton(provider =>
         {
-            return TypeIdAssigner.CreateServerAssigner();
+            IRequestResponseFactory requestResponseFactory = provider.GetRequiredService<IRequestResponseFactory>();
+            return TypeIdAssigner.CreateServerAssigner(requestResponseFactory);
         });
     }
 

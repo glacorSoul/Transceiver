@@ -2,12 +2,17 @@
 // Transceiver is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Transceiver;
+namespace Transceiver.Serializer.SerializerMessagePack;
 
-internal static class Constants
+public static class Bootstrap
 {
-    internal static readonly ITransceiverProtocol Protocol = BootStrap.ServiceProvider.GetRequiredService<ITransceiverProtocol>();
-    internal static readonly IRequestResponseFactory RequestResponseFactory = BootStrap.ServiceProvider.GetRequiredService<IRequestResponseFactory>();
+    public static IServiceCollection AddTransceiverMessagePack(this IServiceCollection services)
+    {
+
+        _ = services.AddSingleton<IRequestResponseFactory, RequestResponseFactoryMessagePack>();
+        return services;
+    }
 }

@@ -11,6 +11,16 @@ namespace Transceiver;
 
 public sealed class TypeIdAssigner : IDisposable
 {
+    internal class Identifiable : IIdentifiable
+    {
+        public Identifiable()
+        {
+            Id = Guid.Empty;
+        }
+
+        public Guid Id { get; set; }
+    }
+
     private static readonly Type[] SystemTypes = [
         typeof(ClientRequest<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel>),
         typeof(ServerResponse<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel>)
@@ -19,8 +29,9 @@ public sealed class TypeIdAssigner : IDisposable
     private readonly ManualResetEventSlim _hasBeenInitialized = new(false);
     private bool disposedValue;
 
-    public TypeIdAssigner()
+    public TypeIdAssigner(IRequestResponseFactory requestResponseFactory)
     {
+        RequestResponseFactory = requestResponseFactory;
         TypeToIdMap = [];
         TypeToUShortIdMap = [];
 
@@ -41,7 +52,7 @@ public sealed class TypeIdAssigner : IDisposable
     }
 
     [JsonConstructor]
-    public TypeIdAssigner(Dictionary<string, ushort> typeToIdMap) : this()
+    public TypeIdAssigner(IRequestResponseFactory requestResponseFactory, Dictionary<string, ushort> typeToIdMap) : this(requestResponseFactory)
     {
         TypeToIdMap = typeToIdMap;
         foreach (KeyValuePair<string, ushort> pair in TypeToIdMap)
@@ -55,13 +66,14 @@ public sealed class TypeIdAssigner : IDisposable
         _hasBeenInitialized.Set();
     }
 
+    public IRequestResponseFactory RequestResponseFactory { get; set; }
     public Dictionary<string, ushort> TypeToIdMap { get; }
 
     private Dictionary<Type, ushort> TypeToUShortIdMap { get; }
 
-    public static TypeIdAssigner CreateServerAssigner()
+    public static TypeIdAssigner CreateServerAssigner(IRequestResponseFactory requestResponseFactory)
     {
-        TypeIdAssigner typeIdAssigner = new();
+        TypeIdAssigner typeIdAssigner = new(requestResponseFactory);
         typeIdAssigner.InitializeServer();
         return typeIdAssigner;
     }
@@ -167,8 +179,7 @@ public sealed class TypeIdAssigner : IDisposable
             }
         }
 
-        Type clientRequestType = typeof(ClientRequest<,>);
-        Type serverResponseType = typeof(ServerResponse<,>);
+        Identifiable identifiable = new();
         foreach (Assembly assembly in assemblies)
         {
             IEnumerable<Type> discoverTypes = assembly.DiscoverType(typeof(ITransceiver<,>))
@@ -183,16 +194,11 @@ public sealed class TypeIdAssigner : IDisposable
                             || i.GetGenericTypeDefinition() == typeof(ITransceiver<,>)
                         ).GenericTypeArguments;
                 }
-                Type specificRequestType = clientRequestType.MakeGenericType(genericArguments);
-                Type specificResponseType = serverResponseType.MakeGenericType(genericArguments);
-                if (!TypeToUShortIdMap.ContainsKey(specificRequestType))
-                {
-                    _ = GetOrCreateTypeId(specificRequestType);
-                }
-                if (!TypeToUShortIdMap.ContainsKey(specificResponseType))
-                {
-                    _ = GetOrCreateTypeId(specificResponseType);
-                }
+                IIdentifiable request = RequestResponseFactory.CreateClientRequest(genericArguments[0], genericArguments[1], identifiable);
+                _ = GetOrCreateTypeId(request.GetType());
+
+                IIdentifiable response = RequestResponseFactory.CreateServerResponse(genericArguments[0], genericArguments[1], identifiable, identifiable);
+                _ = GetOrCreateTypeId(response.GetType());
             }
         }
         SaveTypes();

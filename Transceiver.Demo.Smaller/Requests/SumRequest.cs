@@ -36,7 +36,7 @@ public sealed class SumResponse
 
 public sealed class SumProcessor : IProcessor<SumRequest, SumResponse>
 {
-    public async Task<SumResponse> ProcessRequestAsync(ClientRequest<SumRequest, SumResponse> request, CancellationToken cancellationToken)
+    public async Task<SumResponse> ProcessRequestAsync(IClientRequest<SumRequest, SumResponse> request, CancellationToken cancellationToken)
     {
         SumResponse response = new(request.Data.A + request.Data.B);
         await request.SendResponseAsync(response, cancellationToken);

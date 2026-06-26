@@ -4,31 +4,30 @@
 
 using System.Diagnostics;
 using System.Threading.RateLimiting;
-using Transceiver.Demo.Requests;
 
 namespace Transceiver.Demo;
 
-public sealed class MultiplyExample(ITransceiver<GeneratedRequests.Requests.MultiplyRequest, GeneratedRequests.Responses.MultiplyResponse> transceiver)
-    : Example<GeneratedRequests.Requests.MultiplyRequest, GeneratedRequests.Responses.MultiplyResponse>(transceiver)
+public sealed class MultiplyExample(ITransceiver<MultiplyRequest, MultiplyResponse> transceiver)
+    : Example<MultiplyRequest, MultiplyResponse>(transceiver)
 {
-    public override GeneratedRequests.Requests.MultiplyRequest CreateRequest()
+    public override MultiplyRequest CreateRequest()
     {
-        return new GeneratedRequests.Requests.MultiplyRequest
+        return new MultiplyRequest
         {
             A = Random.Shared.Next(),
             B = Random.Shared.Next()
         };
     }
 
-    public override Task<GeneratedRequests.Responses.MultiplyResponse> ProcessRequest(GeneratedRequests.Requests.MultiplyRequest request, CancellationToken cancellationToken)
+    public override Task<MultiplyResponse> ProcessRequest(MultiplyRequest request, CancellationToken cancellationToken)
     {
-        return Task.FromResult(new GeneratedRequests.Responses.MultiplyResponse
+        return Task.FromResult(new MultiplyResponse
         {
             Result = request.A * request.B
         });
     }
 
-    public override void ProcessResponse(RateLimitLease lease, GeneratedRequests.Requests.MultiplyRequest request, GeneratedRequests.Responses.MultiplyResponse response)
+    public override void ProcessResponse(RateLimitLease lease, MultiplyRequest request, MultiplyResponse response)
     {
         Debug.Assert(response.Result == request.A * request.B, "Multiplication is incorrect");
         if (lease.IsAcquired)

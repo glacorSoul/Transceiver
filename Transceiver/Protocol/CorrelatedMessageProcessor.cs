@@ -57,7 +57,7 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
     private List<StreamEntry> GetStreams(IIdentifiable message)
     {
         Type messageType = message.GetType();
-        List<StreamEntry> streams = _streams.GetAndRemoveAll(Guid.Empty, message.Id, m => m.MessageType == messageType);
+        List<StreamEntry> streams = _streams.GetAndRemoveAll(Guid.Empty, message.Id, m => m.IsOfSameType(messageType));
         return streams;
     }
 
@@ -100,6 +100,15 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         public object AsyncSource { get; }
         public Type MessageType { get; }
         public MethodInfo WriteAsyncMethod { get; }
+
+        public bool IsOfSameType(Type type)
+        {
+            bool result = MessageType.GenericTypeArguments[MessageType.GenericTypeArguments.Length - 1]
+                == type.GenericTypeArguments[type.GenericTypeArguments.Length - 1];
+            bool hasInterface = type.GetInterfaces().Any(i => i == MessageType);
+            result = (result && hasInterface) || type == MessageType;
+            return result;
+        }
     }
 
     private void Dispose(bool disposing)

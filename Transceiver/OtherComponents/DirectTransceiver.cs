@@ -10,16 +10,18 @@ public sealed class DirectTransceiver<TRequest, TResponse> : ITransceiver<TReque
 {
     private readonly IPipelineProcessor<TRequest, TResponse> _pipeline;
     private readonly IProcessor<TRequest, TResponse> _processor;
+    private readonly IRequestResponseFactory _requestResponseFactory;
 
-    public DirectTransceiver(IProcessor<TRequest, TResponse> processor, IPipelineProcessor<TRequest, TResponse> pipeline)
+    public DirectTransceiver(IProcessor<TRequest, TResponse> processor, IPipelineProcessor<TRequest, TResponse> pipeline, IRequestResponseFactory requestResponseFactory)
     {
         _processor = processor;
         _pipeline = pipeline;
+        _requestResponseFactory = requestResponseFactory;
     }
 
-    public async Task<ClientRequest<TRequest, TResponse>> SendToServerAsync(TRequest request, CancellationToken cancellationToken)
+    public async Task<IClientRequest<TRequest, TResponse>> SendToServerAsync(TRequest request, CancellationToken cancellationToken)
     {
-        ClientRequest<TRequest, TResponse> clientRequest = new(request);
+        IClientRequest<TRequest, TResponse> clientRequest = _requestResponseFactory.CreateClientRequest<TRequest, TResponse>(request);
         Task<TResponse> Process(CancellationToken token)
         {
             return _processor.ProcessRequestAsync(clientRequest, token);
@@ -37,7 +39,7 @@ public sealed class DirectTransceiver<TRequest, TResponse> : ITransceiver<TReque
     {
         Task<TResponse> Process(CancellationToken token)
         {
-            ClientRequest<TRequest, TResponse> clientRequest = new(request);
+            IClientRequest<TRequest, TResponse> clientRequest = _requestResponseFactory.CreateClientRequest<TRequest, TResponse>(request);
             return _processor.ProcessRequestAsync(clientRequest, token);
         }
         TResponse response = await _pipeline.ProcessAsync(request, Process, cancellationToken);
@@ -48,7 +50,7 @@ public sealed class DirectTransceiver<TRequest, TResponse> : ITransceiver<TReque
     {
         Task<TResponse> Process(CancellationToken token)
         {
-            ClientRequest<TRequest, TResponse> clientRequest = new(request);
+            IClientRequest<TRequest, TResponse> clientRequest = _requestResponseFactory.CreateClientRequest<TRequest, TResponse>(request);
             return _processor.ProcessRequestAsync(clientRequest, token);
         }
         TResponse response = await _pipeline.ProcessAsync(request, Process, cancellationToken);

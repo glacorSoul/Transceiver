@@ -175,7 +175,8 @@ public static class ReflectionUtils
         }
 
         string mainTypeName = typeName.Substring(0, genericStartIndex);
-        Type mainType = FindType(mainTypeName) ?? throw new ArgumentException($"Type '{mainTypeName}' could not be resolved.");
+        Type mainType = FindType(mainTypeName)
+            ?? throw new ArgumentException($"Type '{mainTypeName}' could not be resolved.");
 
         int genericEndIndex = typeName.LastIndexOf('>');
         if (genericEndIndex == -1 || genericEndIndex <= genericStartIndex)
@@ -205,7 +206,7 @@ public static class ReflectionUtils
     {
         return AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(a => a.DefinedTypes)
-            .First(t => t.FullName!.Contains(name))
+            .First(t => t.Name!.StartsWith(name))
             .GetTypeInfo();
     }
 }

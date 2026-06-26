@@ -2,43 +2,16 @@
 // Transceiver is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
-namespace Transceiver.Demo.Smaller;
-
-public sealed class MultiplyRequest
-{
-    public MultiplyRequest()
-    {
-    }
-
-    public MultiplyRequest(int a, int b)
-    {
-        A = a;
-        B = b;
-    }
-
-    public int A { get; set; }
-    public int B { get; set; }
-}
-
-public sealed class MultiplyResponse
-{
-    public MultiplyResponse()
-    {
-    }
-
-    public MultiplyResponse(int result)
-    {
-        Result = result;
-    }
-
-    public int Result { get; set; }
-}
+namespace Transceiver.Demo;
 
 public sealed class MultiplyProcessor : IProcessor<MultiplyRequest, MultiplyResponse>
 {
     public async Task<MultiplyResponse> ProcessRequestAsync(IClientRequest<MultiplyRequest, MultiplyResponse> request, CancellationToken cancellationToken)
     {
-        MultiplyResponse response = new(request.Data.A * request.Data.B);
+        MultiplyResponse response = new()
+        {
+            Result = request.Data.A * request.Data.B,
+        };
         await request.SendResponseAsync(response, cancellationToken);
         return response;
     }

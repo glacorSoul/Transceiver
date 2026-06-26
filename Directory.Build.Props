@@ -5,8 +5,8 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>COPYING</PackageLicenseFile>
-		<Version>4.0.0</Version>
-		<AssemblyVersion>4.0.0</AssemblyVersion>
+		<Version>5.0.0</Version>
+		<AssemblyVersion>5.0.0</AssemblyVersion>
 		<RepositoryUrl>https://github.com/glacorSoul/Transceiver.git</RepositoryUrl>
 		<PackageProjectUrl>https://glacorsoul.github.io/Transceiver/</PackageProjectUrl>
 		<RepositoryType>git</RepositoryType>

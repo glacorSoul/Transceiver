@@ -23,7 +23,7 @@ public class TcpTransceiverTests : IClassFixture<TestFixture>
     public async Task SendAsync_ShouldNotError()
     {
         TcpSumRequest request = new(1, 2);
-        ClientRequest<TcpSumRequest, TcpSumResponse> clientRequest = await _transceiver.SendToServerAsync(request, TestContext.Current.CancellationToken);
+        IClientRequest<TcpSumRequest, TcpSumResponse> clientRequest = await _transceiver.SendToServerAsync(request, TestContext.Current.CancellationToken);
         Assert.Equivalent(clientRequest.Data, request);
     }
 

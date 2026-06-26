@@ -7,9 +7,21 @@ using System.Text.Json.Serialization;
 
 namespace Transceiver;
 
-public class ClientRequest<TRequest, TResponse> : IIdentifiable
+public interface IClientRequest<TRequest, in TResponse> : IIdentifiable
+{
+    DateTimeOffset TimeStamp { get; set; }
+    TRequest Data { get; set; }
+    Task SendResponseAsync(TResponse response, CancellationToken cancellationToken);
+}
+
+public class ClientRequest<TRequest, TResponse> : IClientRequest<TRequest, TResponse>
 {
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public ClientRequest() : this(default!)
+    {
+
+    }
 
     [JsonConstructor]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -24,9 +36,9 @@ public class ClientRequest<TRequest, TResponse> : IIdentifiable
     {
     }
 
-    public TRequest Data { get; set; }
-    public Guid Id { get; set; }
-    public DateTimeOffset TimeStamp { get; set; }
+    public virtual TRequest Data { get; set; }
+    public virtual Guid Id { get; set; }
+    public virtual DateTimeOffset TimeStamp { get; set; }
 
     public Task SendResponseAsync(TResponse response, CancellationToken cancellationToken)
     {
@@ -34,7 +46,7 @@ public class ClientRequest<TRequest, TResponse> : IIdentifiable
         {
             return Task.CompletedTask;
         }
-        ServerResponse<TRequest, TResponse> serverResponse = new(response, this);
+        IServerResponse<TResponse> serverResponse = Constants.RequestResponseFactory.CreateServerResponse(response, this);
         return Constants.Protocol.SendObjectToClientAsync(serverResponse, cancellationToken);
     }
 }
