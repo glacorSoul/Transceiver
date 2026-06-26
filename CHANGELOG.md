@@ -1,12 +1,18 @@
 # Changelog
 
+## [5.0.0](https://github.com/glacorSoul/Transceiver/compare/5.0.0...4.0.0)  (2026-06-26)
+
+### Features
+
+Implemented Message Pack Serialization [1f93e0b](https://github.com/glacorSoul/Transceiver/commit/1f93e0bc39c3e741ade56020fdb839978dcc284e)
+
 ## [4.0.0](https://github.com/glacorSoul/Transceiver/compare/4.0.0...3.0.0)  (2026-06-23)
 
 ### Features
 
-Removed bottleneck from requeuing in synchronization mechanism (Better performance!)
-Enable publish-subscribe pattern
-Execution SLA is now configurable
+Removed bottleneck from requeuing in synchronization mechanism (Better performance!) [55aec53](https://github.com/glacorSoul/Transceiver/commit/55aec532e436e377d74b9578605c1c7691443484)
+Enable publish-subscribe pattern [6f59804](https://github.com/glacorSoul/Transceiver/commit/6f59804a79dfe499baa46ed185f753aabb376384)
+Execution SLA is now configurable [6abe807](https://github.com/glacorSoul/Transceiver/commit/6abe807b03ffee0409277cb016ce10ed29b0b320)
 
 ## [3.0.0](https://github.com/glacorSoul/Transceiver/compare/2.1.0...3.0.0)  (2026-05-28)
 
