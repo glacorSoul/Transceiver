@@ -9,7 +9,7 @@ using System.Threading.RateLimiting;
 
 namespace Transceiver;
 
-internal class MetricsPipelineProcessor<TRequest, TResponse> : IPipelineProcessor<TRequest, TResponse>
+public class MetricsPipelineProcessor<TRequest, TResponse> : IPipelineProcessor<TRequest, TResponse>
 {
     private static readonly RateLimiter _logLimiter = new FixedWindowRateLimiter(
         new FixedWindowRateLimiterOptions

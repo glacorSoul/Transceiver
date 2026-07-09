@@ -8,9 +8,9 @@ public class CompositePipelineProcessor<TRequest, TResponse> : IPipelineProcesso
 {
     private readonly IEnumerable<IPipelineProcessor<TRequest, TResponse>> _processors;
 
-    public CompositePipelineProcessor(IEnumerable<IPipelineProcessor<TRequest, TResponse>> processors)
+    public CompositePipelineProcessor(IEnumerable<IPipelineProcessor<TRequest, TResponse>>? processors)
     {
-        _processors = processors;
+        _processors = processors ?? [];
     }
 
     public Task<TResponse> ProcessAsync(TRequest request, Func<CancellationToken, Task<TResponse>> nextStep, CancellationToken cancellationToken)

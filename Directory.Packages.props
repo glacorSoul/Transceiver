@@ -7,12 +7,14 @@
     <PackageVersion Include="AWSSDK.SecurityToken" Version="[3.7.300,)" />
     <PackageVersion Include="AWSSDK.SQS" Version="[3.7.300,]" />
     <PackageVersion Include="Azure.Storage.Queues" Version="12.13.0" />
-    <PackageVersion Include="BenchmarkDotNet" Version="0.15.2" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
     <PackageVersion Include="Confluent.Kafka" Version="[2.6.0,)" />
     <PackageVersion Include="Google.Cloud.PubSub.V1" Version="[3.12.0,)" />
     <PackageVersion Include="JunitXml.TestLogger" Version="7.0.2" />
-	<PackageVersion Include="MessagePack" Version="3.1.7" />
+    <PackageVersion Include="MediatR" Version="7.0.0" />
+    <PackageVersion Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageVersion Include="MessagePack" Version="3.1.7" />
     <PackageVersion Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Routing" Version="2.3.0" />
@@ -26,9 +28,9 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.9" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageVersion Include="Moq" Version="4.20.72" />

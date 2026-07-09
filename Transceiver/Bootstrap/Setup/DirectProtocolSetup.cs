@@ -28,7 +28,9 @@ internal sealed class DirectProtocolSetup : BaseTransceiverSetup
         Type directTransceiverType = typeof(DirectTransceiver<,>).MakeGenericType(TransceiverType.GetGenericArguments());
         _ = Services.AddSingleton(ITransceiverType, provider =>
         {
-            object pipeline = provider.GetRequiredService(PipelineType);
+            Type fallbackPipelineType = typeof(CompositePipelineProcessor<,>).MakeGenericType(PipelineType.GenericTypeArguments);
+            object fallbackPipeline = Activator.CreateInstance(fallbackPipelineType, [null])!;
+            object pipeline = provider.GetService(PipelineType) ?? fallbackPipeline;
             object processor = provider.GetRequiredService(ProcessorType);
             IRequestResponseFactory requestResponseFactory = provider.GetRequiredService<IRequestResponseFactory>();
             object transceiver = Activator.CreateInstance(directTransceiverType, [processor, pipeline, requestResponseFactory])!;
