@@ -53,12 +53,6 @@ public static class BootStrap
     public static void ConfigureTransceiverProvider(this IServiceProvider serviceProvider, Assembly assembly)
     {
         ServiceProvider = serviceProvider;
-        IEnumerable<Type> discoverableTransceivers = assembly.DiscoverType(typeof(ITransceiver<,>))
-            .Concat(typeof(BootStrap).Assembly.DiscoverType(typeof(ITransceiver<,>)));
-        foreach (Type transceiverType in discoverableTransceivers)
-        {
-            _ = ServiceProvider.GetRequiredService(transceiverType);
-        }
     }
 
     private static void RegisterProcessors(IServiceCollection services, Assembly currentAssembly)

@@ -13,6 +13,7 @@ using System.Reflection;
 namespace Transceiver.Benchmarks;
 
 [MemoryDiagnoser]
+[RPlotExporter]
 public class TransceiverBenchmarks
 {
     private ITransceiver<DirectSumRequest, DirectSumResponse> _directSumTransceiver = default!;
@@ -36,7 +37,7 @@ public class TransceiverBenchmarks
         B = 2
     };
 
-    protected TransceiverBenchmarks() { }
+    public TransceiverBenchmarks() { }
 
     //------------------------------Transceiver benchmarks------------------------------
     private static ITransceiver<DirectSumRequest, DirectSumResponse> BuildDirectTransceiver()
@@ -64,13 +65,13 @@ public class TransceiverBenchmarks
         _ = services.AddLogging(builder => builder.AddConsole());
         _ = services.AddTransceiver(t =>
         {
-            ITransceiverSetup setup = t.ConfigureSsl(new(IPAddress.Loopback, 1122));
+            ITransceiverSetup setup = t.ConfigureSsl(new(IPAddress.Loopback, 1124));
             setup.SetupServer(false);
             setup.SetupClient();
         }, Assembly.GetExecutingAssembly());
         _ = services.Configure<TransceiverConfiguration>(cfg =>
         {
-            cfg.CertificateThumbprint = "";
+            cfg.CertificateThumbprint = "1c39b7a9e05f5c8124189a950a51779ecd1fdf93";
         });
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         return serviceProvider.GetRequiredService<ITransceiver<SslSumRequest, SslSumResponse>>();
@@ -80,7 +81,7 @@ public class TransceiverBenchmarks
     {
         ServiceCollection services = [];
         _ = services.AddLogging(builder => builder.AddConsole());
-        _ = services.AddTransceiver(t => t.ConfigureTcp(new(IPAddress.Loopback, 1123)), Assembly.GetExecutingAssembly());
+        _ = services.AddTransceiver(t => t.ConfigureTcp(new(IPAddress.Loopback, 1125)), Assembly.GetExecutingAssembly());
         ServiceProvider serviceProvider = services.BuildServiceProvider();
         return serviceProvider.GetRequiredService<ITransceiver<TcpSumRequest, TcpSumResponse>>();
     }

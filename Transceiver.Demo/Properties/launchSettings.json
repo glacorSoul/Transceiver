@@ -34,7 +34,7 @@
         },
         "Transciever.SSL": {
             "commandName": "Project",
-            "commandLineArgs": "ssl -c 1c39b7a9e05f5c8124189a950a51779ecd1fdf93"
+            "commandLineArgs": "ssl -c 34abfd4fc9e26a3315e1c398f51ebfc41ba0d553"
         },
         "Transciever.TCP": {
             "commandName": "Project",
