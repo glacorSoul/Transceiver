@@ -2,7 +2,6 @@
 // Transceiver is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
-using System.Net.WebSockets;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
@@ -30,29 +29,33 @@ internal class WebsocketsSetup : BaseTransceiverSetup
         return protocol;
     }
 
-    public override void SetupClient()
+    public override void SetupClient(CancellationToken cancellationToken)
     {
-        base.SetupClient();
+        base.SetupClient(cancellationToken);
         Services.TryAddSingleton<ITransceiverProtocol>((provider) =>
         {
             WebsocketsProtocol protocol = CreateSocketProtocol(provider, false);
-            WebSocketStream stream = protocol.SetupWriterAsync(CancellationToken.None).GetAwaiter().GetResult();
-            _ = protocol.ReceiveMessagesAsync(stream, CancellationToken.None);
+            _ = protocol.SetupWriterAsync(CancellationToken.None).ContinueWith(stream =>
+            {
+                _ = protocol.ServerReceiveMessagesAsync(stream.Result, CancellationToken.None);
+            });
             return protocol;
         });
     }
 
-    public override void SetupServer(bool serverOnly)
+    public override void SetupServer(bool serverOnly, CancellationToken cancellationToken)
     {
-        base.SetupServer(serverOnly);
+        base.SetupServer(serverOnly, cancellationToken);
         _ = Services.AddSingleton<ITransceiverProtocol>((provider) =>
         {
             WebsocketsProtocol protocol = CreateSocketProtocol(provider, true);
             _ = protocol.ReceiveMessagesAsync(CancellationToken.None);
             if (!serverOnly)
             {
-                WebSocketStream stream = protocol.SetupWriterAsync(CancellationToken.None).GetAwaiter().GetResult();
-                _ = protocol.ReceiveMessagesAsync(stream, CancellationToken.None);
+                _ = protocol.SetupWriterAsync(CancellationToken.None).ContinueWith(stream =>
+                {
+                    _ = protocol.ServerReceiveMessagesAsync(stream.Result, CancellationToken.None);
+                });
             }
             return protocol;
         });

@@ -17,9 +17,9 @@ internal sealed class SslProtocolSetup : ProtocolSpecificSetup
     {
     }
 
-    public sealed override void SetupClient()
+    public sealed override void SetupClient(CancellationToken cancellationToken)
     {
-        base.SetupClient();
+        base.SetupClient(cancellationToken);
         Services.TryAddSingleton<ITransceiverProtocol>((provider) =>
         {
             IMessageProcessor messageProcessor = provider.GetRequiredService<IMessageProcessor>();
@@ -29,15 +29,17 @@ internal sealed class SslProtocolSetup : ProtocolSpecificSetup
             ILogger<TransceiverSslProtocol> logger = provider.GetRequiredService<ILogger<TransceiverSslProtocol>>();
             IOptions<TransceiverConfiguration> configuration = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
             TransceiverSslProtocol protocol = new(factory, certificateLoader, messageProcessor, serializer, logger, configuration);
-            Stream stream = protocol.SetupWriterAsync(CancellationToken.None).GetAwaiter().GetResult();
-            _ = protocol.ReceiveMessagesAsync(stream, CancellationToken.None);
+            _ = protocol.SetupWriterAsync(cancellationToken).ContinueWith(stream =>
+            {
+                _ = protocol.ServerReceiveMessagesAsync(stream.Result, cancellationToken);
+            });
             return protocol;
         });
     }
 
-    public sealed override void SetupServer(bool serverOnly)
+    public sealed override void SetupServer(bool serverOnly, CancellationToken cancellationToken)
     {
-        base.SetupServer(serverOnly);
+        base.SetupServer(serverOnly, cancellationToken);
         _ = Services.AddSingleton<ITransceiverProtocol>((provider) =>
         {
             IMessageProcessor messageProcessor = provider.GetRequiredService<IMessageProcessor>();
@@ -47,9 +49,9 @@ internal sealed class SslProtocolSetup : ProtocolSpecificSetup
             ILogger<TransceiverSslProtocol> logger = provider.GetRequiredService<ILogger<TransceiverSslProtocol>>();
             IOptions<TransceiverConfiguration> configuration = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
             TransceiverSslProtocol protocol = new(factory, certificateLoader, messageProcessor, serializer, logger, configuration);
-            _ = protocol.ReceiveMessagesAsync(CancellationToken.None);
-            Stream stream = protocol.SetupWriterAsync(CancellationToken.None).GetAwaiter().GetResult();
-            _ = protocol.ReceiveMessagesAsync(stream, CancellationToken.None);
+            _ = protocol.ReceiveMessagesAsync(cancellationToken);
+            _ = protocol.SetupWriterAsync(cancellationToken)
+                .ContinueWith(stream => protocol.ServerReceiveMessagesAsync(stream.Result, cancellationToken));
             return protocol;
         });
     }

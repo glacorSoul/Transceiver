@@ -11,15 +11,15 @@ internal sealed class DirectProtocolSetup : BaseTransceiverSetup
     public DirectProtocolSetup(Type transceiverType, IServiceCollection services) : base(transceiverType, services)
     {
         _ = services.AddSingleton<ITransceiverProtocol, DirectProtocol>();
-        SetupServer(true);
+        SetupServer(true, CancellationToken.None);
     }
 
-    public override void SetupClient()
+    public override void SetupClient(CancellationToken cancellationToken)
     {
         //SetupClient is implemented as a NoOp.
     }
 
-    public override void SetupServer(bool serverOnly)
+    public override void SetupServer(bool serverOnly, CancellationToken cancellationToken)
     {
         if (!serverOnly)
         {

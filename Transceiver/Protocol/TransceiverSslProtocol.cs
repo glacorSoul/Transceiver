@@ -33,7 +33,7 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>, IDisposab
         _certificateLoader = certificateLoader;
         _listenSocket = socketFactory.Listen();
         _connectSocket = socketFactory.Connect();
-        _setupWriter = new(SetupWriter);
+        _setupWriter = new(ClientHello);
     }
 
     public sealed override Task<Stream> SetupWriterAsync(CancellationToken cancellationToken)
@@ -50,16 +50,16 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>, IDisposab
     protected sealed override async Task<Stream> SetupReadAsync(CancellationToken cancellationToken)
     {
         NetworkStream networkStream = new(await _socketFactory.AcceptAsync(_listenSocket), true);
-        SslStream sslStream = new(networkStream, false);
+        SslStream sslStream = new(networkStream, true);
         await sslStream.AuthenticateAsServerAsync(_certificateLoader.LoadCertificate(Configuration.Value.CertificateThumbprint));
         return sslStream;
     }
 
     protected override async Task WriteAsync(Stream transceiver, object client, byte[] data, CancellationToken cancellationToken)
     {
-        await _writeLock.WaitAsync(cancellationToken);
         try
         {
+            await _writeLock.WaitAsync(cancellationToken);
             await transceiver.WriteAsync(data, 0, data.Length, cancellationToken);
             await transceiver.FlushAsync(cancellationToken);
         }
@@ -69,7 +69,7 @@ public class TransceiverSslProtocol : ReceiveMessagesProtocol<Stream>, IDisposab
         }
     }
 
-    private async Task<Stream> SetupWriter()
+    private async Task<Stream> ClientHello()
     {
         SslStream writeStream = new(new NetworkStream(_connectSocket, true), false, ValidateServerCertificate, null);
         await writeStream.AuthenticateAsClientAsync(Configuration.Value.Server.Name);

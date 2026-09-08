@@ -18,7 +18,6 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         AllowSynchronousContinuations = false,
     });
 
-    private readonly Thread _retainedMessagesProcessor;
     private readonly ISerializer _serializer;
     private readonly ConcurrentDictionaryList<Guid, StreamEntry> _streams = new();
     private bool disposedValue;
@@ -26,8 +25,7 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
     public CorrelatedMessageProcessor(ISerializer serializer)
     {
         _serializer = serializer;
-        _retainedMessagesProcessor = new(() => ProcessMessages().AsTask().GetAwaiter().GetResult());
-        _retainedMessagesProcessor.Start();
+        _ = Task.Run(ProcessMessages, _cts.Token);
     }
 
     public IAsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
@@ -87,30 +85,6 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
             await task;
         }
     }
-
-    private sealed class StreamEntry
-    {
-        public StreamEntry(object asyncSouce)
-        {
-            AsyncSource = asyncSouce;
-            MessageType = asyncSouce.GetType().GetGenericArguments()[0];
-            WriteAsyncMethod = asyncSouce.GetType().GetMethod(nameof(IAsyncSource<>.WriteAsync)) ?? default!;
-        }
-
-        public object AsyncSource { get; }
-        public Type MessageType { get; }
-        public MethodInfo WriteAsyncMethod { get; }
-
-        public bool IsOfSameType(Type type)
-        {
-            bool result = MessageType.GenericTypeArguments[MessageType.GenericTypeArguments.Length - 1]
-                == type.GenericTypeArguments[type.GenericTypeArguments.Length - 1];
-            bool hasInterface = type.GetInterfaces().Any(i => i == MessageType);
-            result = (result && hasInterface) || type == MessageType;
-            return result;
-        }
-    }
-
     private void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -135,4 +109,28 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    private sealed class StreamEntry
+    {
+        public StreamEntry(object asyncSouce)
+        {
+            AsyncSource = asyncSouce;
+            MessageType = asyncSouce.GetType().GetGenericArguments()[0];
+            WriteAsyncMethod = asyncSouce.GetType().GetMethod(nameof(IAsyncSource<>.WriteAsync)) ?? default!;
+        }
+
+        public object AsyncSource { get; }
+        public Type MessageType { get; }
+        public MethodInfo WriteAsyncMethod { get; }
+
+        public bool IsOfSameType(Type type)
+        {
+            bool result = MessageType.GenericTypeArguments[MessageType.GenericTypeArguments.Length - 1]
+                == type.GenericTypeArguments[type.GenericTypeArguments.Length - 1];
+            bool hasInterface = type.GetInterfaces().Any(i => i == MessageType);
+            result = (result && hasInterface) || type == MessageType;
+            return result;
+        }
+    }
+
 }

@@ -28,8 +28,8 @@ public sealed class RabbitMqOptions : BaseOptions
     {
         _ = services.AddTransceiverRabbitMq(setup =>
         {
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, new RabbitMQ.Client.ConnectionFactory
         {
             Port = Port,

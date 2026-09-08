@@ -8,7 +8,7 @@ namespace Transceiver;
 
 internal class PartitionedMessage
 {
-    private readonly List<ArraySegment<byte>> _buffers = [];
+    private readonly List<byte> _buffer = [];
     public int BytesRead { get; set; }
     public TransceiverHeader? Header { get; set; }
     public bool IsCompleted { get; set; }
@@ -21,50 +21,36 @@ internal class PartitionedMessage
         {
             return;
         }
-        int offset = 0;
+
+        _buffer.AddRange(new ArraySegment<byte>(buffer, 0, nRead));
         BytesRead += nRead;
 
         if (Header == null && BytesRead >= TransceiverHeader.Size)
         {
-            Header = new TransceiverHeader(buffer);
-            offset += TransceiverHeader.Size;
+            Header = new TransceiverHeader(_buffer.GetRange(0, TransceiverHeader.Size).ToArray());
         }
-        _buffers.Add(new ArraySegment<byte>(buffer, offset, nRead - offset));
 
-        if (Header != null && BytesRead >= Header.MessageSize + offset)
+        if (Header != null && BytesRead >= TransceiverHeader.Size + Header.MessageSize)
         {
-            byte[] rawValue = GetBuffersAsSingleBuffer();
+            byte[] rawValue = _buffer.GetRange(TransceiverHeader.Size, Header.MessageSize).ToArray();
             Message = new(Header, rawValue);
             IsCompleted = true;
-            offset += Header.MessageSize;
-        }
 
-        if (nRead > offset)
-        {
-            RemainingBytes = new ArraySegment<byte>(buffer, offset, nRead - offset);
+            int consumed = TransceiverHeader.Size + Header.MessageSize;
+            int remainingCount = _buffer.Count - consumed;
+            if (remainingCount > 0)
+            {
+                RemainingBytes = new ArraySegment<byte>([.. _buffer.GetRange(consumed, remainingCount)]);
+            }
         }
     }
 
     public override string ToString()
     {
-        return $"{Header!}\n{Encoding.UTF8.GetString(GetBuffersAsSingleBuffer())}";
-    }
-
-    private byte[] GetBuffersAsSingleBuffer()
-    {
-        if (Header == null)
+        if (Header == null || Message == null)
         {
-            throw new InvalidOperationException("Header must be set before retrieving the buffer.");
+            return $"[Incomplete message: {BytesRead} bytes read]";
         }
-        byte[] buffer = new byte[Header.MessageSize];
-
-        int offset = 0;
-        foreach (ArraySegment<byte> oldBuffer in _buffers)
-        {
-            Array.Copy(oldBuffer.Array!, oldBuffer.Offset, buffer, offset, Math.Min(Header.MessageSize - offset, oldBuffer.Count));
-            offset += oldBuffer.Count;
-        }
-
-        return buffer;
+        return $"{Header}\n{Encoding.UTF8.GetString(Message.Data)}";
     }
 }

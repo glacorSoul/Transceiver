@@ -135,7 +135,7 @@ public sealed class GooglePubSubMessageProcessor : IMessageProcessor, IDisposabl
                 }
                 _ = cancellationToken.Register(() =>
                 {
-                    subscriberClient.StopAsync(CancellationToken.None).GetAwaiter().GetResult();
+                    subscriberClient.StopAsync(cancellationToken).GetAwaiter().GetResult();
                 });
                 await subscriberClient.StartAsync(async (msg, ct) =>
                 {

@@ -28,29 +28,33 @@ public class SocketsSetup : BaseTransceiverSetup
         return protocol;
     }
 
-    public override void SetupClient()
+    public override void SetupClient(CancellationToken cancellationToken)
     {
-        base.SetupClient();
+        base.SetupClient(cancellationToken);
         Services.TryAddSingleton<ITransceiverProtocol>((provider) =>
         {
             TransceiverSocketProtocol protocol = CreateSocketProtocol(provider);
-            Socket socket = protocol.SetupWriterAsync(CancellationToken.None).GetAwaiter().GetResult();
-            _ = protocol.ReceiveMessagesAsync(socket, CancellationToken.None);
+            _ = protocol.SetupWriterAsync(cancellationToken).ContinueWith(socket =>
+            {
+                _ = protocol.ServerReceiveMessagesAsync(socket.Result, cancellationToken);
+            });
             return protocol;
         });
     }
 
-    public override void SetupServer(bool serverOnly)
+    public override void SetupServer(bool serverOnly, CancellationToken cancellationToken)
     {
-        base.SetupServer(serverOnly);
+        base.SetupServer(serverOnly, cancellationToken);
         _ = Services.AddSingleton<ITransceiverProtocol>((provider) =>
         {
             TransceiverSocketProtocol protocol = CreateSocketProtocol(provider);
-            _ = protocol.ReceiveMessagesAsync(CancellationToken.None);
+            _ = protocol.ReceiveMessagesAsync(cancellationToken);
             if (!serverOnly)
             {
-                Socket socket = protocol.SetupWriterAsync(CancellationToken.None).GetAwaiter().GetResult();
-                _ = protocol.ReceiveMessagesAsync(socket, CancellationToken.None);
+                _ = protocol.SetupWriterAsync(cancellationToken).ContinueWith(socket =>
+                {
+                    _ = protocol.ServerReceiveMessagesAsync(socket.Result, cancellationToken);
+                });
             }
             return protocol;
         });

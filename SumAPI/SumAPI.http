@@ -1,0 +1,6 @@
+@SumAPI_HostAddress = http://localhost:5124
+
+GET {{SumAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

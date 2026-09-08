@@ -29,15 +29,15 @@ public class ProtocolSpecificSetup : SocketsSetup
 
     public HostIdentifier Server { get; }
 
-    public override void SetupClient()
+    public override void SetupClient(CancellationToken cancellationToken)
     {
-        base.SetupClient();
+        base.SetupClient(cancellationToken);
         SetupServerSocketProtocol();
     }
 
-    public override void SetupServer(bool serverOnly)
+    public override void SetupServer(bool serverOnly, CancellationToken cancellationToken)
     {
-        base.SetupServer(serverOnly);
+        base.SetupServer(serverOnly, cancellationToken);
         SetupServerSocketProtocol();
     }
 

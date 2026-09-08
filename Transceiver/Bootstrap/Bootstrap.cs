@@ -50,7 +50,7 @@ public static class BootStrap
         return services;
     }
 
-    public static void ConfigureTransceiverProvider(this IServiceProvider serviceProvider, Assembly assembly)
+    public static void ConfigureTransceiverProvider(this IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
     }

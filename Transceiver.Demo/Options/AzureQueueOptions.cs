@@ -23,8 +23,8 @@ public sealed class AzureQueueOptions : BaseOptions
 
         _ = services.AddTransceiverAzureQueue(setup =>
         {
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, name => new QueueClient(connectionString, name), typeof(Program).Assembly);
         RunSamples(services, CancellationToken.None);
     }

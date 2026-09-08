@@ -38,7 +38,7 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
 
     protected abstract Task WriteAsync(TTransceiver transceiver, object client, byte[] data, CancellationToken cancellationToken);
 
-    public async Task ReceiveMessagesAsync(TTransceiver reader, CancellationToken cancellationToken)
+    public async Task ServerReceiveMessagesAsync(TTransceiver reader, CancellationToken cancellationToken)
     {
         PartitionedMessage partitionedMessage = new();
         while (!cancellationToken.IsCancellationRequested)

@@ -2,10 +2,7 @@
 // Transceiver is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,14 +16,14 @@ internal class SpeedyOptions : BaseOptions
         _ = services.AddTransceiver(config =>
         {
             ITransceiverSetup setup = config.ConfigureDirectProtocol();
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, typeof(Program).Assembly);
         services = services
             .AddSingleton<SumExample>()
             .AddSingleton<MultiplyExample>();
         ServiceProvider provider = services.BuildServiceProvider();
-        provider.ConfigureTransceiverProvider(typeof(BaseOptions).Assembly);
+        provider.ConfigureTransceiverProvider();
 
         ITransceiver<SumRequest, SumResponse> transceiver = provider.GetRequiredService<ITransceiver<SumRequest, SumResponse>>();
         int n = 0;

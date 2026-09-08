@@ -32,7 +32,7 @@ public sealed class DirectTransceiver<TRequest, TResponse> : ITransceiver<TReque
 
     public Task StartProcessingRequestsAsync(IProcessor<TRequest, TResponse> processor, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     public async IAsyncEnumerable<TResponse> TransceiveManyAsync(TRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)

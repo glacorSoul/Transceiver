@@ -1,0 +1,74 @@
+// Diagnostic version with detailed logging for the hang issue
+// This shows where to add logging to identify the exact point of hang
+
+// In ProcessIncomingMessages method, add logging:
+
+private async Task ProcessIncomingMessages(TTransceiver reader, CancellationToken cancellationToken)
+{
+	PartitionedMessage partitionedMessage = new();
+	int messageCount = 0;
+	int readCount = 0;
+
+	while (!cancellationToken.IsCancellationRequested)
+	{
+		try
+		{
+			readCount++;
+			Logger?.LogInformation("ProcessIncomingMessages: Starting read #{ReadCount}", readCount);
+
+			byte[] buffer = new byte[Environment.SystemPageSize];
+			(int read, object client) = await ReadAsync(reader, buffer, cancellationToken);
+
+			Logger?.LogInformation("ProcessIncomingMessages: Read #{ReadCount} returned {BytesRead} bytes", readCount, read);
+
+			if (read == 0)
+			{
+				Logger?.LogInformation("ProcessIncomingMessages: Read returned 0 (connection closed)");
+				break;
+			}
+
+			Logger?.LogInformation("ProcessIncomingMessages: Parsing buffer of {BytesRead} bytes. Current PartitionedMessage.IsCompleted={IsCompleted}", read, partitionedMessage.IsCompleted);
+
+			partitionedMessage.ParseBuffer(buffer, read);
+
+			Logger?.LogInformation("ProcessIncomingMessages: After parse, PartitionedMessage.IsCompleted={IsCompleted}, BytesRead={BytesRead}", partitionedMessage.IsCompleted, partitionedMessage.BytesRead);
+
+			while (partitionedMessage.IsCompleted)
+			{
+				messageCount++;
+				Logger?.LogInformation("ProcessIncomingMessages: Processing message #{MessageCount}", messageCount);
+
+				_ = _clientsMap.AddOrUpdate(partitionedMessage.Header!.Id, _ => (reader, client), (_, _) => (reader, client));
+				await _messageProcessor.ProcessMessageAsync(partitionedMessage.Message!, cancellationToken);
+
+				Logger?.LogInformation("ProcessIncomingMessages: Message #{MessageCount} processed", messageCount);
+
+				PartitionedMessage oldMessage = partitionedMessage;
+				partitionedMessage = new PartitionedMessage();
+
+				if (oldMessage.RemainingBytes.Count > 0)
+				{
+					Logger?.LogInformation("ProcessIncomingMessages: Found {RemainingBytes} remaining bytes, parsing into new message", oldMessage.RemainingBytes.Count);
+					partitionedMessage.ParseBuffer([.. oldMessage.RemainingBytes], oldMessage.RemainingBytes.Count);
+				}
+				else
+				{
+					Logger?.LogInformation("ProcessIncomingMessages: No remaining bytes after message #{MessageCount}", messageCount);
+				}
+			}
+
+			Logger?.LogInformation("ProcessIncomingMessages: Read loop completed, going back to wait for more data");
+		}
+		catch (OperationCanceledException ex)
+		{
+			Logger?.LogWarning(ex, "Receiving message was cancelled: {Message}", ex.Message);
+		}
+		catch (Exception ex)
+		{
+			Logger?.LogError(ex, "Error processing incoming messages: {Message}", ex.Message);
+			break;
+		}
+	}
+
+	Logger?.LogInformation("ProcessIncomingMessages: Exiting after {MessageCount} messages processed", messageCount);
+}

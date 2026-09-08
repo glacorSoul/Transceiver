@@ -18,7 +18,7 @@ public abstract class BaseOptions
             .AddSingleton<MultiplyExample>()
             .AddSingleton<FiboExample>();
         ServiceProvider provider = services.BuildServiceProvider();
-        provider.ConfigureTransceiverProvider(typeof(BaseOptions).Assembly);
+        provider.ConfigureTransceiverProvider();
 
         SumExample sumExample = provider.GetRequiredService<SumExample>();
         _ = ThreadPool.QueueUserWorkItem((ctx) => _ = sumExample.Execute(cancellationToken));

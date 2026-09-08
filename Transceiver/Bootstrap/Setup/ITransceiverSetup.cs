@@ -6,7 +6,7 @@ namespace Transceiver;
 
 public interface ITransceiverSetup
 {
-    void SetupClient();
+    void SetupClient(CancellationToken cancellationToken);
 
-    void SetupServer(bool serverOnly);
+    void SetupServer(bool serverOnly, CancellationToken cancellationToken);
 }

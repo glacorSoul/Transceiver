@@ -29,11 +29,11 @@ internal static class Program
                 "ssl" => config.ConfigureSsl(endpoint),
                 _ => throw new NotSupportedException($"The scheme '{uri.Scheme}' is not supported.")
             };
-            setup.SetupClient();
+            setup.SetupClient(cts.Token);
         }, Assembly.GetExecutingAssembly());
         _ = services.AddLogging();
         ServiceProvider provider = services.BuildServiceProvider();
-        provider.ConfigureTransceiverProvider(Assembly.GetExecutingAssembly());
+        provider.ConfigureTransceiverProvider();
 
         ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel> transceiver
             = provider.GetRequiredService<ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel>>();

@@ -8,6 +8,6 @@ namespace Transceiver;
 
 internal static class Constants
 {
-    internal static readonly ITransceiverProtocol Protocol = BootStrap.ServiceProvider.GetRequiredService<ITransceiverProtocol>();
-    internal static readonly IRequestResponseFactory RequestResponseFactory = BootStrap.ServiceProvider.GetRequiredService<IRequestResponseFactory>();
+    internal static ITransceiverProtocol Protocol => BootStrap.ServiceProvider.GetRequiredService<ITransceiverProtocol>();
+    internal static IRequestResponseFactory RequestResponseFactory => BootStrap.ServiceProvider.GetRequiredService<IRequestResponseFactory>();
 }

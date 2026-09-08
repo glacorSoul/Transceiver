@@ -20,7 +20,7 @@ public sealed class TcpServerOptions : BaseOptions
         _ = services.AddTransceiver((config) =>
         {
             ITransceiverSetup setup = config.ConfigureTcp(new(IPAddress.Parse("192.168.0.134"), ServerPort));
-            setup.SetupServer(true);
+            setup.SetupServer(true, cancellationToken);
         }, typeof(Program).Assembly);
         RunServer(services);
     }
@@ -28,6 +28,6 @@ public sealed class TcpServerOptions : BaseOptions
     private static void RunServer(IServiceCollection services)
     {
         ServiceProvider provider = services.BuildServiceProvider();
-        provider.ConfigureTransceiverProvider(typeof(TcpServerOptions).Assembly);
+        provider.ConfigureTransceiverProvider();
     }
 }

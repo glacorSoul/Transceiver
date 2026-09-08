@@ -4,6 +4,7 @@
 
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http.Json;
 using System.Reflection;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,28 +15,17 @@ namespace Transceiver.Benchmarks;
 
 internal class Program
 {
-#pragma warning disable IDE0052 // Remove unread private members
-#pragma warning disable S4487 // Unread "private" fields should be removed
-#pragma warning disable RCS1213 // Remove unused member declaration
-#pragma warning disable S1144 // Unused private types or members should be removed
-#pragma warning disable IDE0051 // Remove unused private members
+#pragma warning disable S1075 // URIs should not be hardcoded
+    private const string UriString = "https://localhost:7124";
+#pragma warning restore S1075 // URIs should not be hardcoded
     private readonly ITransceiver<DirectSumRequest, DirectSumResponse> _directSumTransceiver = default!;
     private readonly ITransceiver<DirectSumRequest, DirectSumResponse> _directSumTransceiverWithoutMetrics = default!;
     private readonly ITransceiver<DirectSumRequestWithReply, DirectSumResponseWithReply> _directSumTransceiverWithReply = default!;
     private readonly ITransceiver<SslSumRequest, SslSumResponse> _sslTransceiver = default!;
     private readonly ITransceiver<TcpSumRequest, TcpSumResponse> _tcpTransceiver = default!;
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning restore S1144 // Unused private types or members should be removed
-#pragma warning restore RCS1213 // Remove unused member declaration
-#pragma warning restore S4487 // Unread "private" fields should be removed
-#pragma warning restore IDE0052 // Remove unread private members
-    private readonly IMediator _mediator;
-    private readonly DirectSumRequest _directSumRequest = new()
-    {
-        A = 1,
-        B = 2
-    };
-    private readonly DirectSumRequestWithReply _directSumRequestWithReply = new()
+    private static readonly TimeSpan WarmupTime = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan ExecutionTime = TimeSpan.FromSeconds(10);
+    private readonly TcpSumRequest _tcpSumRequest = new()
     {
         A = 1,
         B = 2
@@ -45,30 +35,53 @@ internal class Program
         A = 1,
         B = 2
     };
-    private readonly TcpSumRequest _tcpSumRequest = new()
-    {
-        A = 1,
-        B = 2
-    };
 
     public Program()
     {
-        Console.WriteLine(_directSumTransceiver);
-        Console.WriteLine(_directSumTransceiverWithoutMetrics);
-        Console.WriteLine(_directSumTransceiverWithReply);
-        Console.WriteLine(_sslTransceiver);
-        Console.WriteLine(_tcpTransceiver);
-        _mediator = BuildMediatR();
+        Console.Write(_directSumTransceiver);
+        Console.Write(_directSumTransceiverWithoutMetrics);
+        Console.Write(_directSumTransceiverWithReply);
+        Console.Write(_sslTransceiver);
+        Console.Write(_tcpTransceiver);
     }
 
     //------------------------------Transceiver benchmarks------------------------------
+    private static ITransceiver<TcpSumRequest, TcpSumResponse> BuildTcpTransceiver(CancellationToken cancellationToken)
+    {
+        ServiceCollection services = [];
+        _ = services.AddLogging(builder => builder.AddConsole());
+        _ = services.AddTransceiver(t =>
+        {
+            ITransceiverSetup setup = t.ConfigureTcp(new(IPAddress.Loopback, 11125));
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
+        }, Assembly.GetExecutingAssembly());
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        serviceProvider.ConfigureTransceiverProvider();
+        return serviceProvider.GetRequiredService<ITransceiver<TcpSumRequest, TcpSumResponse>>();
+    }
+
+    private static ITransceiver<SslSumRequest, SslSumResponse> BuildSSLTransceiver(CancellationToken cancellationToken)
+    {
+        ServiceCollection services = [];
+        _ = services.AddLogging(builder => builder.AddConsole());
+        _ = services.AddTransceiver(t =>
+        {
+            ITransceiverSetup setup = t.ConfigureTcp(new(IPAddress.Loopback, 12125));
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
+        }, Assembly.GetExecutingAssembly());
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        serviceProvider.ConfigureTransceiverProvider();
+        return serviceProvider.GetRequiredService<ITransceiver<SslSumRequest, SslSumResponse>>();
+    }
+
     private static ITransceiver<DirectSumRequest, DirectSumResponse> BuildDirectTransceiver()
     {
         ServiceCollection services = [];
         _ = services.AddLogging(builder => builder.AddConsole());
-        _ = services.AddTransceiver(t => t.ConfigureDirectProtocol(), Assembly.GetExecutingAssembly());
+        _ = services.AddTransceiver(transceiverConfiguration => transceiverConfiguration.ConfigureDirectProtocol(), Assembly.GetExecutingAssembly());
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        serviceProvider.ConfigureTransceiverProvider(Assembly.GetExecutingAssembly());
         return serviceProvider.GetRequiredService<ITransceiver<DirectSumRequest, DirectSumResponse>>();
     }
 
@@ -76,54 +89,10 @@ internal class Program
     {
         ServiceCollection services = [];
         _ = services.AddLogging(builder => builder.AddConsole());
-        _ = services.AddTransceiver(t => t.ConfigureDirectProtocol(), Assembly.GetExecutingAssembly());
+        _ = services.AddTransceiver(transceiverConfiguration => transceiverConfiguration.ConfigureDirectProtocol(), Assembly.GetExecutingAssembly());
         _ = services.RemoveAll<IPipelineProcessor<DirectSumRequest, DirectSumResponse>>();
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        serviceProvider.ConfigureTransceiverProvider(Assembly.GetExecutingAssembly());
         return serviceProvider.GetRequiredService<ITransceiver<DirectSumRequest, DirectSumResponse>>();
-    }
-
-    private static ITransceiver<DirectSumRequestWithReply, DirectSumResponseWithReply> BuildDirectTransceiverWithReply()
-    {
-        ServiceCollection services = [];
-        _ = services.AddLogging(builder => builder.AddConsole());
-        _ = services.AddTransceiver(t => t.ConfigureDirectProtocol(), Assembly.GetExecutingAssembly());
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
-        serviceProvider.ConfigureTransceiverProvider(Assembly.GetExecutingAssembly());
-        return serviceProvider.GetRequiredService<ITransceiver<DirectSumRequestWithReply, DirectSumResponseWithReply>>();
-    }
-
-    private static ITransceiver<SslSumRequest, SslSumResponse> BuildSslTransceiver()
-    {
-        ServiceCollection services = [];
-        _ = services.AddLogging(builder => builder.AddConsole());
-        _ = services.AddTransceiver(t =>
-        {
-            ITransceiverSetup setup = t.ConfigureSsl(new(IPAddress.Loopback, 1124));
-            setup.SetupServer(false);
-            setup.SetupClient();
-        }, Assembly.GetExecutingAssembly());
-        _ = services.Configure<TransceiverConfiguration>(cfg =>
-        {
-            cfg.CertificateThumbprint = "34abfd4fc9e26a3315e1c398f51ebfc41ba0d553";
-        });
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
-        serviceProvider.ConfigureTransceiverProvider(Assembly.GetExecutingAssembly());
-        return serviceProvider.GetRequiredService<ITransceiver<SslSumRequest, SslSumResponse>>();
-    }
-
-    private static ITransceiver<TcpSumRequest, TcpSumResponse> BuildTcpTransceiver()
-    {
-        ServiceCollection services = [];
-        _ = services.AddLogging(builder => builder.AddConsole());
-        _ = services.AddTransceiver(t => {
-            ITransceiverSetup setup = t.ConfigureTcp(new(IPAddress.Loopback, 1125));
-            setup.SetupServer(false);
-            setup.SetupClient();
-        }, Assembly.GetExecutingAssembly());
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
-        serviceProvider.ConfigureTransceiverProvider(Assembly.GetExecutingAssembly());
-        return serviceProvider.GetRequiredService<ITransceiver<TcpSumRequest, TcpSumResponse>>();
     }
 
     private static IMediator BuildMediatR()
@@ -135,47 +104,75 @@ internal class Program
         return serviceProvider.GetRequiredService<IMediator>();
     }
 
-    private static async Task<double> RunTransceiverTest<TRequest, TResponse>(ITransceiver<TRequest, TResponse> transceiver, TRequest request)
+    private static async Task<double> RunHTTPTest(string uriString)
     {
+        HttpClient httpClient = new()
+        {
+            BaseAddress = new Uri(uriString)
+        };
         using CancellationTokenSource source1 = new();
-        source1.CancelAfter(TimeSpan.FromMinutes(2));
+        source1.CancelAfter(WarmupTime);
         //warmup
         while (!source1.IsCancellationRequested)
         {
-            _ = await transceiver.TransceiveOnceAsync(request, CancellationToken.None);
+            _ = await httpClient.GetFromJsonAsync<int>("/sum/1/2");
         }
 
         int n = 0;
         using CancellationTokenSource source2 = new();
-        source2.CancelAfter(TimeSpan.FromMinutes(2));
+        source2.CancelAfter(ExecutionTime);
         long startTime = Stopwatch.GetTimestamp();
         while (!source2.IsCancellationRequested)
         {
-            _ = await transceiver.TransceiveOnceAsync(request, CancellationToken.None);
+            _ = await httpClient.GetFromJsonAsync<int>("/sum/1/2");
             n++;
         }
         TimeSpan elapsed = Stopwatch.GetElapsedTime(startTime);
         return n / elapsed.TotalSeconds;
     }
 
-    private static async Task<double> RunMediatRTest(IMediator mediator)
+    private static async Task<double> RunMediatRTest()
     {
-        Program program = new();
+        IMediator mediator = BuildMediatR();
         using CancellationTokenSource source1 = new();
-        source1.CancelAfter(TimeSpan.FromMinutes(2));
+        source1.CancelAfter(WarmupTime);
+        DirectSumRequest request = new() { A = 1, B = 2 };
         //warmup
         while (!source1.IsCancellationRequested)
         {
-            _ = await mediator.Send(program._directSumRequest, CancellationToken.None);
+            _ = await mediator.Send(request, CancellationToken.None);
         }
 
         int n = 0;
         using CancellationTokenSource source2 = new();
-        source2.CancelAfter(TimeSpan.FromMinutes(2));
+        source2.CancelAfter(ExecutionTime);
         long startTime = Stopwatch.GetTimestamp();
         while (!source2.IsCancellationRequested)
         {
-            _ = await mediator.Send(program._directSumRequest, CancellationToken.None);
+            _ = await mediator.Send(request, CancellationToken.None);
+            n++;
+        }
+        TimeSpan elapsed = Stopwatch.GetElapsedTime(startTime);
+        return n / elapsed.TotalSeconds;
+    }
+
+    private static async Task<double> RunTransceiverTest<TRequest, TResponse>(ITransceiver<TRequest, TResponse> transceiver, TRequest request)
+    {
+        using CancellationTokenSource source1 = new();
+        source1.CancelAfter(WarmupTime);
+        //warmup
+        while (!source1.IsCancellationRequested)
+        {
+            _ = await transceiver.TransceiveOnceAsync(request, CancellationToken.None);
+        }
+
+        int n = 0;
+        using CancellationTokenSource source2 = new();
+        source2.CancelAfter(ExecutionTime);
+        long startTime = Stopwatch.GetTimestamp();
+        while (!source2.IsCancellationRequested)
+        {
+            _ = await transceiver.TransceiveOnceAsync(request, CancellationToken.None);
             n++;
         }
         TimeSpan elapsed = Stopwatch.GetElapsedTime(startTime);
@@ -186,25 +183,29 @@ internal class Program
     {
         Program program = new();
 
+        Console.WriteLine("Running TCP transceiver benchmark...");
+        double tcpThroughput = await RunTransceiverTest(BuildTcpTransceiver(CancellationToken.None), program._tcpSumRequest);
 
-        double sslThroughput = await RunTransceiverTest(BuildSslTransceiver(), program._sslSumRequest);
+        Console.WriteLine("Running MediatR benchmark...");
+        double mediatRThroughput = await RunMediatRTest();
 
-        double tcpThroughput = await RunTransceiverTest(BuildTcpTransceiver(), program._tcpSumRequest);
+        Console.WriteLine("Running SSL transceiver benchmark...");
+        double sslThroughput = await RunTransceiverTest(BuildSSLTransceiver(CancellationToken.None), program._sslSumRequest);
 
-        double mediatRThroughput = await RunMediatRTest(program._mediator);
+        Console.WriteLine("Running Direct transceiver benchmark without metrics...");
+        double directWithoutMetricsThroughput = await RunTransceiverTest(BuildDirectTransceiverWithoutMetrics(), new DirectSumRequest { A = 1, B = 2 });
 
-        double directThroughputNoMetrics = await RunTransceiverTest(BuildDirectTransceiverWithoutMetrics(), program._directSumRequest);
+        Console.WriteLine("Running Direct transceiver benchmark...");
+        double directThroughput = await RunTransceiverTest(BuildDirectTransceiver(), new DirectSumRequest { A = 1, B = 2 });
 
-        double directThroughput = await RunTransceiverTest(BuildDirectTransceiver(), program._directSumRequest);
+        Console.WriteLine("Running HTTP benchmark...");
+        double httpThroughput = await RunHTTPTest(UriString);
 
-        double directWithReplyThroughput = await RunTransceiverTest(BuildDirectTransceiverWithReply(), program._directSumRequestWithReply);
-
-
-        Console.WriteLine($"Direct throughput without metrics: {directThroughputNoMetrics} requests/sec. "); //4345653.299779383
-        Console.WriteLine($"Direct throughput: {directThroughput} requests/sec. "); //2730201.623160326
-        Console.WriteLine($"Direct throughput with reply: {directWithReplyThroughput} requests/sec. "); //2651022.122785491
-        Console.WriteLine($"TCP throughput: {tcpThroughput} requests/sec. ");
-        Console.WriteLine($"SSL throughput: {sslThroughput} requests/sec. ");
-        Console.WriteLine($"MediatR throughput: {mediatRThroughput} requests/sec. ");
+        Console.WriteLine($"Direct without metrics throughput: {directWithoutMetricsThroughput} requests/s");
+        Console.WriteLine($"MediatR throughput: {mediatRThroughput} requests/s");
+        Console.WriteLine($"Direct throughput: {directThroughput} requests/s");
+        Console.WriteLine($"TCP throughput: {tcpThroughput} requests/s");
+        Console.WriteLine($"SSL throughput: {sslThroughput} requests/s");
+        Console.WriteLine($"HTTP throughput: {httpThroughput} requests/s");
     }
 }

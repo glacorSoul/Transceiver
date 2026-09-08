@@ -41,8 +41,8 @@ public sealed class KafkaOptions : BaseOptions
         };
         _ = services.AddTransceiverKafka(setup =>
         {
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, adminConfig, producerConfig, consumerConfig, typeof(Program).Assembly);
         RunSamples(services, cancellationToken);
     }

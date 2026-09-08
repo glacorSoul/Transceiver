@@ -11,7 +11,10 @@ public class TransceiverHeader
     public const int Size = sizeof(int) + sizeof(ushort) + SizeOfGuid;
     public static readonly int MinHeaderSizeString = 2 + Guid.Empty.ToString().Length;
     private const int SizeOfGuid = 16;
-    private static readonly TypeIdAssigner _typeIdMap = BootStrap.ServiceProvider.GetRequiredService<TypeIdAssigner>();
+    private static TypeIdAssigner TypeIdMap()
+    {
+        return BootStrap.ServiceProvider.GetRequiredService<TypeIdAssigner>();
+    }
 
     public TransceiverHeader(byte[] headerBuffer)
     {
@@ -44,7 +47,7 @@ public class TransceiverHeader
     {
         get
         {
-            return _typeIdMap.GetType(TypeId);
+            return TypeIdMap().GetType(TypeId);
         }
     }
 
@@ -52,7 +55,7 @@ public class TransceiverHeader
 
     public static TransceiverHeader CreateHeader(Type type, int dataLength, Guid requestId)
     {
-        ushort typeId = _typeIdMap.GetTypeId(type);
+        ushort typeId = TypeIdMap().GetTypeId(type);
         TransceiverHeader header = new()
         {
             MessageSize = dataLength,

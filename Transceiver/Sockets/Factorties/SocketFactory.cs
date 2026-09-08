@@ -12,7 +12,6 @@ public abstract class SocketFactory : ISocketFactory
 {
     private static readonly ConcurrentDictionary<object, SocketFactory> FactoryMap = [];
 
-    private readonly Lazy<Task<Socket>> _acceptSocket;
     private readonly Lazy<Socket> _connectSocket;
     private readonly Lazy<Socket> _listenSocket;
     private object? _factoryIdentifier;
@@ -22,7 +21,6 @@ public abstract class SocketFactory : ISocketFactory
         FactoryIdentifier = factoryIdentifier;
         _listenSocket = new Lazy<Socket>(() => Listen(factoryIdentifier));
         _connectSocket = new Lazy<Socket>(() => Connect(factoryIdentifier));
-        _acceptSocket = new Lazy<Task<Socket>>(AcceptAsync);
         _ = FactoryMap.GetOrAdd(FactoryIdentifier, this);
     }
 
@@ -56,7 +54,7 @@ public abstract class SocketFactory : ISocketFactory
 
     public Task<Socket> AcceptAsync(Socket listenSocket)
     {
-        return FactoryMap[FactoryIdentifier]._acceptSocket.Value;
+        return FactoryMap[FactoryIdentifier]._listenSocket.Value.TryAcceptAsync();
     }
 
     public Socket Connect()
@@ -83,10 +81,5 @@ public abstract class SocketFactory : ISocketFactory
     protected virtual object ReEvaluateIdentifier(object factoryIdentifier)
     {
         return factoryIdentifier.ToString()!;
-    }
-
-    private Task<Socket> AcceptAsync()
-    {
-        return _listenSocket.Value.TryAcceptAsync();
     }
 }

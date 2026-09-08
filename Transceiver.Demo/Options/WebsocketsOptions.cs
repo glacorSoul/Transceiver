@@ -21,8 +21,8 @@ public sealed class WebsocketsOptions : BaseOptions
     {
         _ = services.AddTransceiverWebSockets(setup =>
         {
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, new Uri(Uri), typeof(Program).Assembly);
         _ = services.Configure<TransceiverConfiguration>(cfg =>
         {

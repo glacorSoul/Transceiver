@@ -22,8 +22,8 @@ public sealed class AmazonSqsOptions : BaseOptions
         string secret = lines[2][lines[2].LastIndexOf(" ", StringComparison.InvariantCultureIgnoreCase)..].Trim();
         _ = services.AddTransceiverAmazonSqs(setup =>
         {
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, () => new AmazonSQSClient(id, secret, RegionEndpoint.EUSouth1), typeof(Program).Assembly);
         RunSamples(services, cancellationToken);
     }

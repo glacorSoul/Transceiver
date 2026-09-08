@@ -32,7 +32,7 @@ public class ChannelAsyncSource<T> : IAsyncSource<T>
 
     public async IAsyncEnumerable<T> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        while (await _channel.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
+        while (await _channel.Reader.WaitToReadAsync(cancellationToken))
         {
             while (_channel.Reader.TryRead(out T? item))
             {

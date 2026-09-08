@@ -25,10 +25,10 @@ public sealed class WebsocketsSeverOptions : BaseOptions
         });
         _ = services.AddTransceiverWebSockets(setup =>
         {
-            setup.SetupServer(true);
+            setup.SetupServer(true, cancellationToken);
         }, new Uri(Uri), typeof(Program).Assembly);
 
         ServiceProvider provider = services.BuildServiceProvider();
-        provider.ConfigureTransceiverProvider(typeof(BaseOptions).Assembly);
+        provider.ConfigureTransceiverProvider();
     }
 }

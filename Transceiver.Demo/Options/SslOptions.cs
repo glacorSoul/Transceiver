@@ -23,8 +23,8 @@ public sealed class SslOptions : BaseOptions
         _ = services.AddTransceiver((config) =>
         {
             ITransceiverSetup setup = config.ConfigureSsl(new(IPAddress.Loopback, ServerPort));
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, typeof(Program).Assembly);
         _ = services.Configure<TransceiverConfiguration>(cfg =>
         {

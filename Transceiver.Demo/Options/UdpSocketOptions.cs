@@ -20,8 +20,8 @@ public sealed class UdpSocketOptions : BaseOptions
         _ = services.AddTransceiver((config) =>
         {
             ITransceiverSetup setup = config.ConfigureUdp(new(IPAddress.Loopback, ServerPort));
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, typeof(Program).Assembly);
         RunSamples(services, cancellationToken);
     }

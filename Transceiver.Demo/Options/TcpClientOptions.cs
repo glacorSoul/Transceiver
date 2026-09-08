@@ -20,7 +20,7 @@ public sealed class TcpClientOptions : BaseOptions
         _ = services.AddTransceiver((config) =>
         {
             ITransceiverSetup setup = config.ConfigureTcp(new(IPAddress.Loopback, ServerPort));
-            setup.SetupClient();
+            setup.SetupClient(cancellationToken);
         }, typeof(Program).Assembly);
         RunSamples(services, cancellationToken);
     }

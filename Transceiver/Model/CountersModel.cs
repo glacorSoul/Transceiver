@@ -44,46 +44,46 @@ internal sealed class CountersModel<TRequest, TResponse> : CountersModel, IDispo
     {
         string metricName = typeof(TRequest).ToShortPrettyString() + typeof(TResponse).ToShortPrettyString();
         Name = metricName;
-        NErrorsCounter = Meter.CreateCounter<long>($"requests_error_total_{metricName}",
+        NErrorsCounter = Meter.CreateCounter<long>($"transceiver_requests_error_total_{metricName}",
             "errors",
             "Total number of requests that resulted in an error"
         );
-        NRequestsCounter = Meter.CreateCounter<long>($"requests_total_{metricName}",
+        NRequestsCounter = Meter.CreateCounter<long>($"transceiver_requests_total_{metricName}",
             "requests",
             "Total number of requests processed"
         );
-        NSlowRequestsCounter = Meter.CreateCounter<long>($"requests_slow_total_{metricName}",
+        NSlowRequestsCounter = Meter.CreateCounter<long>($"transceiver_requests_slow_total_{metricName}",
             "requests",
             $"Total number of requests that exceeded the execution SLA"
         );
-        ExecutionTimeCounter = Meter.CreateHistogram<double>($"request_execution_time_ms_{metricName}",
+        ExecutionTimeCounter = Meter.CreateHistogram<double>($"transceiver_request_execution_time_ms_{metricName}",
             "ms",
             "Execution time of requests in milliseconds"
         );
-        RequestsPerSecond = Meter.CreateHistogram<double>($"requests_per_second_{metricName}",
+        RequestsPerSecond = Meter.CreateHistogram<double>($"transceiver_requests_per_second_{metricName}",
             "rps",
             "Number of requests processed per second"
         );
         _nRequestsListener = new();
         _nRequestsListener.EnableMeasurementEvents(NRequestsCounter);
         long now = Stopwatch.GetTimestamp();
-        _nRequestsListener.SetMeasurementEventCallback<long>((instrument, measurment, tags, state) =>
+        _nRequestsListener.SetMeasurementEventCallback<long>((instrument, measurement, tags, state) =>
         {
             TimeSpan elapsed = TimeSpan.FromTicks(Stopwatch.GetTimestamp() - now);
-            if (measurment >= 1)
+            if (measurement >= 1)
             {
-                double requestsPerSecond = measurment / elapsed.TotalSeconds;
+                double requestsPerSecond = measurement / elapsed.TotalSeconds;
                 RequestsPerSecond.Record(requestsPerSecond, tags);
             }
         });
         _nErrorsListener = new();
         _nErrorsListener.EnableMeasurementEvents(NErrorsCounter);
-        _nErrorsListener.SetMeasurementEventCallback<long>((instrument, measurment, tags, state) =>
+        _nErrorsListener.SetMeasurementEventCallback<long>((instrument, measurement, tags, state) =>
         {
             TimeSpan elapsed = TimeSpan.FromTicks(Stopwatch.GetTimestamp() - now);
-            if (measurment >= 1)
+            if (measurement >= 1)
             {
-                double requestsPerSecond = measurment / elapsed.TotalSeconds;
+                double requestsPerSecond = measurement / elapsed.TotalSeconds;
                 ErrorsPerSecond.Record(requestsPerSecond, tags);
             }
         });

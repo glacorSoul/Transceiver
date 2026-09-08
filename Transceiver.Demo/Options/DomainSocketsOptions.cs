@@ -16,8 +16,8 @@ public sealed class DomainSocketsOptions : BaseOptions
     {
         _ = services.AddTransceiverDomainSockets(setup =>
         {
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, typeof(Program).Assembly);
         RunSamples(services, cancellationToken);
     }

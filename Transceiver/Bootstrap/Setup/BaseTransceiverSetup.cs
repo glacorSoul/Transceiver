@@ -46,7 +46,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
         return transceiver;
     }
 
-    public virtual void SetupClient()
+    public virtual void SetupClient(CancellationToken cancellationToken)
     {
         Services.TryAddSingleton<TypeIdAssigner>();
         Services.TryAddSingleton(ITransceiverType, provider =>
@@ -54,7 +54,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
             object transceiver = CreateTransceiver(provider);
             if (transceiver is ITransceiver<ServiceDiscoveryRequestModel, ServiceDiscoveryResponseModel> serviceDiscoveryTransceiver)
             {
-                _ = serviceDiscoveryTransceiver.TransceiveOnceAsync(new(), CancellationToken.None)
+                _ = serviceDiscoveryTransceiver.TransceiveOnceAsync(new(), cancellationToken)
                     .ContinueWith(response =>
                     {
                         TypeIdAssigner idAssigner = provider.GetRequiredService<TypeIdAssigner>();
@@ -65,7 +65,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
         });
     }
 
-    public virtual void SetupServer(bool serverOnly)
+    public virtual void SetupServer(bool serverOnly, CancellationToken cancellationToken)
     {
         _ = Services.AddSingleton(ITransceiverType, provider =>
         {
@@ -79,7 +79,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
             const string startAsyncMethod = nameof(ITransceiver<,>.StartProcessingRequestsAsync);
             Type[] startAsyncArguments = [ProcessorType, typeof(CancellationToken)];
             MethodInfo start = transceiver.GetType().GetMethod(startAsyncMethod, startAsyncArguments)!;
-            _ = (Task)start.Invoke(transceiver, [processor, CancellationToken.None])!;
+            _ = (Task)start.Invoke(transceiver, [processor, cancellationToken])!;
             return transceiver;
         });
         _ = Services.AddSingleton(provider =>

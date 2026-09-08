@@ -19,8 +19,8 @@ public sealed class GooglePubSubOptions : BaseOptions
     {
         _ = services.AddTransceiverGooglePubSub(setup =>
         {
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, new GooglePubSubConfig
         {
             ProjectId = ProjectId

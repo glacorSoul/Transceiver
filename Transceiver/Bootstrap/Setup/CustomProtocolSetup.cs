@@ -16,15 +16,15 @@ public class CustomProtocolSetup : BaseTransceiverSetup
         _protocolType = protocolType;
     }
 
-    public override void SetupClient()
+    public override void SetupClient(CancellationToken cancellationToken)
     {
-        base.SetupClient();
+        base.SetupClient(cancellationToken);
         _ = Services.AddSingleton(typeof(ITransceiverProtocol), _protocolType);
     }
 
-    public override void SetupServer(bool serverOnly)
+    public override void SetupServer(bool serverOnly, CancellationToken cancellationToken)
     {
-        base.SetupServer(serverOnly);
+        base.SetupServer(serverOnly, cancellationToken);
         _ = Services.AddSingleton(typeof(ITransceiverProtocol), _protocolType);
     }
 }

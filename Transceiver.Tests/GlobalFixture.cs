@@ -25,24 +25,24 @@ public class GlobalFixture
             if (config.Type == typeof(ITransceiver<UdpSumRequest, UdpSumResponse>))
             {
                 ITransceiverSetup setup = config.ConfigureUdp(new(IPAddress.Loopback, 8889));
-                setup.SetupServer(false);
-                setup.SetupClient();
+                setup.SetupServer(false, CancellationToken.None);
+                setup.SetupClient(CancellationToken.None);
             }
             else if (config.Type == typeof(ITransceiver<TcpSumRequest, TcpSumResponse>))
             {
                 ITransceiverSetup setup = config.ConfigureTcp(new(IPAddress.Loopback, 8889));
-                setup.SetupServer(false);
-                setup.SetupClient();
+                setup.SetupServer(false, CancellationToken.None);
+                setup.SetupClient(CancellationToken.None);
             }
             else
             {
                 ITransceiverSetup setup = config.ConfigureTcp(new(IPAddress.Loopback, 8889));
-                setup.SetupServer(false);
-                setup.SetupClient();
+                setup.SetupServer(false, CancellationToken.None);
+                setup.SetupClient(CancellationToken.None);
             }
         }, assembly);
         ServiceProvider provider = services.BuildServiceProvider();
-        provider.ConfigureTransceiverProvider(assembly);
+        provider.ConfigureTransceiverProvider();
         Provider = provider;
     }
 

@@ -20,8 +20,8 @@ public sealed class ZeroMqOptions : BaseOptions
     {
         _ = services.AddTransceiverZeroMq((setup) =>
         {
-            setup.SetupServer(false);
-            setup.SetupClient();
+            setup.SetupServer(false, cancellationToken);
+            setup.SetupClient(cancellationToken);
         }, new(IPAddress.Loopback, Port), typeof(Program).Assembly);
         RunSamples(services, CancellationToken.None);
     }
