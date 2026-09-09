@@ -1,0 +1,14 @@
+title Publish Subscribe
+
+participant Client1
+participant Client2
+participant Server
+
+Client1->Server:Subscribe Fibonacci 
+Client2->Server:Subscribe Fibonacci
+
+Server->Client1: 1
+Server->Client2: 1
+
+Server->Client2: ETC
+Server->Client1: ETC

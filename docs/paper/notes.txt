@@ -1,0 +1,22 @@
+# Performance Metrics
+
+28 MAY
+
+Direct 	- 91k/s
+TCP	- 2.3k/s
+
+
+# Meeting - 29/05/2026
+
+1. trab relacionado
+2. avaliação
+3. aplicação de exemplos e comprar com outras bibliotecas
+
+4. Pub/sub com vários servidores 
+	ponto-a-ponto
+	ponto-multiponto
+	
+5. https://capnproto.org/rpc.html
+
+6. Fallback de tipo de comunicação
+

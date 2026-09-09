@@ -1,0 +1,8 @@
+title Queue
+
+participant Producer
+participant Queue Mail
+participant Consumer
+
+Producer->Queue Mail:Olá Mundo
+Queue Mail->Consumer:Olá Mundo

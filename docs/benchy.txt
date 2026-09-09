@@ -1,0 +1,11 @@
+Direct throughput without metrics: 	6134710.76328179 requests/sec.
+MediatR throughput: 				4506777.493136208 requests/sec.
+Direct throughput: 					3831811.84014944 requests/sec.
+Direct throughput with reply: 		2221345.4454344944 requests/sec.
+TCP throughput: 					14931.818057459965 requests/sec.
+HTTPS throughput: 					7014.997759880579 requests/sec.
+SSL throughput: 					2405.2293556333793 requests/sec.
+
+Explicar quais são os bottlenecks.
+etapas: resposta, pedido, serialização, processamento.
+Soma, Fibonnaci, Tempo.

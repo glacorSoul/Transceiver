@@ -1,0 +1,12 @@
+title Request Response
+
+participant Client
+participant Server
+
+Client->Server:Request
+space 0
+activate Server
+Server->(1)Server:Process
+space 0
+deactivate Server
+Server->Client:Response
