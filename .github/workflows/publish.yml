@@ -1,0 +1,94 @@
+name: Publish Packages
+
+on:
+   workflow_dispatch:
+
+permissions:
+   contents: read
+
+jobs:
+   build:
+      runs-on: ubuntu-latest
+      environment: nuget
+      permissions:
+         contents: write
+
+      steps:
+         - uses: actions/checkout@v5
+         - name: Setup .NET
+           uses: actions/setup-dotnet@v5
+           with:
+              dotnet-version: 11.0.x
+         - name: Restore dependencies
+           run: dotnet restore Transceiver.sln
+         - name: Build
+           run: dotnet build Transceiver.sln --configuration Release --no-restore
+         - name: Test
+           run: dotnet test Transceiver.sln --configuration Release --no-build --verbosity normal
+         - parallel:
+           - name: Publish Transceiver
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver\Transceiver.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+           - name: Publish Transceiver.Generator
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver.Generator\Transceiver.Generator.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+           - name: Publish Transceiver.AmazonSqs
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver.AmazonSqs\Transceiver.AmazonSqs.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+           - name: Publish Transceiver.AzureQueue
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver.AzureQueue\Transceiver.AzureQueue.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+           - name: Publish Transceiver.DomainSockets
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver.DomainSockets\Transceiver.DomainSockets.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+           - name: Publish Transceiver.GooglePubSub
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver.GooglePubSub\Transceiver.GooglePubSub.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+           - name: Publish Transceiver.Kafka
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver.Kafka\Transceiver.Kafka.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+           - name: Publish Transceiver.RabbitMq
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver.RabbitMq\Transceiver.RabbitMq.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+           - name: Publish Transceiver.ZeroMq
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver.ZeroMq\Transceiver.ZeroMq.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+           - name: Publish Transceiver.Websockets
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver.Websockets\Transceiver.Websockets.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+           - name: Publish Transceiver.Serializer.SerializerMessagePack
+             uses: alirezanet/publish-nuget@v3.1.0
+             with:
+                PROJECT_FILE_PATH: Transceiver\Transceiver.Serializer.SerializerMessagePack\Transceiver.Serializer.SerializerMessagePack.csproj
+                INCLUDE_SYMBOLS: true
+                NUGET_KEY: ${{secrets.NUGET_API_KEY}}
