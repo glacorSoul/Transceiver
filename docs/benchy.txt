@@ -9,3 +9,4 @@ SSL throughput: 					2405.2293556333793 requests/sec.
 Explicar quais são os bottlenecks.
 etapas: resposta, pedido, serialização, processamento.
 Soma, Fibonnaci, Tempo.
+
