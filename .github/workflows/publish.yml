@@ -30,65 +30,76 @@ jobs:
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver/Transceiver.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
            - name: Publish Transceiver.Generator
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver.Generator/Transceiver.Generator.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
            - name: Publish Transceiver.AmazonSqs
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver.AmazonSqs/Transceiver.AmazonSqs.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
            - name: Publish Transceiver.AzureQueue
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver.AzureQueue/Transceiver.AzureQueue.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
            - name: Publish Transceiver.DomainSockets
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver.DomainSockets/Transceiver.DomainSockets.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
            - name: Publish Transceiver.GooglePubSub
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver.GooglePubSub/Transceiver.GooglePubSub.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
            - name: Publish Transceiver.Kafka
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver.Kafka/Transceiver.Kafka.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
            - name: Publish Transceiver.RabbitMq
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver.RabbitMq/Transceiver.RabbitMq.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
            - name: Publish Transceiver.ZeroMq
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver.ZeroMq/Transceiver.ZeroMq.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
            - name: Publish Transceiver.Websockets
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver.Websockets/Transceiver.Websockets.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
            - name: Publish Transceiver.Serializer.SerializerMessagePack
              uses: alirezanet/publish-nuget@v3.1.0
              with:
                 PROJECT_FILE_PATH: Transceiver.Serializer.SerializerMessagePack/Transceiver.Serializer.SerializerMessagePack.csproj
+                VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{secrets.NUGET_API_KEY}}
