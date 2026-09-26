@@ -1,5 +1,16 @@
 # Changelog
 
+## [6.0.0](https://github.com/glacorSoul/Transceiver/compare/6.0.0...5.0.0)  (2026-09-26)
+
+### Features
+
+Transceiver now has github workflow/pipeline to publish packages.
+
+### Bug Fixes
+
+SSL should now work correctly.
+It should be possible to switch protocols within the same process.
+
 ## [5.0.0](https://github.com/glacorSoul/Transceiver/compare/5.0.0...4.0.0)  (2026-06-26)
 
 ### Features
