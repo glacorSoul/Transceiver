@@ -24,7 +24,7 @@ public sealed class SumExample(ITransceiver<SumRequest, SumResponse> transceiver
     public override void ProcessResponse(SumRequest request, SumResponse response)
     {
         Debug.Assert(response.Result == request.A + request.B, "Sum is incorrect");
-        if (Interlocked.Increment(ref n) % 1000 == 0)
+        if (Interlocked.Increment(ref n) % 20000 == 0)
         {
             Console.WriteLine($"Sum: {request.A} + {request.B} = {response.Result}");
         }

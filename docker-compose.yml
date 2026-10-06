@@ -1,11 +1,45 @@
 services:
-  transceiver.demo.smaller:
-    image: ${DOCKER_REGISTRY-}transceiverdemosmaller
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "8889:8889"   # Prometheus exporter endpoint
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - otel-collector
+  node-exporter:
+    image: 'prom/node-exporter:latest'
+    container_name: node-exporter
+    restart: unless-stopped
+    expose:
+      - 9100
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=password
+    depends_on:
+      - prometheus
+  transceiver-demo:
+    image: ${DOCKER_REGISTRY-}transceiverdemo
+    ports:
+      - '11112:11112'
     build:
       context: .
       dockerfile: Transceiver.Demo.Smaller/Dockerfile
-    command:
-        - "tcpClient"
-        - "-p 2244"
-    extra_hosts:
-        - "dockerhost:192.168.0.134"
+    command: tcp -p 11112
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      - otel-collector

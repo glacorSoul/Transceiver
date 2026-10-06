@@ -9,7 +9,7 @@ using Transceiver.Demo.Smaller.Options;
 
 namespace Transceiver.Demo.Smaller;
 
-[Verb(name: "tcp", isDefault: false)]
+[Verb(name: "tcp", isDefault: true)]
 public sealed class TcpSocketOptions : BaseOptions
 {
     [Option('p', "Port", Required = false, HelpText = "Server port to connect to.", Default = 11111)]

@@ -7,8 +7,24 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
 using Transceiver;
 using Transceiver.Demo.Smaller;
+
+
+string otlpEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT")
+    ?? "http://localhost:4317";
+
+MeterProvider meterProvider = Sdk.CreateMeterProviderBuilder()
+    .AddMeter("Transceiver")
+    .AddOtlpExporter(options =>
+    {
+        options.Endpoint = new Uri(otlpEndpoint);
+        options.Protocol = OtlpExportProtocol.Grpc;
+    })
+    .Build();
 
 await Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((context, config) =>
@@ -24,6 +40,7 @@ await Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
         _ = services.Configure<TransceiverConfiguration>(context.Configuration.GetSection("Transceiver"));
+        _ = services.AddSingleton(meterProvider);
     })
     .ConfigureServices((context, services) => _ = ParseArguments(args, services)).RunConsoleAsync();
 
@@ -34,6 +51,10 @@ ParserResult<object> ParseArguments(string[] args, IServiceCollection services)
         TcpServerOptions,
         TcpClientOptions
     >(args)
+        .WithParsed<TcpSocketOptions>(options =>
+        {
+            options.Run(services, CancellationToken.None);
+        })
         .WithParsed<TcpServerOptions>(options =>
         {
             options.Run(services, CancellationToken.None);

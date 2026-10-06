@@ -1,76 +1,83 @@
 {
-    "profiles": {
-        "Transciever.AmazonSQS": {
-            "commandName": "Project",
-            "commandLineArgs": "amazonSqs"
-        },
-        "Transciever.AzureQueue": {
-            "commandName": "Project",
-            "commandLineArgs": "azureQueue"
-        },
-        "Transciever.Benchmark": {
-            "commandName": "Project",
-            "commandLineArgs": "bench"
-        },
-        "Transciever.Direct": {
-            "commandName": "Project",
-            "commandLineArgs": "direct"
-        },
-        "Transciever.DomainSocket": {
-            "commandName": "Project",
-            "commandLineArgs": "domainSockets"
-        },
-        "Transciever.GooglePubSub": {
-            "commandName": "Project",
-            "commandLineArgs": "googlePubSub -p transceiver-470011"
-        },
-        "Transciever.Kafka": {
-            "commandName": "Project",
-            "commandLineArgs": "kafka"
-        },
-        "Transciever.RabbitMq": {
-            "commandName": "Project",
-            "commandLineArgs": "rabbitMq"
-        },
-        "Transciever.SSL": {
-            "commandName": "Project",
-            "commandLineArgs": "ssl -c 34abfd4fc9e26a3315e1c398f51ebfc41ba0d553"
-        },
-        "Transciever.TCP": {
-            "commandName": "Project",
-            "commandLineArgs": "tcp"
-        },
-        "Transciever.TCPServer": {
-            "commandName": "Project",
-            "commandLineArgs": "tcpServer"
-        },
-        "Transciever.TCPClient": {
-            "commandName": "Project",
-            "commandLineArgs": "tcpClient"
-        },
-        "Transciever.UDP": {
-            "commandName": "Project",
-            "commandLineArgs": "udp"
-        },
-        "Transciever.Websockets": {
-            "commandName": "Project",
-            "commandLineArgs": "wss -c 1c39b7a9e05f5c8124189a950a51779ecd1fdf93"
-        },
-        "Transciever.WebsocketsClient": {
-            "commandName": "Project",
-            "commandLineArgs": "wssClient -c 1c39b7a9e05f5c8124189a950a51779ecd1fdf93"
-        },
-        "Transciever.WebsocketsServer": {
-            "commandName": "Project",
-            "commandLineArgs": "wssServer -c 1c39b7a9e05f5c8124189a950a51779ecd1fdf93"
-        },
-        "Transciever.ZeroMQ": {
-            "commandName": "Project",
-            "commandLineArgs": "zeroMq"
-        },
-        "Transciever.speedy": {
-            "commandName": "Project",
-            "commandLineArgs": "speedy"
-        }
+  "profiles": {
+    "Transciever.AmazonSQS": {
+      "commandName": "Project",
+      "commandLineArgs": "amazonSqs"
+    },
+    "Transciever.AzureQueue": {
+      "commandName": "Project",
+      "commandLineArgs": "azureQueue"
+    },
+    "Transciever.Benchmark": {
+      "commandName": "Project",
+      "commandLineArgs": "bench"
+    },
+    "Transciever.Direct": {
+      "commandName": "Project",
+      "commandLineArgs": "direct"
+    },
+    "Transciever.DomainSocket": {
+      "commandName": "Project",
+      "commandLineArgs": "domainSockets"
+    },
+    "Transciever.GooglePubSub": {
+      "commandName": "Project",
+      "commandLineArgs": "googlePubSub -p transceiver-470011"
+    },
+    "Transciever.Kafka": {
+      "commandName": "Project",
+      "commandLineArgs": "kafka"
+    },
+    "Transciever.RabbitMq": {
+      "commandName": "Project",
+      "commandLineArgs": "rabbitMq"
+    },
+    "Transciever.SSL": {
+      "commandName": "Project",
+      "commandLineArgs": "ssl -c 34abfd4fc9e26a3315e1c398f51ebfc41ba0d553"
+    },
+    "Transciever.TCP": {
+      "commandName": "Project",
+      "commandLineArgs": "tcp"
+    },
+    "Transciever.TCPServer": {
+      "commandName": "Project",
+      "commandLineArgs": "tcpServer"
+    },
+    "Transciever.TCPClient": {
+      "commandName": "Project",
+      "commandLineArgs": "tcpClient"
+    },
+    "Transciever.UDP": {
+      "commandName": "Project",
+      "commandLineArgs": "udp"
+    },
+    "Transciever.Websockets": {
+      "commandName": "Project",
+      "commandLineArgs": "wss -c 1c39b7a9e05f5c8124189a950a51779ecd1fdf93"
+    },
+    "Transciever.WebsocketsClient": {
+      "commandName": "Project",
+      "commandLineArgs": "wssClient -c 1c39b7a9e05f5c8124189a950a51779ecd1fdf93"
+    },
+    "Transciever.WebsocketsServer": {
+      "commandName": "Project",
+      "commandLineArgs": "wssServer -c 1c39b7a9e05f5c8124189a950a51779ecd1fdf93"
+    },
+    "Transciever.ZeroMQ": {
+      "commandName": "Project",
+      "commandLineArgs": "zeroMq"
+    },
+    "Transciever.speedy": {
+      "commandName": "Project",
+      "commandLineArgs": "speedy"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
     }
+  }
 }

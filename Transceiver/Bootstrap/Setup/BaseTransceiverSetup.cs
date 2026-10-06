@@ -2,11 +2,12 @@
 // Transceiver is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Reflection;
+using Transceiver.Protocol;
 using Transceiver.Requests;
 
 namespace Transceiver;
@@ -89,11 +90,11 @@ public class BaseTransceiverSetup : ITransceiverSetup
         });
     }
 
-    private static ResilientProtocol CreateResilientProtocol(IServiceProvider provider)
+    private static MeasuredProtocol CreateResilientProtocol(IServiceProvider provider)
     {
         ITransceiverProtocol protocol = provider.GetRequiredService<ITransceiverProtocol>();
         ILogger<ResilientProtocol> resilientProtocol = provider.GetRequiredService<ILogger<ResilientProtocol>>();
         IOptions<TransceiverConfiguration> config = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
-        return new ResilientProtocol(protocol, resilientProtocol, config);
+        return new MeasuredProtocol(new ResilientProtocol(protocol, resilientProtocol, config));
     }
 }

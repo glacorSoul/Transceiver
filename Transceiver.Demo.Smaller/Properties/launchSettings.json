@@ -1,16 +1,19 @@
 {
-  "profiles": {
-    "Transciever.TCPServer": {
-      "commandName": "Project",
-      "commandLineArgs": "tcpServer -p 2244"
-    },
-    "Transciever.TCPClient": {
-      "commandName": "Project",
-      "commandLineArgs": "tcpClient -p 2244"
-    },
-    "Container (.NET SDK)": {
-        "commandName": "SdkContainer",
-        "commandLineArgs": "tcpClient -p 2244"
+    "profiles": {
+        "Transciever.TCP": {
+            "commandName": "Project",
+            "commandLineArgs": "tcp -p 2244"
+        },
+        "Transciever.TCPServer": {
+            "commandName": "Project",
+            "commandLineArgs": "tcpServer -p 2244"
+        },
+        "Transciever.TCPClient": {
+            "commandName": "Project",
+            "commandLineArgs": "tcpClient -p 2244"
+        },
+        "Container (Dockerfile)": {
+            "commandName": "Docker"
+        }
     }
-  }
 }

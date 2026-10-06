@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0-noble AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Directory.Packages.props", "."]
-COPY ["Directory.Build.props", "."]
+COPY ["Directory.Build.Props", "."]
 COPY ["Transceiver.Demo.Smaller/Transceiver.Demo.Smaller.csproj", "Transceiver.Demo.Smaller/"]
 COPY ["Transceiver/Transceiver.csproj", "Transceiver/"]
 RUN dotnet restore "./Transceiver.Demo.Smaller/Transceiver.Demo.Smaller.csproj"

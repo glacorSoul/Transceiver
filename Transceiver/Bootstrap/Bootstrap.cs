@@ -21,14 +21,18 @@ public static class BootStrap
     {
         if (serializer is null)
         {
-            _ = services.AddSingleton<ISerializer, SerializerJson>();
+            _ = services.AddSingleton<ISerializer, SerializerMeasured>(provider =>
+            {
+                IOptions<TransceiverConfiguration> options = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
+                return new SerializerMeasured(new SerializerJson(options));
+            });
         }
         else
         {
             _ = services.AddSingleton<ISerializer>(provider =>
             {
                 IOptions<TransceiverConfiguration> options = provider.GetRequiredService<IOptions<TransceiverConfiguration>>();
-                return new SerializerTransceiver(serializer, options);
+                return new SerializerMeasured(new SerializerTransceiver(serializer, options));
             });
         }
 

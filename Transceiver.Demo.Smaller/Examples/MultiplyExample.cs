@@ -24,7 +24,7 @@ public sealed class MultiplyExample(ITransceiver<MultiplyRequest, MultiplyRespon
     public override void ProcessResponse(MultiplyRequest request, MultiplyResponse response)
     {
         Debug.Assert(response.Result == request.A * request.B, "Multiplication is incorrect");
-        if (Interlocked.Increment(ref n) % 1000 == 0)
+        if (Interlocked.Increment(ref n) % 20000 == 0)
         {
             Console.WriteLine($"Multiplication: {request.A} * {request.B} = {response.Result}");
         }
