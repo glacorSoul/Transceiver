@@ -26,25 +26,25 @@ public sealed class ServerResponseResolver : IFormatterResolver
 
         static IMessagePackFormatter<T>? CreateFormatter()
         {
-            var type = typeof(T);
+            Type type = typeof(T);
 
             if (!type.IsGenericType)
                 return null;
 
-            var genericTypeDef = type.GetGenericTypeDefinition();
+            Type genericTypeDef = type.GetGenericTypeDefinition();
 
             if (genericTypeDef == typeof(ServerResponseMessagePack<>))
             {
-                var args = type.GetGenericArguments();
-                var formatterType = typeof(ServerResponseMessagePackFormatter<>)
+                Type[] args = type.GetGenericArguments();
+                Type formatterType = typeof(ServerResponseMessagePackFormatter<>)
                     .MakeGenericType(args[0]);
 
                 return (IMessagePackFormatter<T>)Activator.CreateInstance(formatterType)!;
             }
             if (genericTypeDef == typeof(ClientRequest<,>))
             {
-                var args = type.GetGenericArguments();
-                var formatterType = typeof(ClientRequest<,>)
+                Type[] args = type.GetGenericArguments();
+                Type formatterType = typeof(ClientRequest<,>)
                     .MakeGenericType(args[0]);
 
                 return (IMessagePackFormatter<T>)Activator.CreateInstance(formatterType)!;

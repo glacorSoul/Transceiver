@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "SumAPI";
+
+package sum;
+
+service Summer {
+  // Sums two integers.
+  rpc Sum (SumRequest) returns (SumReply);
+}
+
+message SumRequest {
+  int32 a = 1;
+  int32 b = 2;
+}
+
+message SumReply {
+  int32 result = 1;
+}

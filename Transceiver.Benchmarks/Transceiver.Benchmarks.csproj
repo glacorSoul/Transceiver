@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\..\SumAPI\SumAPI\Protos\sum.proto" GrpcServices="Client" Link="Protos\sum.proto" />
+    <Protobuf Include="..\SumAPI\Protos\sum.proto" GrpcServices="Client" Link="Protos\sum.proto" />
   </ItemGroup>
 
   <ItemGroup>
