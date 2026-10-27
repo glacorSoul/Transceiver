@@ -38,7 +38,6 @@ public static class BootStrap
 
         _ = services.AddSingleton<IRequestResponseFactory, RequestResponseFactory>();
         _ = services.AddTransient<CorrelatedMessageProcessor>();
-        _ = services.AddSingleton<TypeIdAssigner>();
         _ = services.AddSingleton<ICertificateLoader>(provider =>
         {
             return new CertificateLoader(StoreName.My, StoreLocation.LocalMachine, X509FindType.FindByThumbprint);

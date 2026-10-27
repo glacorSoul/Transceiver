@@ -3,9 +3,10 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-	<PackageVersion Include="WolverineFx.Http" Version="6.51.0" />
-	<PackageVersion Include="WolverineFx.RuntimeCompilation" Version="6.51.0" />
-	<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+    <PackageVersion Include="Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers" Version="18.12.37802.2" />
+    <PackageVersion Include="WolverineFx.Http" Version="6.51.0" />
+    <PackageVersion Include="WolverineFx.RuntimeCompilation" Version="6.51.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
     <PackageVersion Include="AsyncFixer" Version="2.1.0" />
     <PackageVersion Include="AWSSDK.SecurityToken" Version="[3.7.300,)" />
     <PackageVersion Include="AWSSDK.SQS" Version="[3.7.300,]" />

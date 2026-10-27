@@ -11,7 +11,8 @@ using System.Reflection;
 namespace Transceiver.Benchmarks;
 
 [MemoryDiagnoser]
-[RPlotExporter]
+[MarkdownExporterAttribute.GitHub()]
+[RankColumn, MinColumn, MaxColumn, Q1Column, Q3Column, AllStatisticsColumn]
 public class TransceiverBenchmarksDirectWithoutMetrics
 {
     private ITransceiver<DirectSumRequest, DirectSumResponse> _directSumTransceiverWithoutMetrics = default!;

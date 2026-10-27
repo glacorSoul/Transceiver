@@ -73,8 +73,19 @@ public sealed class TypeIdAssigner : IDisposable
 
     public static TypeIdAssigner CreateServerAssigner(IRequestResponseFactory requestResponseFactory)
     {
+        return CreateServerAssigner(requestResponseFactory, Assembly.GetEntryAssembly());
+    }
+
+    public static TypeIdAssigner CreateServerAssigner(IRequestResponseFactory requestResponseFactory, Assembly? currentAssembly)
+    {
+        IEnumerable<Assembly> assemblies = currentAssembly is null ? [] : [currentAssembly];
+        return CreateServerAssigner(requestResponseFactory, assemblies);
+    }
+
+    public static TypeIdAssigner CreateServerAssigner(IRequestResponseFactory requestResponseFactory, IEnumerable<Assembly> currentAssemblies)
+    {
         TypeIdAssigner typeIdAssigner = new(requestResponseFactory);
-        typeIdAssigner.InitializeServer();
+        typeIdAssigner.InitializeServer(currentAssemblies);
         return typeIdAssigner;
     }
 
@@ -158,19 +169,29 @@ public sealed class TypeIdAssigner : IDisposable
         }
     }
 
-    private void InitializeServer()
+    private void InitializeServer(IEnumerable<Assembly> currentAssemblies)
     {
-        Assembly[] assemblies = [Assembly.GetExecutingAssembly(), Assembly.GetEntryAssembly()!];
-        if (File.Exists("TypeIdMap.json"))
+        HashSet<Assembly> assembliesSet = [Assembly.GetExecutingAssembly()];
+        foreach (Assembly currentAssembly in currentAssemblies)
         {
-            string json = File.ReadAllText("TypeIdMap.json");
+            _ = assembliesSet.Add(currentAssembly);
+        }
+        Assembly? entryAssembly = Assembly.GetEntryAssembly();
+        if (entryAssembly != null)
+        {
+            _ = assembliesSet.Add(entryAssembly);
+        }
+        Assembly[] assemblies = [.. assembliesSet];
+        if (File.Exists($"{nameof(TypeIdAssigner)}.json"))
+        {
+            string json = File.ReadAllText($"{nameof(TypeIdAssigner)}.json");
             Dictionary<string, ushort> savedMap = JsonSerializer.Deserialize<Dictionary<string, ushort>>(json)!;
             foreach (KeyValuePair<string, ushort> entry in savedMap)
             {
                 if (!TypeToIdMap.ContainsKey(entry.Key))
                 {
                     TypeToIdMap[entry.Key] = entry.Value;
-                    Type? type = assemblies.Select(assembly => assembly.GetType(entry.Key)).FirstOrDefault();
+                    Type? type = entry.Key.ToTypeFromShortPrettyString();
                     if (type != null)
                     {
                         TypeToUShortIdMap[type] = entry.Value;

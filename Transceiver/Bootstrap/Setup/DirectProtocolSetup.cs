@@ -36,10 +36,13 @@ internal sealed class DirectProtocolSetup : BaseTransceiverSetup
             object transceiver = Activator.CreateInstance(directTransceiverType, [processor, pipeline, requestResponseFactory])!;
             return transceiver;
         });
+        RequestAssemblyRegistry registry = GetOrAddRequestAssemblyRegistry();
+        _ = registry.Assemblies.Add(RequestTypeAssembly);
+
         _ = Services.AddSingleton(provider =>
         {
             IRequestResponseFactory requestResponseFactory = provider.GetRequiredService<IRequestResponseFactory>();
-            return TypeIdAssigner.CreateServerAssigner(requestResponseFactory);
+            return TypeIdAssigner.CreateServerAssigner(requestResponseFactory, registry.Assemblies);
         });
     }
 }

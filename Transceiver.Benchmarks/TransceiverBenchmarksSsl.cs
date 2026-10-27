@@ -11,7 +11,8 @@ using System.Reflection;
 namespace Transceiver.Benchmarks;
 
 [MemoryDiagnoser]
-[RPlotExporter]
+[MarkdownExporterAttribute.GitHub()]
+[RankColumn, MinColumn, MaxColumn, Q1Column, Q3Column, AllStatisticsColumn]
 public class TransceiverBenchmarksSsl
 {
     private ITransceiver<SslSumRequest, SslSumResponse> _sslTransceiver = default!;

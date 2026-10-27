@@ -10,7 +10,8 @@ using System.Reflection;
 namespace Transceiver.Benchmarks;
 
 [MemoryDiagnoser]
-[RPlotExporter]
+[MarkdownExporterAttribute.GitHub()]
+[RankColumn, MinColumn, MaxColumn, Q1Column, Q3Column, AllStatisticsColumn]
 public class TransceiverBenchmarksDirect
 {
     private ITransceiver<DirectSumRequest, DirectSumResponse> _directSumTransceiver = default!;

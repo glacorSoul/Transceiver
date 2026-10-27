@@ -14,6 +14,11 @@ namespace Transceiver;
 
 public class BaseTransceiverSetup : ITransceiverSetup
 {
+    protected sealed class RequestAssemblyRegistry
+    {
+        public HashSet<Assembly> Assemblies { get; } = [];
+    }
+
     public BaseTransceiverSetup(Type transceiverType, IServiceCollection services)
     {
         Type[] genericArguments = transceiverType.GetGenericArguments();
@@ -24,11 +29,14 @@ public class BaseTransceiverSetup : ITransceiverSetup
         CompositePipelineType = typeof(CompositePipelineProcessor<,>).MakeGenericType(genericArguments);
         Type metricsPipelineType = typeof(MetricsPipelineProcessor<,>).MakeGenericType(genericArguments);
         Services = services;
+        RequestTypeAssembly = genericArguments[0].Assembly;
         _ = services.AddTransient<CorrelatedMessageProcessor>()
             .AddTransient<IMessageProcessor, CorrelatedMessageProcessor>(provider => provider.GetRequiredService<CorrelatedMessageProcessor>())
             .AddTransient(PipelineType, metricsPipelineType)
             .AddTransient(CompositePipelineType);
     }
+
+    protected Assembly RequestTypeAssembly { get; }
 
     protected Type CompositePipelineType { get; }
     protected Type ITransceiverType { get; }
@@ -83,11 +91,28 @@ public class BaseTransceiverSetup : ITransceiverSetup
             _ = (Task)start.Invoke(transceiver, [processor, cancellationToken])!;
             return transceiver;
         });
-        _ = Services.AddSingleton(provider =>
+
+        RequestAssemblyRegistry registry = GetOrAddRequestAssemblyRegistry();
+        _ = registry.Assemblies.Add(RequestTypeAssembly);
+
+        Services.TryAddSingleton(provider =>
         {
             IRequestResponseFactory requestResponseFactory = provider.GetRequiredService<IRequestResponseFactory>();
-            return TypeIdAssigner.CreateServerAssigner(requestResponseFactory);
+            return TypeIdAssigner.CreateServerAssigner(requestResponseFactory, registry.Assemblies);
         });
+    }
+
+    protected RequestAssemblyRegistry GetOrAddRequestAssemblyRegistry()
+    {
+        ServiceDescriptor? descriptor = Services.FirstOrDefault(d => d.ServiceType == typeof(RequestAssemblyRegistry));
+        if (descriptor?.ImplementationInstance is RequestAssemblyRegistry existing)
+        {
+            return existing;
+        }
+
+        RequestAssemblyRegistry registry = new();
+        _ = Services.AddSingleton(registry);
+        return registry;
     }
 
     private static MeasuredProtocol CreateResilientProtocol(IServiceProvider provider)
