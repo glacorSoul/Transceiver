@@ -40,6 +40,11 @@ public sealed class RabbitMqMessageProcessor : IMessageProcessor, IDisposable
         return result;
     }
 
+    public void RemoveRequester<T>(Guid requestId, IAsyncSource<T> source) where T : IIdentifiable
+    {
+        _processor.RemoveRequester(requestId, source);
+    }
+
     public void Dispose()
     {
         Dispose(true);

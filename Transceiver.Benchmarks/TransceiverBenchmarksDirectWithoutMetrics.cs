@@ -28,6 +28,7 @@ public class TransceiverBenchmarksDirectWithoutMetrics
         _ = services.AddTransceiver(transceiverConfiguration => transceiverConfiguration.ConfigureDirectProtocol(), Assembly.GetExecutingAssembly());
         _ = services.RemoveAll<IPipelineProcessor<DirectSumRequest, DirectSumResponse>>();
         ServiceProvider serviceProvider = services.BuildServiceProvider();
+        serviceProvider.ConfigureTransceiverProvider();
         return serviceProvider.GetRequiredService<ITransceiver<DirectSumRequest, DirectSumResponse>>();
     }
 

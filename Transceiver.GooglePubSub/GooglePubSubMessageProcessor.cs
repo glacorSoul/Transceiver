@@ -46,6 +46,11 @@ public sealed class GooglePubSubMessageProcessor : IMessageProcessor, IDisposabl
         return _messageProcessor.AddRequester<T>(requestId);
     }
 
+    public void RemoveRequester<T>(Guid requestId, IAsyncSource<T> source) where T : IIdentifiable
+    {
+        _messageProcessor.RemoveRequester(requestId, source);
+    }
+
     public void Dispose()
     {
         Dispose(true);
@@ -76,7 +81,7 @@ public sealed class GooglePubSubMessageProcessor : IMessageProcessor, IDisposabl
         {
             try
             {
-                _ = await publisherClient.CreateTopicAsync(topicName);
+                _ = await publisherClient.CreateTopicAsync(topicName, cancellationToken: _cts.Token);
             }
             catch (RpcException ex)
             {
@@ -127,7 +132,7 @@ public sealed class GooglePubSubMessageProcessor : IMessageProcessor, IDisposabl
                     {
                         TopicAsTopicName = topicName,
                         SubscriptionName = subscriptionName
-                    });
+                    }, _cts.Token);
                 }
                 catch (RpcException ex)
                 {

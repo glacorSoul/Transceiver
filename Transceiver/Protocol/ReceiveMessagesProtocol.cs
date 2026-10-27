@@ -29,6 +29,7 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
 
     protected IOptions<TransceiverConfiguration> Configuration { get; }
     protected ILogger Logger { get; }
+    protected ISerializer Serializer => _serializer;
 
     public abstract Task<TTransceiver> SetupWriterAsync(CancellationToken cancellationToken);
 
@@ -43,9 +44,9 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
         PartitionedMessage partitionedMessage = new();
         while (!cancellationToken.IsCancellationRequested)
         {
+            byte[] buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(Environment.SystemPageSize);
             try
             {
-                byte[] buffer = new byte[Environment.SystemPageSize];
                 (int read, _) = await ReadAsync(reader, buffer, cancellationToken);
 
                 if (read == 0)
@@ -57,17 +58,23 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
                 while (partitionedMessage.IsCompleted)
                 {
                     await _messageProcessor.ProcessMessageAsync(partitionedMessage.Message!, cancellationToken);
-                    PartitionedMessage oldMessage = partitionedMessage;
-                    partitionedMessage = new PartitionedMessage();
-                    if (oldMessage.RemainingBytes.Count > 0)
+                    partitionedMessage.ReturnPayloadBuffer();
+                    ArraySegment<byte> remainingBytes = partitionedMessage.RemainingBytes;
+                    partitionedMessage.Reset();
+                    if (remainingBytes.Count > 0)
                     {
-                        partitionedMessage.ParseBuffer([.. oldMessage.RemainingBytes], oldMessage.RemainingBytes.Count);
+                        partitionedMessage.ParseBuffer(remainingBytes.Array!, remainingBytes.Count);
+                        System.Buffers.ArrayPool<byte>.Shared.Return(remainingBytes.Array!);
                     }
                 }
             }
             catch (OperationCanceledException ex)
             {
                 Logger?.LogWarning(ex, "Receiving message was cancelled: {Message}", ex.Message);
+            }
+            finally
+            {
+                System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
             }
         }
     }
@@ -80,9 +87,20 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
         }
     }
 
-    public IAsyncEnumerable<T> ReceiveObjectsAsync<T>(Guid requestId, CancellationToken cancellationToken) where T : IIdentifiable
+    public async IAsyncEnumerable<T> ReceiveObjectsAsync<T>(Guid requestId, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken) where T : IIdentifiable
     {
-        return _messageProcessor.AddRequester<T>(requestId).ReadAllAsync(cancellationToken);
+        IAsyncSource<T> source = _messageProcessor.AddRequester<T>(requestId);
+        try
+        {
+            await foreach (T item in source.ReadAllAsync(cancellationToken))
+            {
+                yield return item;
+            }
+        }
+        finally
+        {
+            _messageProcessor.RemoveRequester(requestId, source);
+        }
     }
 
     public Task SendObjectToClientAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
@@ -106,7 +124,7 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
         await WriteAsync(writer, null!, buffer, cancellationToken);
     }
 
-    protected byte[] ToDataArray<T>(T data) where T : IIdentifiable
+    protected virtual byte[] ToDataArray<T>(T data) where T : IIdentifiable
     {
         TransceiverMessage message = new(data, _serializer);
         return message.ToBytes();
@@ -117,9 +135,9 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
         PartitionedMessage partitionedMessage = new();
         while (!cancellationToken.IsCancellationRequested)
         {
+            byte[] buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(Environment.SystemPageSize);
             try
             {
-                byte[] buffer = new byte[Environment.SystemPageSize];
                 (int read, object client) = await ReadAsync(reader, buffer, cancellationToken);
 
                 if (read == 0)
@@ -132,17 +150,23 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
                 {
                     _ = _clientsMap.AddOrUpdate(partitionedMessage.Header!.Id, _ => (reader, client), (_, _) => (reader, client));
                     await _messageProcessor.ProcessMessageAsync(partitionedMessage.Message!, cancellationToken);
-                    PartitionedMessage oldMessage = partitionedMessage;
-                    partitionedMessage = new PartitionedMessage();
-                    if (oldMessage.RemainingBytes.Count > 0)
+                    partitionedMessage.ReturnPayloadBuffer();
+                    ArraySegment<byte> remainingBytes = partitionedMessage.RemainingBytes;
+                    partitionedMessage.Reset();
+                    if (remainingBytes.Count > 0)
                     {
-                        partitionedMessage.ParseBuffer([.. oldMessage.RemainingBytes], oldMessage.RemainingBytes.Count);
+                        partitionedMessage.ParseBuffer(remainingBytes.Array!, remainingBytes.Count);
+                        System.Buffers.ArrayPool<byte>.Shared.Return(remainingBytes.Array!);
                     }
                 }
             }
             catch (OperationCanceledException ex)
             {
                 Logger?.LogWarning(ex, "Receiving message was cancelled: {Message}", ex.Message);
+            }
+            finally
+            {
+                System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
             }
         }
     }

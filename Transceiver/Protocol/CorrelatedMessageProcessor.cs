@@ -2,6 +2,7 @@
 // Transceiver is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // Transceiver is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading.Channels;
 
@@ -10,7 +11,7 @@ namespace Transceiver;
 public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
 {
     private readonly CancellationTokenSource _cts = new();
-
+    private readonly List<StreamEntry> _streamsBuffer = [];
     private readonly ChannelAsyncSource<IIdentifiable> _messages = new(new UnboundedChannelOptions
     {
         SingleReader = true,
@@ -40,10 +41,16 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         return result;
     }
 
+    public void RemoveRequester<T>(Guid requestId, IAsyncSource<T> source) where T : IIdentifiable
+    {
+        _ = _streams.RemoveWhere(requestId, new StreamEntryReferenceMatch(source));
+    }
+
 
     public async Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken)
     {
         IIdentifiable data = (IIdentifiable)_serializer.Deserialize(message.Header.Type, message.Data);
+
         await _messages.WriteAsync(data, cancellationToken);
     }
 
@@ -55,7 +62,8 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
     private List<StreamEntry> GetStreams(IIdentifiable message)
     {
         Type messageType = message.GetType();
-        List<StreamEntry> streams = _streams.GetAndRemoveAll(Guid.Empty, message.Id, m => m.IsOfSameType(messageType));
+        Type lastGenericArgument = StreamEntry.GetLastGenericArgument(messageType);
+        List<StreamEntry> streams = _streams.GetAll(Guid.Empty, message.Id, new StreamTypeMatch(messageType, lastGenericArgument), _streamsBuffer);
         return streams;
     }
 
@@ -81,10 +89,10 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         }
         foreach (StreamEntry stream in streams)
         {
-            ValueTask task = (ValueTask)stream.WriteAsyncMethod.Invoke(stream.AsyncSource, [message, _cts.Token])!;
-            await task;
+            await stream.WriteAsyncInvoker(stream.AsyncSource, message, _cts.Token);
         }
     }
+
     private void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -110,26 +118,72 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private sealed class StreamEntry
+    private readonly struct StreamTypeMatch(Type messageType, Type lastGenericArgument) : IPredicate<StreamEntry>
+    {
+        public bool Matches(StreamEntry value)
+        {
+            return value.IsOfSameType(messageType, lastGenericArgument);
+        }
+    }
+
+    private readonly struct StreamEntryReferenceMatch(object asyncSource) : IPredicate<StreamEntry>
+    {
+        public bool Matches(StreamEntry value)
+        {
+            return ReferenceEquals(value.AsyncSource, asyncSource);
+        }
+    }
+
+    private readonly struct StreamEntry
     {
         public StreamEntry(object asyncSouce)
         {
             AsyncSource = asyncSouce;
             MessageType = asyncSouce.GetType().GetGenericArguments()[0];
-            WriteAsyncMethod = asyncSouce.GetType().GetMethod(nameof(IAsyncSource<>.WriteAsync)) ?? default!;
+            MessageTypeLastGenericArgument = GetLastGenericArgument(MessageType);
+            WriteAsyncInvoker = GetWriteAsyncInvoker(MessageType);
         }
 
         public object AsyncSource { get; }
         public Type MessageType { get; }
-        public MethodInfo WriteAsyncMethod { get; }
+        public Type MessageTypeLastGenericArgument { get; }
+        public Func<object, IIdentifiable, CancellationToken, ValueTask> WriteAsyncInvoker { get; }
 
-        public bool IsOfSameType(Type type)
+        public bool IsOfSameType(Type type, Type typeLastGenericArgument)
         {
-            bool result = MessageType.GenericTypeArguments[MessageType.GenericTypeArguments.Length - 1]
-                == type.GenericTypeArguments[type.GenericTypeArguments.Length - 1];
-            bool hasInterface = type.GetInterfaces().Any(i => i == MessageType);
-            result = (result && hasInterface) || type == MessageType;
-            return result;
+            if (type == MessageType)
+            {
+                return true;
+            }
+
+            return MessageTypeLastGenericArgument == typeLastGenericArgument && MessageType.IsAssignableFrom(type);
+        }
+
+        private static readonly ConcurrentDictionary<Type, Type> s_lastGenericArgumentCache = new();
+
+        public static Type GetLastGenericArgument(Type type)
+        {
+            return s_lastGenericArgumentCache.GetOrAdd(type, static t =>
+            {
+                Type[] genericArguments = t.GenericTypeArguments;
+                return genericArguments[genericArguments.Length - 1];
+            });
+        }
+
+        private static readonly MethodInfo s_invokeWriteAsyncDefinition =
+            typeof(StreamEntry).GetMethod(nameof(InvokeWriteAsync), BindingFlags.Public | BindingFlags.Static)!;
+
+        private static Func<object, IIdentifiable, CancellationToken, ValueTask> GetWriteAsyncInvoker(Type messageType)
+        {
+            MethodInfo closedMethod = s_invokeWriteAsyncDefinition.MakeGenericMethod(messageType);
+            return (Func<object, IIdentifiable, CancellationToken, ValueTask>)closedMethod
+                .CreateDelegate(typeof(Func<object, IIdentifiable, CancellationToken, ValueTask>));
+        }
+
+        public static ValueTask InvokeWriteAsync<T>(object asyncSource, IIdentifiable message, CancellationToken cancellationToken)
+            where T : IIdentifiable
+        {
+            return ((IAsyncSource<T>)asyncSource).WriteAsync((T)message, cancellationToken);
         }
     }
 

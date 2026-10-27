@@ -27,6 +27,7 @@ public class TransceiverBenchmarksMediatR
         _ = services.AddLogging(builder => builder.AddConsole());
         _ = services.AddMediatR(Assembly.GetExecutingAssembly());
         ServiceProvider serviceProvider = services.BuildServiceProvider();
+        serviceProvider.ConfigureTransceiverProvider();
         return serviceProvider.GetRequiredService<IMediator>();
     }
 

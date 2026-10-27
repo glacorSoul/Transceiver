@@ -19,7 +19,7 @@ public sealed class TcpClientOptions : BaseOptions
     {
         _ = services.AddTransceiver((config) =>
         {
-            ITransceiverSetup setup = config.ConfigureTcp(new(IPAddress.Parse("192.168.0.134"), ServerPort));
+            ITransceiverSetup setup = config.ConfigureTcp(new(IPAddress.Parse(GetLocalIPAddress()), ServerPort));
             setup.SetupClient(cancellationToken);
         }, typeof(Program).Assembly);
         RunSamples(services, cancellationToken);

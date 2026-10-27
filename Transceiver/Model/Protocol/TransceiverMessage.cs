@@ -10,11 +10,11 @@ public sealed class TransceiverMessage : IIdentifiable
 {
     public TransceiverMessage(IIdentifiable data, ISerializer serializer)
     {
-        Data = serializer.Serialize(data);
+        Data = serializer.Seriazlize(data.GetType(), data);
         Header = TransceiverHeader.CreateHeader(data.GetType(), Data.Length, data.Id);
     }
 
-    public TransceiverMessage(TransceiverHeader header, byte[] data)
+    public TransceiverMessage(TransceiverHeader header, ReadOnlyMemory<byte> data)
     {
         Header = header;
         Data = data;
@@ -29,11 +29,11 @@ public sealed class TransceiverMessage : IIdentifiable
         Header = new(data);
         if (Header.MessageSize > 0)
         {
-            Data = [.. data.Skip(TransceiverHeader.Size)];
+            Data = new ReadOnlyMemory<byte>(data, TransceiverHeader.Size, data.Length - TransceiverHeader.Size);
         }
         else
         {
-            Data = [];
+            Data = ReadOnlyMemory<byte>.Empty;
         }
     }
 
@@ -44,7 +44,7 @@ public sealed class TransceiverMessage : IIdentifiable
         Data = Encoding.UTF8.GetBytes(text);
     }
 
-    public byte[] Data { get; }
+    public ReadOnlyMemory<byte> Data { get; }
 
     public TransceiverHeader Header { get; }
 
@@ -52,20 +52,28 @@ public sealed class TransceiverMessage : IIdentifiable
 
     public byte[] ToBytes()
     {
-        byte[] headerBytes = Header.ToArray();
-        byte[] messageBytes = new byte[headerBytes.Length + Data.Length];
-        Buffer.BlockCopy(headerBytes, 0, messageBytes, 0, headerBytes.Length);
+        byte[] messageBytes = new byte[TransceiverHeader.Size + Data.Length];
+        return ToBytes(messageBytes);
+    }
+
+    public byte[] ToBytes(byte[] buffer)
+    {
+        if (buffer.Length != TransceiverHeader.Size + Data.Length)
+        {
+            throw new ArgumentException($"Buffer length {buffer.Length} does not match required size {TransceiverHeader.Size + Data.Length}", nameof(buffer));
+        }
+        Header.WriteTo(buffer.AsSpan(0, TransceiverHeader.Size));
         if (Data.Length > 0)
         {
-            Buffer.BlockCopy(Data, 0, messageBytes, headerBytes.Length, Data.Length);
+            Data.Span.CopyTo(buffer.AsSpan(TransceiverHeader.Size));
         }
-        return messageBytes;
+        return buffer;
     }
 
     public string ToCsv()
     {
         string headerText = Header.ToCsv();
-        string dataText = Encoding.UTF8.GetString(Data);
+        string dataText = Encoding.UTF8.GetString(Data.ToArray());
         return $"{headerText},{dataText}";
     }
 }

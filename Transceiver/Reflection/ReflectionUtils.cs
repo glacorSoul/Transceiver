@@ -206,7 +206,7 @@ public static class ReflectionUtils
     {
         return AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(a => a.DefinedTypes)
-            .First(t => t.Name!.StartsWith(name))
+            .First(t => t.Name.StartsWith(name))
             .GetTypeInfo();
     }
 }

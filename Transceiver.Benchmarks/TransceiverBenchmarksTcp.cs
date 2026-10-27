@@ -33,6 +33,7 @@ public class TransceiverBenchmarksTcp
             setup.SetupClient(cancellationToken);
         }, Assembly.GetExecutingAssembly());
         ServiceProvider serviceProvider = services.BuildServiceProvider();
+        serviceProvider.ConfigureTransceiverProvider();
         return serviceProvider.GetRequiredService<ITransceiver<TcpSumRequest, TcpSumResponse>>();
     }
 

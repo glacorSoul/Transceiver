@@ -8,6 +8,8 @@ public interface IMessageProcessor
 {
     IAsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable;
 
+    void RemoveRequester<T>(Guid requestId, IAsyncSource<T> source) where T : IIdentifiable;
+
     Task ProcessMessageAsync(TransceiverMessage message, CancellationToken cancellationToken);
 
     Task ProcessUnserializedMessageAsync<T>(T message, CancellationToken cancellationToken) where T : IIdentifiable;

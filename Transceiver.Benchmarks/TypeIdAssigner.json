@@ -1,0 +1,12 @@
+{
+  "ClientRequest\u003CServiceDiscoveryRequestModel,ServiceDiscoveryResponseModel\u003E": 0,
+  "ServerResponse\u003CServiceDiscoveryRequestModel,ServiceDiscoveryResponseModel\u003E": 1,
+  "ClientRequest\u003CDirectSumRequest,DirectSumResponse\u003E": 2,
+  "ServerResponse\u003CDirectSumRequest,DirectSumResponse\u003E": 3,
+  "ClientRequest\u003CDirectSumRequestWithReply,DirectSumResponseWithReply\u003E": 4,
+  "ServerResponse\u003CDirectSumRequestWithReply,DirectSumResponseWithReply\u003E": 5,
+  "ClientRequest\u003CSslSumRequest,SslSumResponse\u003E": 6,
+  "ServerResponse\u003CSslSumRequest,SslSumResponse\u003E": 7,
+  "ClientRequest\u003CTcpSumRequest,TcpSumResponse\u003E": 8,
+  "ServerResponse\u003CTcpSumRequest,TcpSumResponse\u003E": 9
+}

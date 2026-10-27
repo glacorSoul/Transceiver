@@ -5,6 +5,7 @@
 using NetMQ;
 using NetMQ.Sockets;
 using System.Net;
+using System.Runtime.CompilerServices;
 
 namespace Transceiver.ZeroMq;
 
@@ -31,8 +32,8 @@ public sealed class ZeroMqProtocol : ITransceiverProtocol, IDisposable
             _subSocket.Connect($"tcp://127.0.0.1:{endpoint.Port}");
             _subSocket.Subscribe("");
             Thread.Sleep(500);
-        });
-        _ = Task.Run(ProcessMessage);
+        }, _cts.Token);
+        _ = Task.Run(ProcessMessage, _cts.Token);
     }
 
     public void Dispose()
@@ -41,9 +42,20 @@ public sealed class ZeroMqProtocol : ITransceiverProtocol, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public IAsyncEnumerable<T> ReceiveObjectsAsync<T>(Guid requestId, CancellationToken cancellationToken) where T : IIdentifiable
+    public async IAsyncEnumerable<T> ReceiveObjectsAsync<T>(Guid requestId, [EnumeratorCancellation] CancellationToken cancellationToken) where T : IIdentifiable
     {
-        return _messageProcessor.AddRequester<T>(requestId).ReadAllAsync(cancellationToken);
+        IAsyncSource<T> source = _messageProcessor.AddRequester<T>(requestId);
+        try
+        {
+            await foreach (T item in source.ReadAllAsync(cancellationToken))
+            {
+                yield return item;
+            }
+        }
+        finally
+        {
+            _messageProcessor.RemoveRequester(requestId, source);
+        }
     }
 
     public async Task SendObjectAsync<T>(Guid requestId, T data)

@@ -96,8 +96,12 @@ public class TransceiverHeader
         typeIdSpan[0] = (byte)(TypeId & 0xFF);
         typeIdSpan[1] = (byte)((TypeId >> 8) & 0xFF);
 
+        #if NETSTANDARD2_0
         byte[] guidArray = Id.ToByteArray();
         guidArray.CopyTo(guidSpan);
+#else
+        _ = Id.TryWriteBytes(guidSpan);
+#endif
     }
 
     public void WriteTo(byte[] buffer)
@@ -114,6 +118,10 @@ public class TransceiverHeader
 
         MessageSize = lengthSpan[0] | (lengthSpan[1] << 8) | (lengthSpan[2] << 16) | (lengthSpan[3] << 24);
         TypeId = (ushort)(typeIdSpan[0] | (typeIdSpan[1] << 8));
+#if NETSTANDARD2_0
         Id = new Guid(guidSpan.ToArray());
+#else
+        Id = new Guid(guidSpan);
+#endif
     }
 }

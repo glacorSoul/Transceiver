@@ -52,6 +52,11 @@ public sealed class KafkaMessageProcessor : IMessageProcessor, IDisposable
         return _processor.AddRequester<T>(requestId);
     }
 
+    public void RemoveRequester<T>(Guid requestId, IAsyncSource<T> source) where T : IIdentifiable
+    {
+        _processor.RemoveRequester(requestId, source);
+    }
+
     public void Dispose()
     {
         Dispose(true);

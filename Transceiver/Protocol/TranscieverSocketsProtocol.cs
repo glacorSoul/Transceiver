@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 
@@ -13,6 +14,8 @@ public sealed class TransceiverSocketProtocol : ReceiveMessagesProtocol<Socket>
 {
     private readonly Lazy<Task<Socket>> _setupWrite;
     private readonly ISocketFactory _socketFactory;
+    private readonly ConcurrentBag<SocketAsyncEventArgs> _socketArgsPool = [];
+    private readonly ConcurrentDictionary<int, ConcurrentBag<byte[]>> _writeBufferPool = new();
 
     public TransceiverSocketProtocol(IMessageProcessor messageProcessor,
         ISocketFactory socketFactory,
@@ -29,15 +32,21 @@ public sealed class TransceiverSocketProtocol : ReceiveMessagesProtocol<Socket>
         return _setupWrite.Value;
     }
 
+    protected sealed override byte[] ToDataArray<T>(T data)
+    {
+        TransceiverMessage message = new(data, Serializer);
+        int size = TransceiverHeader.Size + message.Data.Length;
+        byte[] buffer = RentWriteBuffer(size);
+        return message.ToBytes(buffer);
+    }
+
     protected sealed override Task<(int, object)> ReadAsync(Socket reader, byte[] buffer, CancellationToken cancellationToken)
     {
-        TaskCompletionSource<(int, object)> tcs = new();
-        SocketAsyncEventArgs socketArgs = new();
+        SocketAsyncEventArgs socketArgs = RentSocketArgs();
         socketArgs.SetBuffer(buffer, 0, buffer.Length);
-        socketArgs.Completed += (sender, args) =>
-        {
-            tcs.SetResult((args.BytesTransferred, args.RemoteEndPoint!));
-        };
+        TaskCompletionSource<(int, object)> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        socketArgs.UserToken = tcs;
+
         bool pending;
         if (reader.ProtocolType == ProtocolType.Udp)
         {
@@ -51,7 +60,9 @@ public sealed class TransceiverSocketProtocol : ReceiveMessagesProtocol<Socket>
 
         if (!pending)
         {
-            return Task.FromResult((socketArgs.BytesTransferred, (object)socketArgs.RemoteEndPoint!));
+            (int, object) result = (socketArgs.BytesTransferred, socketArgs.RemoteEndPoint!);
+            ReturnSocketArgs(socketArgs);
+            return Task.FromResult(result);
         }
         return tcs.Task;
     }
@@ -64,14 +75,12 @@ public sealed class TransceiverSocketProtocol : ReceiveMessagesProtocol<Socket>
 
     protected sealed override Task WriteAsync(Socket transceiver, object client, byte[] data, CancellationToken cancellationToken)
     {
-        TaskCompletionSource<object> tcs = new();
-        SocketAsyncEventArgs socketArgs = new();
+        SocketAsyncEventArgs socketArgs = RentSocketArgs();
         socketArgs.SetBuffer(data, 0, data.Length);
         socketArgs.RemoteEndPoint = (EndPoint)client;
-        socketArgs.Completed += (sender, args) =>
-        {
-            tcs.SetResult(default!);
-        };
+        TaskCompletionSource<object> tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        socketArgs.UserToken = tcs;
+
         bool pending;
         if (client is null)
         {
@@ -85,6 +94,64 @@ public sealed class TransceiverSocketProtocol : ReceiveMessagesProtocol<Socket>
         {
             return tcs.Task;
         }
+        ReturnSocketArgs(socketArgs);
+        ReturnWriteBuffer(data);
         return Task.CompletedTask;
+    }
+
+    private SocketAsyncEventArgs RentSocketArgs()
+    {
+        if (_socketArgsPool.TryTake(out SocketAsyncEventArgs? socketArgs))
+        {
+            return socketArgs;
+        }
+        socketArgs = new SocketAsyncEventArgs();
+        socketArgs.Completed += OnSocketAsyncCompleted;
+        return socketArgs;
+    }
+
+    private void ReturnSocketArgs(SocketAsyncEventArgs socketArgs)
+    {
+        socketArgs.UserToken = null;
+        socketArgs.RemoteEndPoint = null;
+        socketArgs.SetBuffer(null, 0, 0);
+        _socketArgsPool.Add(socketArgs);
+    }
+
+    private byte[] RentWriteBuffer(int size)
+    {
+        if (_writeBufferPool.TryGetValue(size, out ConcurrentBag<byte[]>? bag) && bag.TryTake(out byte[]? buffer))
+        {
+            return buffer;
+        }
+        return new byte[size];
+    }
+
+    private void ReturnWriteBuffer(byte[] buffer)
+    {
+        ConcurrentBag<byte[]> bag = _writeBufferPool.GetOrAdd(buffer.Length, _ => []);
+        bag.Add(buffer);
+    }
+
+    private void OnSocketAsyncCompleted(object? sender, SocketAsyncEventArgs args)
+    {
+        object? state = args.UserToken;
+        int bytesTransferred = args.BytesTransferred;
+        object remoteEndPoint = (object)args.RemoteEndPoint!;
+        byte[]? writeBuffer = state is TaskCompletionSource<object> ? args.Buffer : null;
+        ReturnSocketArgs(args);
+        if (writeBuffer != null)
+        {
+            ReturnWriteBuffer(writeBuffer);
+        }
+
+        if (state is TaskCompletionSource<(int, object)> readTcs)
+        {
+            readTcs.SetResult((bytesTransferred, remoteEndPoint));
+        }
+        else if (state is TaskCompletionSource<object> writeTcs)
+        {
+            writeTcs.SetResult(default!);
+        }
     }
 }

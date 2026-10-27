@@ -23,7 +23,7 @@ public class SerializerMeasured : ISerializer, IDisposable
         _serializeTimeHistogram = _meter.CreateHistogram<double>("transceiver_serializer_serialize_time_ms", "ms", "Time taken to serialize data");
     }
 
-    public object Deserialize(Type type, byte[] data)
+    public object Deserialize(Type type, ReadOnlyMemory<byte> data)
     {
         long now = Stopwatch.GetTimestamp();
         object result = _innerSerializer.Deserialize(type, data);
@@ -32,7 +32,7 @@ public class SerializerMeasured : ISerializer, IDisposable
         return result;
     }
 
-    public T Deserialize<T>(byte[] data)
+    public T Deserialize<T>(ReadOnlyMemory<byte> data)
     {
         long now = Stopwatch.GetTimestamp();
         T result = _innerSerializer.Deserialize<T>(data);

@@ -36,12 +36,12 @@ public class SerializerMessagePack : ISerializer
         return options;
     }
 
-    public object Deserialize(Type type, byte[] data)
+    public object Deserialize(Type type, ReadOnlyMemory<byte> data)
     {
         return MessagePackSerializer.Deserialize(type, data, _messagePackOptions)!;
     }
 
-    public T Deserialize<T>(byte[] data)
+    public T Deserialize<T>(ReadOnlyMemory<byte> data)
     {
         return MessagePackSerializer.Deserialize<T>(data, _messagePackOptions);
     }

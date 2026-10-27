@@ -19,7 +19,7 @@ internal class SerializerTransceiver : ISerializer
         _jsonSerializer = new SerializerJson(options);
     }
 
-    public object Deserialize(Type type, byte[] data)
+    public object Deserialize(Type type, ReadOnlyMemory<byte> data)
     {
         if (TypesWithJsonDefault.Contains(type))
         {
@@ -28,7 +28,7 @@ internal class SerializerTransceiver : ISerializer
         return _serializer.Deserialize(type, data);
     }
 
-    public T Deserialize<T>(byte[] data)
+    public T Deserialize<T>(ReadOnlyMemory<byte> data)
     {
         if (TypesWithJsonDefault.Contains(typeof(T)))
         {

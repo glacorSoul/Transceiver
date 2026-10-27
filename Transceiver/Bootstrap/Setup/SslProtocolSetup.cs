@@ -32,7 +32,7 @@ internal sealed class SslProtocolSetup : ProtocolSpecificSetup
             _ = protocol.SetupWriterAsync(cancellationToken).ContinueWith(stream =>
             {
                 _ = protocol.ServerReceiveMessagesAsync(stream.Result, cancellationToken);
-            });
+            }, cancellationToken);
             return protocol;
         });
     }
@@ -51,7 +51,7 @@ internal sealed class SslProtocolSetup : ProtocolSpecificSetup
             TransceiverSslProtocol protocol = new(factory, certificateLoader, messageProcessor, serializer, logger, configuration);
             _ = protocol.ReceiveMessagesAsync(cancellationToken);
             _ = protocol.SetupWriterAsync(cancellationToken)
-                .ContinueWith(stream => protocol.ServerReceiveMessagesAsync(stream.Result, cancellationToken));
+                .ContinueWith(stream => protocol.ServerReceiveMessagesAsync(stream.Result, cancellationToken), cancellationToken);
             return protocol;
         });
     }

@@ -36,6 +36,7 @@ public class TransceiverBenchmarksSsl
             cfg.CertificateThumbprint = "34abfd4fc9e26a3315e1c398f51ebfc41ba0d553";
         });
         ServiceProvider serviceProvider = services.BuildServiceProvider();
+        serviceProvider.ConfigureTransceiverProvider();
         return serviceProvider.GetRequiredService<ITransceiver<SslSumRequest, SslSumResponse>>();
     }
 

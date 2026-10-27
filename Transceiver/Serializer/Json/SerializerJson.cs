@@ -27,14 +27,14 @@ public sealed class SerializerJson : ISerializer
         _options = options;
     }
 
-    public T Deserialize<T>(byte[] data)
+    public T Deserialize<T>(ReadOnlyMemory<byte> data)
     {
-        return JsonSerializer.Deserialize<T>(data, _options)!;
+        return JsonSerializer.Deserialize<T>(data.Span, _options)!;
     }
 
-    public object Deserialize(Type type, byte[] data)
+    public object Deserialize(Type type, ReadOnlyMemory<byte> data)
     {
-        return JsonSerializer.Deserialize(data, type, _options)!;
+        return JsonSerializer.Deserialize(data.Span, type, _options)!;
     }
 
     public async Task<T> DeserializeAsync<T>(byte[] data, CancellationToken cancellationToken)

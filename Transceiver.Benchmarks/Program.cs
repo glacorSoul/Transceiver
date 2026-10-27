@@ -6,10 +6,13 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
 using System.Reflection;
+using BenchmarkDotNet.Running;
+using Grpc.Net.Client;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using SumAPI;
 
 namespace Transceiver.Benchmarks;
 
@@ -17,6 +20,7 @@ internal class Program
 {
 #pragma warning disable S1075 // URIs should not be hardcoded
     private const string UriString = "https://localhost:7124";
+    private const string WolverineUriString = "https://localhost:7225";
 #pragma warning restore S1075 // URIs should not be hardcoded
     private readonly ITransceiver<DirectSumRequest, DirectSumResponse> _directSumTransceiver = default!;
     private readonly ITransceiver<DirectSumRequest, DirectSumResponse> _directSumTransceiverWithoutMetrics = default!;
@@ -115,7 +119,7 @@ internal class Program
         //warmup
         while (!source1.IsCancellationRequested)
         {
-            _ = await httpClient.GetFromJsonAsync<int>("/sum/1/2");
+            _ = await httpClient.GetStringAsync("/sum/1/2");
         }
 
         int n = 0;
@@ -124,7 +128,33 @@ internal class Program
         long startTime = Stopwatch.GetTimestamp();
         while (!source2.IsCancellationRequested)
         {
-            _ = await httpClient.GetFromJsonAsync<int>("/sum/1/2");
+            _ = await httpClient.GetStringAsync("/sum/1/2");
+            n++;
+        }
+        TimeSpan elapsed = Stopwatch.GetElapsedTime(startTime);
+        return n / elapsed.TotalSeconds;
+    }
+
+    private static async Task<double> RunGrpcTest(string uriString)
+    {
+        using GrpcChannel channel = GrpcChannel.ForAddress(uriString);
+        Summer.SummerClient client = new(channel);
+        SumRequest request = new() { A = 1, B = 2 };
+        using CancellationTokenSource source1 = new();
+        source1.CancelAfter(WarmupTime);
+        //warmup
+        while (!source1.IsCancellationRequested)
+        {
+            _ = await client.SumAsync(request);
+        }
+
+        int n = 0;
+        using CancellationTokenSource source2 = new();
+        source2.CancelAfter(ExecutionTime);
+        long startTime = Stopwatch.GetTimestamp();
+        while (!source2.IsCancellationRequested)
+        {
+            _ = await client.SumAsync(request);
             n++;
         }
         TimeSpan elapsed = Stopwatch.GetElapsedTime(startTime);
@@ -179,9 +209,20 @@ internal class Program
         return n / elapsed.TotalSeconds;
     }
 
-    private static async Task Main()
+    public static async Task RunTcp()
     {
         Program program = new();
+        Console.WriteLine("Running TCP transceiver benchmark...");
+        double tcpThroughput = await RunTransceiverTest(BuildTcpTransceiver(CancellationToken.None), program._tcpSumRequest);
+        Console.WriteLine($"TCP throughput: {tcpThroughput} requests/s");
+    }
+
+    public static async Task Run()
+    {
+        Program program = new();
+
+        Console.WriteLine("Running Wolverine HTTP benchmark...");
+        double wolverineThroughput = await RunHTTPTest(WolverineUriString);
 
         Console.WriteLine("Running TCP transceiver benchmark...");
         double tcpThroughput = await RunTransceiverTest(BuildTcpTransceiver(CancellationToken.None), program._tcpSumRequest);
@@ -201,11 +242,29 @@ internal class Program
         Console.WriteLine("Running HTTP benchmark...");
         double httpThroughput = await RunHTTPTest(UriString);
 
+        Console.WriteLine("Running gRPC benchmark...");
+        double grpcThroughput = await RunGrpcTest(UriString);
+
         Console.WriteLine($"Direct without metrics throughput: {directWithoutMetricsThroughput} requests/s");
         Console.WriteLine($"MediatR throughput: {mediatRThroughput} requests/s");
         Console.WriteLine($"Direct throughput: {directThroughput} requests/s");
         Console.WriteLine($"TCP throughput: {tcpThroughput} requests/s");
         Console.WriteLine($"SSL throughput: {sslThroughput} requests/s");
         Console.WriteLine($"HTTP throughput: {httpThroughput} requests/s");
+        Console.WriteLine($"gRPC throughput: {grpcThroughput} requests/s");
+        Console.WriteLine($"Wolverine HTTP throughput: {wolverineThroughput} requests/s");
+    }
+
+    public static void RunBenchmarks()
+    {
+        _ = BenchmarkRunner.Run<TransceiverBenchmarksDirect>();
+        _ = BenchmarkRunner.Run<TransceiverBenchmarksTcp>();
+        _ = BenchmarkRunner.Run<TransceiverBenchmarksSsl>();
+        _ = BenchmarkRunner.Run<TransceiverBenchmarksMediatR>();
+    }
+
+    private static Task Main()
+    {
+        return RunTcp();
     }
 }

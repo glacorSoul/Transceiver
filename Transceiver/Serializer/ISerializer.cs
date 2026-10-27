@@ -6,9 +6,9 @@ namespace Transceiver;
 
 public interface ISerializer
 {
-    object Deserialize(Type type, byte[] data);
+    object Deserialize(Type type, ReadOnlyMemory<byte> data);
 
-    T Deserialize<T>(byte[] data);
+    T Deserialize<T>(ReadOnlyMemory<byte> data);
 
     Task<object> DeserializeAsync(Type type, byte[] data, CancellationToken cancellationToken);
 

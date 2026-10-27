@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Net.Sockets;
+using Transceiver.Protocol;
 
 namespace Transceiver;
 
@@ -37,8 +37,8 @@ public class SocketsSetup : BaseTransceiverSetup
             _ = protocol.SetupWriterAsync(cancellationToken).ContinueWith(socket =>
             {
                 _ = protocol.ServerReceiveMessagesAsync(socket.Result, cancellationToken);
-            });
-            return protocol;
+            }, cancellationToken);
+            return new MeasuredProtocol(protocol);
         });
     }
 
@@ -54,9 +54,9 @@ public class SocketsSetup : BaseTransceiverSetup
                 _ = protocol.SetupWriterAsync(cancellationToken).ContinueWith(socket =>
                 {
                     _ = protocol.ServerReceiveMessagesAsync(socket.Result, cancellationToken);
-                });
+                }, cancellationToken);
             }
-            return protocol;
+            return new MeasuredProtocol(protocol);
         });
     }
 }

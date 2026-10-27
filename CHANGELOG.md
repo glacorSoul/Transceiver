@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.1.0](https://github.com/glacorSoul/Transceiver/compare/6.0.0...6.1.0)  (2026-10-27)
+
+### Features
+
+Improve message exchange throughput by 2x
+Reduce memory allocations
+
 ## [6.0.0](https://github.com/glacorSoul/Transceiver/compare/6.0.0...5.0.0)  (2026-09-26)
 
 ### Features

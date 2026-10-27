@@ -44,6 +44,11 @@ public sealed class AmazonSqsMessageProcessor : IMessageProcessor, IDisposable
         return _processor.AddRequester<T>(requestId);
     }
 
+    public void RemoveRequester<T>(Guid requestId, IAsyncSource<T> source) where T : IIdentifiable
+    {
+        _processor.RemoveRequester(requestId, source);
+    }
+
     public void Dispose()
     {
         Dispose(true);
@@ -123,7 +128,7 @@ public sealed class AmazonSqsMessageProcessor : IMessageProcessor, IDisposable
                     }
                     catch (QueueDoesNotExistException)
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(1));
+                        await Task.Delay(TimeSpan.FromSeconds(1), _cts.Token);
                     }
                     catch (Exception ex) when (ex is IOException or HttpRequestException)
                     {

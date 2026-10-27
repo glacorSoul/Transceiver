@@ -38,7 +38,7 @@ internal class WebsocketsSetup : BaseTransceiverSetup
             _ = protocol.SetupWriterAsync(CancellationToken.None).ContinueWith(stream =>
             {
                 _ = protocol.ServerReceiveMessagesAsync(stream.Result, CancellationToken.None);
-            });
+            }, cancellationToken);
             return protocol;
         });
     }
@@ -55,7 +55,7 @@ internal class WebsocketsSetup : BaseTransceiverSetup
                 _ = protocol.SetupWriterAsync(CancellationToken.None).ContinueWith(stream =>
                 {
                     _ = protocol.ServerReceiveMessagesAsync(stream.Result, CancellationToken.None);
-                });
+                }, cancellationToken);
             }
             return protocol;
         });

@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.3.11505.172
@@ -42,6 +42,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Serializer.SerializerMessagePack", "Transceiver.Serializer.SerializerMessagePack\Transceiver.Serializer.SerializerMessagePack.csproj", "{DD1199D0-E807-56D3-B2A7-A826D61CFDF6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transceiver.Benchmarks", "Transceiver.Benchmarks\Transceiver.Benchmarks.csproj", "{3663FE30-8C56-4CBA-BE96-318A7F59440A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SumAPI", "..\SumAPI\SumAPI\SumAPI.csproj", "{003FA7AF-223F-932E-2087-85DA5FAFA14F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WolverineSumAPI", "..\SumAPI\WolverineSumAPI\WolverineSumAPI.csproj", "{1CDE2F49-6A3B-4E2A-9A2E-2F1C2E6B5A11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +117,14 @@ Global
 		{3663FE30-8C56-4CBA-BE96-318A7F59440A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3663FE30-8C56-4CBA-BE96-318A7F59440A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3663FE30-8C56-4CBA-BE96-318A7F59440A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{003FA7AF-223F-932E-2087-85DA5FAFA14F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{003FA7AF-223F-932E-2087-85DA5FAFA14F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{003FA7AF-223F-932E-2087-85DA5FAFA14F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{003FA7AF-223F-932E-2087-85DA5FAFA14F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CDE2F49-6A3B-4E2A-9A2E-2F1C2E6B5A11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CDE2F49-6A3B-4E2A-9A2E-2F1C2E6B5A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CDE2F49-6A3B-4E2A-9A2E-2F1C2E6B5A11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CDE2F49-6A3B-4E2A-9A2E-2F1C2E6B5A11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

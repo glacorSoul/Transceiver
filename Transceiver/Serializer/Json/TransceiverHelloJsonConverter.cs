@@ -79,7 +79,7 @@ internal class TransceiverHelloJsonConverter : JsonConverter<TransceiverHelloCli
                 throw new JsonException("Data property is required or should be cached");
             }
 
-            return storedData!;
+            return storedData;
         }
     }
 

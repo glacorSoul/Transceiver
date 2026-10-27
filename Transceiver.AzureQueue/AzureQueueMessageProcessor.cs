@@ -38,6 +38,11 @@ public sealed class AzureQueueMessageProcessor : IMessageProcessor, IDisposable
         return _messageProcessor.AddRequester<T>(requestId);
     }
 
+    public void RemoveRequester<T>(Guid requestId, IAsyncSource<T> source) where T : IIdentifiable
+    {
+        _messageProcessor.RemoveRequester(requestId, source);
+    }
+
     public void Dispose()
     {
         Dispose(true);
@@ -61,7 +66,7 @@ public sealed class AzureQueueMessageProcessor : IMessageProcessor, IDisposable
         return _queues.GetOrAdd(type, type =>
         {
             QueueClient queueClient = _queueFactory(name);
-            _ = queueClient.CreateIfNotExists();
+            _ = queueClient.CreateIfNotExists(cancellationToken: _cts.Token);
             return queueClient;
         });
     }

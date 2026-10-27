@@ -106,7 +106,7 @@ public sealed class TypeIdAssigner : IDisposable
             return (ushort)idxType;
         }
         _hasBeenInitialized.Wait();
-        string typeName = GetKey(type)!;
+        string typeName = GetKey(type);
         lock (TypeToIdMap)
         {
             if (TypeToIdMap.TryGetValue(typeName, out ushort id))
@@ -139,7 +139,7 @@ public sealed class TypeIdAssigner : IDisposable
 
     private static string GetKey(Type type)
     {
-        return type.ToShortPrettyString()!;
+        return type.ToShortPrettyString();
     }
 
     private ushort GetOrCreateTypeId(Type type)

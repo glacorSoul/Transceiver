@@ -60,7 +60,7 @@ public class BaseTransceiverSetup : ITransceiverSetup
                     {
                         TypeIdAssigner idAssigner = provider.GetRequiredService<TypeIdAssigner>();
                         idAssigner.UpdateFrom(response.Result.TypeIdAssigner);
-                    });
+                    }, cancellationToken);
             }
             return transceiver;
         });

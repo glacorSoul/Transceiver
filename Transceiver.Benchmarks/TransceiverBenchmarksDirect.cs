@@ -27,6 +27,7 @@ public class TransceiverBenchmarksDirect
         _ = services.AddLogging(builder => builder.AddConsole());
         _ = services.AddTransceiver(transceiverConfiguration => transceiverConfiguration.ConfigureDirectProtocol(), Assembly.GetExecutingAssembly());
         ServiceProvider serviceProvider = services.BuildServiceProvider();
+        serviceProvider.ConfigureTransceiverProvider();
         return serviceProvider.GetRequiredService<ITransceiver<DirectSumRequest, DirectSumResponse>>();
     }
 
