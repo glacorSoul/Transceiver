@@ -13,6 +13,9 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
     private readonly ConcurrentDictionary<Guid, (TTransceiver, object)> _clientsMap;
     private readonly IMessageProcessor _messageProcessor;
     private readonly ISerializer _serializer;
+#if NET8_0_OR_GREATER
+    private readonly ConcurrentBag<CancellationTokenSource> _timeoutCtsPool = [];
+#endif
 
     protected ReceiveMessagesProtocol(
         IMessageProcessor messageProcessor,
@@ -99,6 +102,7 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
         }
         finally
         {
+            _ = _clientsMap.TryRemove(requestId, out _);
             _messageProcessor.RemoveRequester(requestId, source);
         }
     }
@@ -115,6 +119,35 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
 
     public async Task SendObjectToServerAsync<T>(T data, CancellationToken cancellationToken) where T : IIdentifiable
     {
+#if NET8_0_OR_GREATER
+        if (!_timeoutCtsPool.TryTake(out CancellationTokenSource? cancelSource))
+        {
+            cancelSource = new CancellationTokenSource();
+        }
+        CancellationTokenRegistration registration = cancellationToken.CanBeCanceled
+            ? cancellationToken.Register(static state => ((CancellationTokenSource)state!).Cancel(), cancelSource)
+            : default;
+        try
+        {
+            cancelSource.CancelAfter(Configuration.Value.RequestTimeout);
+
+            TTransceiver writer = await SetupWriterAsync(cancelSource.Token);
+            byte[] buffer = ToDataArray(data);
+            await WriteAsync(writer, null!, buffer, cancelSource.Token);
+        }
+        finally
+        {
+            await registration.DisposeAsync();
+            if (cancelSource.TryReset())
+            {
+                _timeoutCtsPool.Add(cancelSource);
+            }
+            else
+            {
+                cancelSource.Dispose();
+            }
+        }
+#else
         using CancellationTokenSource cancelSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         cancelSource.CancelAfter(Configuration.Value.RequestTimeout);
         cancellationToken = cancelSource.Token;
@@ -122,6 +155,7 @@ public abstract class ReceiveMessagesProtocol<TTransceiver> : ITransceiverProtoc
         TTransceiver writer = await SetupWriterAsync(cancellationToken);
         byte[] buffer = ToDataArray(data);
         await WriteAsync(writer, null!, buffer, cancellationToken);
+#endif
     }
 
     protected virtual byte[] ToDataArray<T>(T data) where T : IIdentifiable

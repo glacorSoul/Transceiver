@@ -30,8 +30,8 @@ public class BaseTransceiverSetup : ITransceiverSetup
         Type metricsPipelineType = typeof(MetricsPipelineProcessor<,>).MakeGenericType(genericArguments);
         Services = services;
         RequestTypeAssembly = genericArguments[0].Assembly;
-        _ = services.AddTransient<CorrelatedMessageProcessor>()
-            .AddTransient<IMessageProcessor, CorrelatedMessageProcessor>(provider => provider.GetRequiredService<CorrelatedMessageProcessor>())
+        _ = services.AddSingleton<CorrelatedMessageProcessor>()
+            .AddSingleton<IMessageProcessor, CorrelatedMessageProcessor>(provider => provider.GetRequiredService<CorrelatedMessageProcessor>())
             .AddTransient(PipelineType, metricsPipelineType)
             .AddTransient(CompositePipelineType);
     }

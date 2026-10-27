@@ -38,13 +38,6 @@ jobs:
                 VERSION_FILE_PATH: Directory.Build.props
                 INCLUDE_SYMBOLS: true
                 NUGET_KEY: ${{steps.login.outputs.NUGET_API_KEY}}
-           - name: Publish Transceiver.Generator
-             uses: alirezanet/publish-nuget@v3.1.0
-             with:
-                PROJECT_FILE_PATH: Transceiver.Generator/Transceiver.Generator.csproj
-                VERSION_FILE_PATH: Directory.Build.props
-                INCLUDE_SYMBOLS: true
-                NUGET_KEY: ${{steps.login.outputs.NUGET_API_KEY}}
            - name: Publish Transceiver.AmazonSqs
              uses: alirezanet/publish-nuget@v3.1.0
              with:

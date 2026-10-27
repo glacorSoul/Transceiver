@@ -117,11 +117,16 @@ public sealed class TypeIdAssigner : IDisposable
             return (ushort)idxType;
         }
         _hasBeenInitialized.Wait();
-        string typeName = GetKey(type);
         lock (TypeToIdMap)
         {
+            if (TypeToUShortIdMap.TryGetValue(type, out ushort cachedId))
+            {
+                return cachedId;
+            }
+            string typeName = GetKey(type);
             if (TypeToIdMap.TryGetValue(typeName, out ushort id))
             {
+                TypeToUShortIdMap[type] = id;
                 return id;
             }
             throw new KeyNotFoundException($"Type {typeName} not found.");

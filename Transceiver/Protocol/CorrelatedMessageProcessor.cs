@@ -21,6 +21,7 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
 
     private readonly ISerializer _serializer;
     private readonly ConcurrentDictionaryList<Guid, StreamEntry> _streams = new();
+    private readonly ConcurrentDictionary<Type, ConcurrentBag<object>> _sourcePools = new();
     private bool disposedValue;
 
     public CorrelatedMessageProcessor(ISerializer serializer)
@@ -31,12 +32,15 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
 
     public IAsyncSource<T> AddRequester<T>(Guid requestId) where T : IIdentifiable
     {
-        IAsyncSource<T> result = new ChannelAsyncSource<T>(new UnboundedChannelOptions
-        {
-            SingleWriter = true,
-            SingleReader = true,
-            AllowSynchronousContinuations = false
-        });
+        ConcurrentBag<object> pool = _sourcePools.GetOrAdd(typeof(T), static _ => []);
+        ChannelAsyncSource<T> result = pool.TryTake(out object? pooled)
+            ? (ChannelAsyncSource<T>)pooled
+            : new ChannelAsyncSource<T>(new UnboundedChannelOptions
+            {
+                SingleWriter = true,
+                SingleReader = true,
+                AllowSynchronousContinuations = false
+            });
         _streams.Add(requestId, new StreamEntry(result));
         return result;
     }
@@ -44,6 +48,12 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
     public void RemoveRequester<T>(Guid requestId, IAsyncSource<T> source) where T : IIdentifiable
     {
         _ = _streams.RemoveWhere(requestId, new StreamEntryReferenceMatch(source));
+        if (source is ChannelAsyncSource<T> channelSource)
+        {
+            channelSource.Reset();
+            ConcurrentBag<object> pool = _sourcePools.GetOrAdd(typeof(T), static _ => []);
+            pool.Add(channelSource);
+        }
     }
 
 
@@ -134,7 +144,7 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         }
     }
 
-    private readonly struct StreamEntry
+    private sealed class StreamEntry
     {
         public StreamEntry(object asyncSouce)
         {
@@ -173,11 +183,16 @@ public sealed class CorrelatedMessageProcessor : IMessageProcessor, IDisposable
         private static readonly MethodInfo s_invokeWriteAsyncDefinition =
             typeof(StreamEntry).GetMethod(nameof(InvokeWriteAsync), BindingFlags.Public | BindingFlags.Static)!;
 
+        private static readonly ConcurrentDictionary<Type, Func<object, IIdentifiable, CancellationToken, ValueTask>> s_writeAsyncInvokerCache = new();
+
         private static Func<object, IIdentifiable, CancellationToken, ValueTask> GetWriteAsyncInvoker(Type messageType)
         {
-            MethodInfo closedMethod = s_invokeWriteAsyncDefinition.MakeGenericMethod(messageType);
-            return (Func<object, IIdentifiable, CancellationToken, ValueTask>)closedMethod
-                .CreateDelegate(typeof(Func<object, IIdentifiable, CancellationToken, ValueTask>));
+            return s_writeAsyncInvokerCache.GetOrAdd(messageType, static t =>
+            {
+                MethodInfo closedMethod = s_invokeWriteAsyncDefinition.MakeGenericMethod(t);
+                return (Func<object, IIdentifiable, CancellationToken, ValueTask>)closedMethod
+                    .CreateDelegate(typeof(Func<object, IIdentifiable, CancellationToken, ValueTask>));
+            });
         }
 
         public static ValueTask InvokeWriteAsync<T>(object asyncSource, IIdentifiable message, CancellationToken cancellationToken)

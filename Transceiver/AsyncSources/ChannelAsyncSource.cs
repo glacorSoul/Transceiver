@@ -30,6 +30,17 @@ public class ChannelAsyncSource<T> : IAsyncSource<T>
         _ = _channel.Writer.TryComplete();
     }
 
+    /// <summary>
+    /// Drains any buffered, unread items so the instance can be safely reused from a pool.
+    /// </summary>
+    internal void Reset()
+    {
+        while (_channel.Reader.TryRead(out _))
+        {
+            // Discard any items left over from a prior use before returning this instance to the pool.
+        }
+    }
+
     public async IAsyncEnumerable<T> ReadAllAsync([EnumeratorCancellation] CancellationToken cancellationToken)
     {
         while (await _channel.Reader.WaitToReadAsync(cancellationToken))
